@@ -39,7 +39,9 @@ eureka:
 
 environment:
     name: 'bipedal_walker'
-    
+
 experiment:
-    name: 'bipedal_walker_exp'
+    parent: 'experiments'
+    name: 'bipedal_walker'
+    use_datetime: true
 ```

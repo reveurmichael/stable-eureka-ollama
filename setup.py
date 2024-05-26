@@ -9,7 +9,7 @@ def get_requirements():
 setup(
     name='stable_eureka',
     version='1.0.0',
-    author="Indra",
+    author="Rodrigo Sánchez Molina",
     author_email="rsanchezm98@gmail.com",
     maintainer="Rodrigo Sánchez Molina",
     maintainer_email="rsanchezm98@gmail.com",
