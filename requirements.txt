@@ -1,0 +1,4 @@
+ollama-python
+gymnasium[accept-rom-license]
+stable-baselines3
+pyyaml
