@@ -1,0 +1,13 @@
+eureka:
+    model: 'llama3'
+    temperature: 0.5
+    iterations: 1
+    samples: 3
+
+environment:
+    name: 'bipedal_walker'
+
+experiment:
+    parent: 'experiments'
+    name: 'bipedal_walker'
+    use_datetime: true

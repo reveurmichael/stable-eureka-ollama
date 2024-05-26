@@ -1,6 +1,6 @@
 # Stable Eureka
 Stable Eureka is an iterative llm-based reward designer for reinforcement learning. It integrates
-stable-baselines3, open-source LLMs and gym-based environments. 
+stable-baselines3, open-source LLMs and gym-based environments. This repo is based on [NVIDIA Eureka](https://github.com/eureka-research/Eureka/tree/main).
 
 
 ## Installation
@@ -27,3 +27,19 @@ ollama pull llama3
 - mistral
 - phi3
 - gemma
+
+## Configuration
+You must fill a configuration file with the following structure:
+```yaml
+eureka:
+    model: 'llama3'
+    temperature: 0.5
+    iterations: 1
+    samples: 3
+
+environment:
+    name: 'bipedal_walker'
+    
+experiment:
+    name: 'bipedal_walker_exp'
+```
