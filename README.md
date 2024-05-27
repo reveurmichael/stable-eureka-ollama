@@ -45,3 +45,22 @@ experiment:
     name: 'bipedal_walker'
     use_datetime: true
 ```
+
+## Environment
+You must provide the env code in a `env.py` file for now. You should include take the step func into a `step.py` file, and must
+create a `task_description.txt` file with the task description:
+
+```
+envs/
+    bipedal_walker/
+        env.py
+        step.py
+        task_description.txt
+```
+
+The code will copy the code into the experiments folder and append the reward function to it. The reward function should 
+satisfy the signature:
+```python
+reward, intermediate_reward = self.reward_function(param1, param2, param3)
+```
+By doing so, the code will be automatically executed by the experiment runner once the reward function is appended.
