@@ -64,3 +64,10 @@ satisfy the signature:
 reward, intermediate_reward = self.reward_function(param1, param2, param3)
 ```
 By doing so, the code will be automatically executed by the experiment runner once the reward function is appended.
+
+
+## TODO:
+- run parallel processes and training with stable baselines
+- evaluate the trained agent and compute fitness scores
+- create the reward reflection code
+- add some plots of fitness scores during iterations

@@ -1,8 +1,8 @@
 eureka:
     model: 'llama3'
     temperature: 0.5
-    iterations: 1
-    samples: 3
+    iterations: 2
+    samples: 5
 
 environment:
     name: 'bipedal_walker'

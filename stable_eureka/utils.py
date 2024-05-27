@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 import ollama
 from typing import List, Optional
+import json
 
 
 def read_from_file(path: Path) -> str:
@@ -32,9 +33,19 @@ def get_code_from_response(response: ollama.ChatResponse, regex: List[str]) -> s
     return ''
 
 
-def append_and_save_code(path: Path, txt: str):
+def append_and_save_to_txt(path: Path, txt: str):
     with open(path, 'a') as file:
         file.write(txt)
+
+
+def save_to_txt(path: Path, txt: str):
+    with open(path, 'w') as file:
+        file.write(txt)
+
+
+def save_to_json(path: Path, data: dict):
+    with open(path, 'w') as file:
+        json.dump(data, file, indent=4)
 
 
 def indent_code(code: str, signature: Optional[str] = None) -> str:
