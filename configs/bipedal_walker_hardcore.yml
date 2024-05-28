@@ -6,13 +6,14 @@ eureka:
 
 environment:
     name: 'bipedal_walker'
-    max_episode_steps: 1600
     class_name: 'BipedalWalker'
-    kwargs: null
+    max_episode_steps: 2000
+    kwargs:
+        hardcore: true
 
 experiment:
     parent: 'experiments'
-    name: 'bipedal_walker'
+    name: 'bipedal_walker_hardcore'
     use_datetime: true
 
 rl:

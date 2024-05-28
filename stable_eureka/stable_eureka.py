@@ -16,6 +16,8 @@ from stable_eureka.utils import (read_from_file, generate_text,
 from stable_eureka.utils import make_env
 from stable_eureka.rl_trainer import RLTrainer
 
+from gymnasium.wrappers import TimeLimit
+
 import multiprocessing
 import importlib
 import torch
@@ -142,6 +144,7 @@ class StableEureka:
 
                     importlib.import_module(module_name)
                     env_class = getattr(importlib.import_module(module_name), self._config['environment']['class_name'])
+                    TimeLimit(env_class, max_episode_steps=self._config['environment']['max_episode_steps'])
                     env = make_env(env_class=env_class,
                                    env_kwargs=self._config['environment'].get('kwargs', None),
                                    n_envs=self._config['rl']['training'].get('num_envs', 1),

@@ -33,12 +33,13 @@ You must fill a configuration file with the following structure:
 ```yaml
 eureka:
     model: 'llama3'
-    temperature: 0.5
+    temperature: 0.8
     iterations: 2
-    samples: 5
+    samples: 10
 
 environment:
     name: 'bipedal_walker'
+    max_episode_steps: 1600
     class_name: 'BipedalWalker'
     kwargs: null
 
@@ -65,10 +66,11 @@ rl:
     architecture:
         net_arch: {'pi': [128, 128], 'vf': [128, 128]}
         activation_fn: 'Tanh'
+        share_features_extractor: false
 
     training:
         seed: 0
-        total_timesteps: 1000000
+        total_timesteps: 1_000_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1
