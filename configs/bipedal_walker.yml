@@ -2,12 +2,42 @@ eureka:
     model: 'llama3'
     temperature: 0.5
     iterations: 2
-    samples: 5
+    samples: 10
 
 environment:
     name: 'bipedal_walker'
+    class_name: 'BipedalWalker'
+    kwargs: null
 
 experiment:
     parent: 'experiments'
     name: 'bipedal_walker'
     use_datetime: true
+
+rl:
+    algo: 'ppo'
+    algo_params:
+        policy: 'MlpPolicy'
+        learning_rate: 0.0003
+        n_steps: 2048
+        batch_size: 64
+        n_epochs: 10
+        gamma: 0.99
+        gae_lambda: 0.95
+        clip_range: 0.2
+        ent_coef: 0.0
+        vf_coef: 0.5
+        max_grad_norm: 0.5
+
+    architecture:
+        net_arch: {'pi': [128, 128], 'vf': [128, 128]}
+        activation_fn: 'Tanh'
+        share_features_extractor: false
+
+    training:
+        seed: 0
+        total_timesteps: 1_000_000
+        device: 'cuda'
+        num_envs: 4
+        state_stack: 1
+        is_atari: false

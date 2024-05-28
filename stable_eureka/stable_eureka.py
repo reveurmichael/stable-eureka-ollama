@@ -13,6 +13,12 @@ from stable_eureka.logger import get_logger, EmptyLogger
 from stable_eureka.utils import (read_from_file, generate_text,
                                  get_code_from_response, append_and_save_to_txt,
                                  indent_code, save_to_txt, save_to_json)
+from stable_eureka.utils import make_env
+from stable_eureka.rl_trainer import RLTrainer
+
+import multiprocessing
+import importlib
+import torch
 
 
 class StableEureka:
@@ -68,6 +74,8 @@ class StableEureka:
                 shutil.copy(self._root_path / 'envs' / self._config['environment']['name'] / 'env.py',
                             self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{sample}' / 'env.py')
 
+        torch.multiprocessing.set_start_method('spawn')  # required for multiprocessing
+
     def run(self, verbose: bool = True):
 
         if verbose:
@@ -104,6 +112,7 @@ class StableEureka:
                         f"LLM generation time: {elapsed:.2f}s")
 
             reward_codes = []
+            processes = []
             for idx, reward_response in enumerate(rewards):
                 code = get_code_from_response(reward_response, self._regex)
                 logger.info(f"Sample {idx}"
@@ -121,7 +130,43 @@ class StableEureka:
                                        / f'sample_{idx}'
                                        / 'env.py', code)
 
-                # run training of each reward
+                log_dir = self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{idx}'
+
+                process = None
+                try:
+                    module_name = f"{self._config['experiment']['parent']}.{self._config['experiment']['name']}"
+                    if self._config['experiment']['use_datetime']:
+                        module_name += f".{datetime.utcnow().strftime('%Y-%m-%d')}"
+
+                    module_name += f".code.iteration_{iteration}.sample_{idx}.env"
+
+                    importlib.import_module(module_name)
+                    env_class = getattr(importlib.import_module(module_name), self._config['environment']['class_name'])
+                    env = make_env(env_class=env_class,
+                                   env_kwargs=self._config['environment'].get('kwargs', None),
+                                   n_envs=self._config['rl']['training'].get('num_envs', 1),
+                                   is_atari=self._config['rl']['training'].get('is_atari', False),
+                                   state_stack=self._config['rl']['training'].get('state_stack', 1),
+                                   multithreaded=self._config['rl']['training'].get('multithreaded', False))
+
+                    rl_trainer = RLTrainer(env, self._config['rl'], log_dir)
+                    process = multiprocessing.Process(target=rl_trainer.run)
+                    process.start()
+
+                except Exception as e:
+                    logger.error(f"Error in training: {e}, for sample {idx}")
+
+                processes.append(process)
+
+            while active_processes := np.sum([process.is_alive() for process in processes if process is not None]):
+                time.sleep(20)
+                logger.info(f"Active processes: {active_processes}")
+
+            for process in processes:
+                if isinstance(process, multiprocessing.Process) and process.is_alive():
+                    process.join()
+
+            logger.info("Training loop finished...")
 
             save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'reward_codes.txt',
                         '\n\n'.join(reward_codes))
@@ -131,8 +176,8 @@ class StableEureka:
             for idx in range(self._config['eureka']['samples']):
                 # run training of each reward
                 # try to load an agent, if fails, leave the -inf value
-                # evaluate_agent()
-                fitness_values[idx] = 0
+                score = 0  # evaluate_agent()
+                fitness_values[idx] = score
 
             # select the best reward among them from fitness value
             best_sample = np.argmax(fitness_values)

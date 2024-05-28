@@ -1,4 +1,5 @@
 ollama
-gymnasium[accept-rom-license]
+gymnasium[accept-rom-license, box2d]
+tensorboard
 stable-baselines3
 pyyaml
