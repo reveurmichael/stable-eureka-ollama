@@ -1,6 +1,6 @@
 eureka:
     model: 'llama3'
-    temperature: 0.8
+    temperature: 0.5
     iterations: 2
     samples: 10
 

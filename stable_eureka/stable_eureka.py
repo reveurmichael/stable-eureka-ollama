@@ -16,7 +16,7 @@ from stable_eureka.utils import (read_from_file, generate_text,
 from stable_eureka.utils import make_env
 from stable_eureka.rl_trainer import RLTrainer
 
-from gymnasium.wrappers import TimeLimit
+from gymnasium.envs.registration import register
 
 import multiprocessing
 import importlib
@@ -142,10 +142,11 @@ class StableEureka:
 
                     module_name += f".code.iteration_{iteration}.sample_{idx}.env"
 
-                    importlib.import_module(module_name)
-                    env_class = getattr(importlib.import_module(module_name), self._config['environment']['class_name'])
-                    TimeLimit(env_class, max_episode_steps=self._config['environment']['max_episode_steps'])
-                    env = make_env(env_class=env_class,
+                    register(id=f'iteration_{iteration}_sample_{idx}_env-v0',
+                                entry_point=f"{module_name}:{self._config['environment']['class_name']}",
+                                max_episode_steps=self._config['environment']['max_episode_steps'])
+
+                    env = make_env(env_class=f'iteration_{iteration}_sample_{idx}_env-v0',
                                    env_kwargs=self._config['environment'].get('kwargs', None),
                                    n_envs=self._config['rl']['training'].get('num_envs', 1),
                                    is_atari=self._config['rl']['training'].get('is_atari', False),
