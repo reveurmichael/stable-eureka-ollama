@@ -64,7 +64,7 @@ rl:
 
     architecture:
         net_arch: {'pi': [128, 128], 'vf': [128, 128]}
-        activation_fn: 'tanh'
+        activation_fn: 'Tanh'
 
     training:
         seed: 0
