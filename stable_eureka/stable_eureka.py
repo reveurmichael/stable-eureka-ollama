@@ -188,15 +188,32 @@ class StableEureka:
             save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'reward_codes.txt',
                         '\n\n'.join(reward_codes))
 
-            # evaluate in the end the fitness and the intermediate rewards
             fitness_values = -np.inf * np.ones(self._config['eureka']['samples'])
+            reflection_components = []
             for idx in range(self._config['eureka']['samples']):
-                # run training of each reward
-                # try to load an agent, if fails, leave the -inf value
-                score = 0  # evaluate_agent()
-                fitness_values[idx] = score
+                register(id=f'base-v0',
+                         entry_point=f"{self._root_path}.envs.{self._config['environment']['name']}."
+                                     f"env:{self._config['environment']['class_name']}",
+                         max_episode_steps=self._config['environment']['max_episode_steps'])
 
-            # select the best reward among them from fitness value
+                env = make_env(env_class=f'base-v0',
+                               env_kwargs=self._config['environment'].get('kwargs', None),
+                               n_envs=1,
+                               is_atari=self._config['rl']['training'].get('is_atari', False),
+                               state_stack=self._config['rl']['training'].get('state_stack', 1),
+                               multithreaded=self._config['rl']['training'].get('multithreaded', False))
+
+                log_dir = self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{idx}'
+                try:
+                    # TODO: implement evaluate_agent (individual rewards corresponds to the best reward obtained,
+                    # plan to be a dict with mean, max, min and the list of each component)
+                    avg_reward, individual_rewards = evaluate_agent(log_dir / 'model.zip', env, seed=10, num_episodes=5)
+                    fitness_values[idx] = avg_reward
+                    reflection_components.append(individual_rewards)
+                    logger.info(f"Sample {idx} fitness score: {fitness_values[idx]}")
+                except Exception as e:
+                    reflection_components.append(None)
+
             best_sample = np.argmax(fitness_values)
             best_value = fitness_values[best_sample]
             best_reward_code = reward_codes[best_sample]
@@ -204,7 +221,9 @@ class StableEureka:
             self._record_results[iteration] = (best_reward_code, best_value)
 
             # create the reward reflection prompt
-            reward_reflection = ''
+            best_reflection = reflection_components[best_sample]
+            # TODO: implement reflection_components_to_str
+            reward_reflection = reflection_components_to_str(best_reflection)
             reward_reflection_prompt = 'Stable-Eureka best output: \n' + best_reward_code + '\n\n' + \
                                        self._prompts['reward_reflection_init'] + reward_reflection + '\n\n' + \
                                        self._prompts['reward_reflection_end']

@@ -1,7 +1,7 @@
 eureka:
     model: 'llama3'
     temperature: 0.5
-    iterations: 2
+    iterations: 5
     samples: 10
 
 environment:
@@ -37,7 +37,7 @@ rl:
 
     training:
         seed: 0
-        total_timesteps: 1_000_000
+        total_timesteps: 500_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1
