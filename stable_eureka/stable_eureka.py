@@ -47,18 +47,31 @@ class StableEureka:
                                                           / 'stable_eureka'
                                                           / 'prompts'
                                                           / 'initial_system_prompt.txt'),
+
                          'coding_instructions': read_from_file(self._root_path
                                                                / 'stable_eureka'
                                                                / 'prompts'
                                                                / 'coding_instructions_prompt.txt'),
+
                          'task_description': read_from_file(self._root_path
                                                             / 'envs'
                                                             / self._config['environment']['name']
                                                             / 'task_description.txt'),
+
                          'env_code': read_from_file(self._root_path
                                                     / 'envs'
                                                     / self._config['environment']['name']
                                                     / 'step.py'),
+
+                         'reward_reflection_init': read_from_file(self._root_path
+                                                                  / 'stable_eureka'
+                                                                  / 'prompts'
+                                                                  / 'reward_reflection_init_prompt.txt'),
+
+                         'reward_reflection_end': read_from_file(self._root_path
+                                                                 / 'stable_eureka'
+                                                                 / 'prompts'
+                                                                 / 'reward_reflection_end_prompt.txt'),
 
                          'reward_reflection': ''
                          }
@@ -143,8 +156,8 @@ class StableEureka:
                     module_name += f".code.iteration_{iteration}.sample_{idx}.env"
 
                     register(id=f'iteration_{iteration}_sample_{idx}_env-v0',
-                                entry_point=f"{module_name}:{self._config['environment']['class_name']}",
-                                max_episode_steps=self._config['environment']['max_episode_steps'])
+                             entry_point=f"{module_name}:{self._config['environment']['class_name']}",
+                             max_episode_steps=self._config['environment']['max_episode_steps'])
 
                     env = make_env(env_class=f'iteration_{iteration}_sample_{idx}_env-v0',
                                    env_kwargs=self._config['environment'].get('kwargs', None),
@@ -191,7 +204,12 @@ class StableEureka:
             self._record_results[iteration] = (best_reward_code, best_value)
 
             # create the reward reflection prompt
-            self._prompts['reward_reflection'] = ''
+            reward_reflection = ''
+            reward_reflection_prompt = 'Stable-Eureka best output: \n' + best_reward_code + '\n\n' + \
+                                       self._prompts['reward_reflection_init'] + reward_reflection + '\n\n' + \
+                                       self._prompts['reward_reflection_end']
+
+            self._prompts['reward_reflection'] = reward_reflection_prompt
 
             # update the best reward tuple
             if best_value > self._best_reward[1]:
