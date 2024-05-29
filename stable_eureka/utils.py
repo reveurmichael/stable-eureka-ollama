@@ -1,7 +1,9 @@
 import re
 from pathlib import Path
+
+import numpy as np
 import ollama
-from typing import List, Optional
+from typing import List, Optional, Dict
 import json
 
 from stable_baselines3.common.vec_env import VecFrameStack, VecEnv
@@ -53,6 +55,11 @@ def save_to_json(path: Path, data: dict):
         json.dump(data, file, indent=4)
 
 
+def read_from_json(path: Path) -> dict:
+    with open(path, 'r') as file:
+        return json.load(file)
+
+
 def indent_code(code: str, signature: Optional[str] = None) -> str:
     indented_code = ''
     if signature:
@@ -73,3 +80,10 @@ def make_env(env_class, env_kwargs, n_envs, is_atari, state_stack, multithreaded
         env = VecFrameStack(env, n_stack=state_stack)
 
     return env
+
+
+def reflection_component_to_str(component: Dict):
+    txt = ''
+    for key, value in component.items():
+        txt += f'   {key}: {value}. Max: {np.max(value)} - Mean: {np.mean(value)} - Min: {np.min(value)} \n'
+        return txt

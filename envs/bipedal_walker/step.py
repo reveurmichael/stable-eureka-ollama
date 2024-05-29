@@ -66,13 +66,15 @@ def step(self, action: np.ndarray):
     if self.game_over or pos[0] < 0:
         terminated = True
 
-    # MODEL: YOU MUST IMPLEMENT THIS FUNCTION, DO NOT USE self. variable inside it, just the arguments.
-    # You can use CONSTANTS that you have on this code.
+    # stable-eureka: this is the function you must implement!
     reward, individual_reward = self.compute_reward(pos, action, state)
+
+    fitness_score = self.compute_fitness_score(pos, action, state)
 
     if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
         terminated = True
 
     if self.render_mode == "human":
         self.render()
-    return np.array(state, dtype=np.float32), reward, terminated, False, {'individual_reward': individual_reward}
+    return np.array(state, dtype=np.float32), reward, terminated, False, {'individual_reward': individual_reward,
+                                                                          'fitness_score': fitness_score}

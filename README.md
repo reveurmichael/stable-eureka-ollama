@@ -33,8 +33,8 @@ You must fill a configuration file with the following structure:
 ```yaml
 eureka:
     model: 'llama3'
-    temperature: 0.8
-    iterations: 2
+    temperature: 0.5
+    iterations: 5
     samples: 10
 
 environment:
@@ -70,7 +70,8 @@ rl:
 
     training:
         seed: 0
-        total_timesteps: 1_000_000
+        eval_seed: 5
+        total_timesteps: 500_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1
@@ -96,9 +97,5 @@ reward, intermediate_reward = self.compute_reward(param1, param2, param3)
 ```
 By doing so, the code will be automatically executed by the experiment runner once the reward function is appended.
 
-
-## TODO:
-- run parallel processes and training with stable baselines
-- evaluate the trained agent and compute fitness scores
-- create the reward reflection code
-- add some plots of fitness scores during iterations
+You must also implement the `self.compute_fitness_score`, the ground truth reward function that allows to compare between 
+environments with different reward functions. You can see several implementations on the environments folder.

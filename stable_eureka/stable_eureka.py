@@ -12,14 +12,14 @@ from typing import Dict
 from stable_eureka.logger import get_logger, EmptyLogger
 from stable_eureka.utils import (read_from_file, generate_text,
                                  get_code_from_response, append_and_save_to_txt,
-                                 indent_code, save_to_txt, save_to_json)
-from stable_eureka.utils import make_env
+                                 indent_code, save_to_txt, save_to_json,
+                                 make_env, reflection_component_to_str, read_from_json)
 from stable_eureka.rl_trainer import RLTrainer
+from stable_eureka.rl_evaluator import RLEvaluator
 
 from gymnasium.envs.registration import register
 
 import multiprocessing
-import importlib
 import torch
 
 
@@ -166,8 +166,18 @@ class StableEureka:
                                    state_stack=self._config['rl']['training'].get('state_stack', 1),
                                    multithreaded=self._config['rl']['training'].get('multithreaded', False))
 
-                    rl_trainer = RLTrainer(env, self._config['rl'], log_dir)
-                    process = multiprocessing.Process(target=rl_trainer.run)
+                    eval_env = make_env(env_class=f'iteration_{iteration}_sample_{idx}_env-v0',
+                                        env_kwargs=self._config['environment'].get('kwargs', None),
+                                        n_envs=1,
+                                        is_atari=self._config['rl']['training'].get('is_atari', False),
+                                        state_stack=self._config['rl']['training'].get('state_stack', 1),
+                                        multithreaded=self._config['rl']['training'].get('multithreaded', False))
+
+                    rl_trainer = RLTrainer(env, config=self._config['rl'], log_dir=log_dir)
+                    process = multiprocessing.Process(target=rl_trainer.run,
+                                                      args=(eval_env,
+                                                            self._config['rl']['training']['eval_seed'],
+                                                            logger,))
                     process.start()
 
                 except Exception as e:
@@ -188,42 +198,31 @@ class StableEureka:
             save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'reward_codes.txt',
                         '\n\n'.join(reward_codes))
 
-            fitness_values = -np.inf * np.ones(self._config['eureka']['samples'])
-            reflection_components = []
+            best_eval = None
+            best_fitness = -float('inf')
+            best_idx = -1
             for idx in range(self._config['eureka']['samples']):
-                register(id=f'base-v0',
-                         entry_point=f"{self._root_path}.envs.{self._config['environment']['name']}."
-                                     f"env:{self._config['environment']['class_name']}",
-                         max_episode_steps=self._config['environment']['max_episode_steps'])
+                log_dir = self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{idx}' / 'evals.json'
+                if not log_dir.exists():
+                    continue
 
-                env = make_env(env_class=f'base-v0',
-                               env_kwargs=self._config['environment'].get('kwargs', None),
-                               n_envs=1,
-                               is_atari=self._config['rl']['training'].get('is_atari', False),
-                               state_stack=self._config['rl']['training'].get('state_stack', 1),
-                               multithreaded=self._config['rl']['training'].get('multithreaded', False))
+                evals = read_from_json(log_dir)
+                fitness_scores = evals['fitness_scores']
 
-                log_dir = self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{idx}'
-                try:
-                    # TODO: implement evaluate_agent (individual rewards corresponds to the best reward obtained,
-                    # plan to be a dict with mean, max, min and the list of each component)
-                    avg_reward, individual_rewards = evaluate_agent(log_dir / 'model.zip', env, seed=10, num_episodes=5)
-                    fitness_values[idx] = avg_reward
-                    reflection_components.append(individual_rewards)
-                    logger.info(f"Sample {idx} fitness score: {fitness_values[idx]}")
-                except Exception as e:
-                    reflection_components.append(None)
+                if np.max(fitness_scores) > best_fitness:
+                    best_fitness = np.max(fitness_scores)
+                    best_idx = idx
+                    best_eval = evals
 
-            best_sample = np.argmax(fitness_values)
-            best_value = fitness_values[best_sample]
-            best_reward_code = reward_codes[best_sample]
+            if best_eval is None:
+                logger.info("No successful train found for this iteration... Moving to the next one.")
+                continue
 
-            self._record_results[iteration] = (best_reward_code, best_value)
+            best_reward_code = reward_codes[best_idx]
+            self._record_results[iteration] = (best_reward_code, best_fitness)
 
             # create the reward reflection prompt
-            best_reflection = reflection_components[best_sample]
-            # TODO: implement reflection_components_to_str
-            reward_reflection = reflection_components_to_str(best_reflection)
+            reward_reflection = reflection_component_to_str(best_eval)
             reward_reflection_prompt = 'Stable-Eureka best output: \n' + best_reward_code + '\n\n' + \
                                        self._prompts['reward_reflection_init'] + reward_reflection + '\n\n' + \
                                        self._prompts['reward_reflection_end']
@@ -231,14 +230,14 @@ class StableEureka:
             self._prompts['reward_reflection'] = reward_reflection_prompt
 
             # update the best reward tuple
-            if best_value > self._best_reward[1]:
-                logger.info(f"New best reward found with fitness score of: {best_value}, "
+            if best_fitness > self._best_reward[1]:
+                logger.info(f"New best reward found with fitness score of: {best_fitness}, "
                             f"previous best: {self._best_reward[1]}")
                 logger.info(f"Reward code:\n{best_reward_code}")
-                self._best_reward = (best_reward_code, best_value)
+                self._best_reward = (best_reward_code, best_fitness)
 
                 save_to_txt(self._experiment_path / 'code' / 'best_rewards.txt',
-                            f'Reward code (score: {best_value}):\n' + best_reward_code + '\n\n')
+                            f'Reward code (fitness score: {best_fitness}):\n' + best_reward_code + '\n\n')
 
             save_to_json(self._experiment_path / 'code' / 'best_iteration_rewards.json',
                          self._record_results)

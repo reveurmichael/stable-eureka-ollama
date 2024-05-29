@@ -585,14 +585,17 @@ class BipedalWalker(gym.Env, EzPickle):
 
         reward, individual_reward = self.compute_reward(pos, action, state)
 
+        fitness_score = self.compute_fitness_score(pos, action, state)
+
         if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
             terminated = True
 
         if self.render_mode == "human":
             self.render()
-        return np.array(state, dtype=np.float32), reward, terminated, False, {'individual_reward': individual_reward}
+        return np.array(state, dtype=np.float32), reward, terminated, False, {'individual_reward': individual_reward,
+                                                                              'fitness_score': fitness_score}
 
-    def compute_reward(self, pos, action, state):
+    def compute_fitness_score(self, pos, action, state):
         shaping = (
                 130 * pos[0] / SCALE
         )  # moving forward is a way to receive reward (normalized to get 300 on completion)
@@ -612,7 +615,7 @@ class BipedalWalker(gym.Env, EzPickle):
         if self.game_over or pos[0] < 0:
             reward = -100
 
-        return reward, {}
+        return reward
 
     def render(self):
         if self.render_mode is None:

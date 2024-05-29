@@ -37,6 +37,7 @@ rl:
 
     training:
         seed: 0
+        eval_seed: 5
         total_timesteps: 500_000
         device: 'cuda'
         num_envs: 4
