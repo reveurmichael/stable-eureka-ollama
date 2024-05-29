@@ -98,4 +98,12 @@ reward, intermediate_reward = self.compute_reward(param1, param2, param3)
 By doing so, the code will be automatically executed by the experiment runner once the reward function is appended.
 
 You must also implement the `self.compute_fitness_score`, the ground truth reward function that allows to compare between 
-environments with different reward functions. You can see several implementations on the environments folder.
+environments with different reward functions. You can see several implementations on the environments folder:
+```python
+fitness_score = self.compute_fitness_score(param1, param2, param3)
+```
+
+> [!NOTE] 
+> The `compute_fitness_score` returns a part of the total fitness score, which is actually the sum over all the episode. 
+> Same as reward is the sum of the intermediate rewards during the episode. If the total fitness score is a binary value such as 1 for success, 
+> then you will provide always 0 until the episode ends where it will return a 1.
