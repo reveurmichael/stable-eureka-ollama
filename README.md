@@ -23,6 +23,7 @@ ollama pull llama3
 ```
 
 - llama3
+- codestral
 - codellama
 - mistral
 - phi3

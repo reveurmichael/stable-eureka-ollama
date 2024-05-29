@@ -187,8 +187,8 @@ class StableEureka:
                 processes.append(process)
 
             while active_processes := np.sum([process.is_alive() for process in processes if process is not None]):
-                time.sleep(20)
                 logger.info(f"Active processes: {active_processes}")
+                time.sleep(20)
 
             for process in processes:
                 if isinstance(process, multiprocessing.Process) and process.is_alive():
@@ -216,7 +216,8 @@ class StableEureka:
                     best_eval = copy.deepcopy(evals)
 
             if best_eval is None:
-                logger.info("No successful train found for this iteration... Moving to the next one.")
+                logger.info("No successful train found for this iteration... "
+                            "Moving to the next one with the same reward reflection as before!")
                 continue
 
             best_reward_code = reward_codes[best_idx]
@@ -235,10 +236,26 @@ class StableEureka:
                 logger.info(f"New best reward found with fitness score of: {best_fitness}, "
                             f"previous best: {self._best_reward[1]}")
                 logger.info(f"Reward code:\n{best_reward_code}")
-                self._best_reward = (best_reward_code, best_fitness)
+                self._best_reward = (best_reward_code, best_fitness, iteration, best_idx)
 
-                save_to_txt(self._experiment_path / 'code' / 'best_rewards.txt',
-                            f'Reward code (fitness score: {best_fitness}):\n' + best_reward_code + '\n\n')
+                save_to_json(self._experiment_path / 'code' / 'best_reward.txt',
+                             {'reward': best_reward_code, 'fitness': best_fitness, 'iteration': iteration, 'sample': best_idx})
 
             save_to_json(self._experiment_path / 'code' / 'best_iteration_rewards.json',
                          self._record_results)
+
+        # TODO: evaluate the best! generate video, etc
+        # model_path = self._experiment_path / 'code' / f'iteration_{self._best_reward[2]}' / f'sample_{self._best_reward[3]}' / 'model.zip'
+        # env_name = f'base_env-v0'
+        # register(id=env_name,
+        #          entry_point=f"envs.{self._config['environment']['module_name']}:{self._config['environment']['class_name']}",
+        #          max_episode_steps=self._config['environment']['max_episode_steps'])
+        # env = make_env(env_class=env_name,
+        #                env_kwargs=self._config['environment'].get('kwargs', None),
+        #                n_envs=1,
+        #                is_atari=self._config['rl']['training'].get('is_atari', False),
+        #                state_stack=self._config['rl']['training'].get('state_stack', 1),
+        #                multithreaded=self._config['rl']['training'].get('multithreaded', False))
+
+
+
