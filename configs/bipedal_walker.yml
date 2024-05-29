@@ -2,7 +2,7 @@ eureka:
     model: 'llama3'
     temperature: 0.5
     iterations: 5
-    samples: 10
+    samples: 8
 
 environment:
     name: 'bipedal_walker'
@@ -37,8 +37,11 @@ rl:
 
     training:
         seed: 0
-        eval_seed: 5
-        total_timesteps: 500_000
+        eval:
+            seed: 5
+            num_episodes: 3
+            num_evals: 20
+        total_timesteps: 300_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1

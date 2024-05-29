@@ -86,4 +86,4 @@ def reflection_component_to_str(component: Dict):
     txt = ''
     for key, value in component.items():
         txt += f'   {key}: {value}. Max: {np.max(value)} - Mean: {np.mean(value)} - Min: {np.min(value)} \n'
-        return txt
+    return txt

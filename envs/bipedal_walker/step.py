@@ -65,7 +65,6 @@ def step(self, action: np.ndarray):
     terminated = False
     if self.game_over or pos[0] < 0:
         terminated = True
-
     # stable-eureka: this is the function you must implement!
     reward, individual_reward = self.compute_reward(pos, action, state)
 
@@ -76,5 +75,7 @@ def step(self, action: np.ndarray):
 
     if self.render_mode == "human":
         self.render()
-    return np.array(state, dtype=np.float32), reward, terminated, False, {'individual_reward': individual_reward,
-                                                                          'fitness_score': fitness_score}
+
+    info = individual_reward.update({'fitness_score': fitness_score})
+
+    return np.array(state, dtype=np.float32), reward, terminated, False, info

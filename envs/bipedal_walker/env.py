@@ -592,8 +592,10 @@ class BipedalWalker(gym.Env, EzPickle):
 
         if self.render_mode == "human":
             self.render()
-        return np.array(state, dtype=np.float32), reward, terminated, False, {'individual_reward': individual_reward,
-                                                                              'fitness_score': fitness_score}
+
+        individual_reward.update({'fitness_score': fitness_score})
+
+        return np.array(state, dtype=np.float32), reward, terminated, False, individual_reward
 
     def compute_fitness_score(self, pos, action, state):
         shaping = (

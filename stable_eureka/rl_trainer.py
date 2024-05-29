@@ -49,10 +49,13 @@ class RLTrainer:
 
         self._params = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][1](env, self._config, self._log_dir)
 
-    def run(self, eval_env, eval_seed, logger=None):
+    def run(self, eval_env, eval_seed, eval_episodes, num_evals, logger=None):
 
-        eval_seed.seed(eval_seed)
-        info_saver_callback = RLEvalCallback(eval_env)
+        eval_freq = max(1, int(self._config['training']['total_timesteps'] // self._config['training']['num_envs'] / num_evals))
+        info_saver_callback = RLEvalCallback(eval_env, seed=eval_seed,
+                                             n_eval_episodes=eval_episodes,
+                                             eval_freq=eval_freq,
+                                             log_path=self._log_dir)
 
         model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
         model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",

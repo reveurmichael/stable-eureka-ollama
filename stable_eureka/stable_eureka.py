@@ -1,3 +1,4 @@
+import copy
 import time
 from pathlib import Path
 
@@ -15,8 +16,6 @@ from stable_eureka.utils import (read_from_file, generate_text,
                                  indent_code, save_to_txt, save_to_json,
                                  make_env, reflection_component_to_str, read_from_json)
 from stable_eureka.rl_trainer import RLTrainer
-from stable_eureka.rl_evaluator import RLEvaluator
-
 from gymnasium.envs.registration import register
 
 import multiprocessing
@@ -176,7 +175,9 @@ class StableEureka:
                     rl_trainer = RLTrainer(env, config=self._config['rl'], log_dir=log_dir)
                     process = multiprocessing.Process(target=rl_trainer.run,
                                                       args=(eval_env,
-                                                            self._config['rl']['training']['eval_seed'],
+                                                            self._config['rl']['training']['eval']['seed'],
+                                                            self._config['rl']['training']['eval']['num_episodes'],
+                                                            self._config['rl']['training']['eval']['num_evals'],
                                                             logger,))
                     process.start()
 
@@ -207,12 +208,12 @@ class StableEureka:
                     continue
 
                 evals = read_from_json(log_dir)
-                fitness_scores = evals['fitness_scores']
+                fitness_scores = evals['fitness_score']
 
                 if np.max(fitness_scores) > best_fitness:
                     best_fitness = np.max(fitness_scores)
                     best_idx = idx
-                    best_eval = evals
+                    best_eval = copy.deepcopy(evals)
 
             if best_eval is None:
                 logger.info("No successful train found for this iteration... Moving to the next one.")

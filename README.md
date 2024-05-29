@@ -35,7 +35,7 @@ eureka:
     model: 'llama3'
     temperature: 0.5
     iterations: 5
-    samples: 10
+    samples: 8
 
 environment:
     name: 'bipedal_walker'
@@ -70,8 +70,11 @@ rl:
 
     training:
         seed: 0
-        eval_seed: 5
-        total_timesteps: 500_000
+        eval:
+            seed: 5
+            num_episodes: 3
+            num_evals: 20
+        total_timesteps: 300_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1
@@ -93,7 +96,7 @@ envs/
 The code will copy the code into the experiments folder and append the reward function to it. The reward function should 
 satisfy the signature:
 ```python
-reward, intermediate_reward = self.compute_reward(param1, param2, param3)
+reward, individual_reward = self.compute_reward(param1, param2, param3)
 ```
 By doing so, the code will be automatically executed by the experiment runner once the reward function is appended.
 
@@ -107,3 +110,9 @@ fitness_score = self.compute_fitness_score(param1, param2, param3)
 > The `compute_fitness_score` returns a part of the total fitness score, which is actually the sum over all the episode. 
 > Same as reward is the sum of the intermediate rewards during the episode. If the total fitness score is a binary value such as 1 for success, 
 > then you will provide always 0 until the episode ends where it will return a 1.
+
+Finally, you must set to in the insert in the individual_rewards dict the `fitness_score` value:
+```python
+individual_rewards.update({'fitness_score': fitness_score})
+```
+This allows us to save all this values for later reward reflection.
