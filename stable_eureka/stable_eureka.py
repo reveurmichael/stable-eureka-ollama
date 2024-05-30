@@ -269,6 +269,8 @@ class StableEureka:
                        multithreaded=self._config['rl']['training'].get('multithreaded', False))
 
         evaluator = RLEvaluator(model_path, algo=self._config['rl']['training']['algo'])
-        evaluator.run(env, seed=10, n_episodes=10, save_gif=True, logger=logger)
+        evaluator.run(env, seed=self._config['rl']['evaluation']['seed'],
+                      n_episodes=self._config['rl']['evaluation']['num_episodes'],
+                      logger=logger, save_gif=self._config['rl']['evaluation']['save_gif'])
 
 

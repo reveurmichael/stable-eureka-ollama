@@ -35,9 +35,9 @@ You must fill a configuration file with the following structure:
 ```yaml
 eureka:
     model: 'llama3'
-    temperature: 1.0 
+    temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
-    samples: 10
+    samples: 12
     use_initial_reward_prompt: true  # if available, use the initial reward prompt
 
 environment:
@@ -82,6 +82,11 @@ rl:
         num_envs: 4
         state_stack: 1
         is_atari: false
+
+    evaluation:
+        seed: 10
+        num_episodes: 10
+        save_gif: true
 ```
 
 ## Environment

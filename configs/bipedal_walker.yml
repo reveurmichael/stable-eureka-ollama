@@ -47,3 +47,8 @@ rl:
         num_envs: 4
         state_stack: 1
         is_atari: false
+
+    evaluation:
+        seed: 10
+        num_episodes: 10
+        save_gif: true
