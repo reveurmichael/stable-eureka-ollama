@@ -1,8 +1,9 @@
 eureka:
     model: 'llama3'
-    temperature: 0.5
+    temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
-    samples: 8
+    samples: 12
+    use_initial_reward_prompt: true  # if available, use the initial reward prompt
 
 environment:
     name: 'bipedal_walker'
@@ -23,7 +24,7 @@ rl:
         n_steps: 2048
         batch_size: 64
         n_epochs: 10
-        gamma: 0.99
+        gamma: 0.999
         gae_lambda: 0.95
         clip_range: 0.2
         ent_coef: 0.0
@@ -31,17 +32,17 @@ rl:
         max_grad_norm: 0.5
 
     architecture:
-        net_arch: {'pi': [128, 128], 'vf': [128, 128]}
-        activation_fn: 'Tanh'
+        net_arch: {'pi': [64, 64], 'vf': [64, 64]}
+        activation_fn: 'ReLU'
         share_features_extractor: false
 
     training:
         seed: 0
         eval:
             seed: 5
-            num_episodes: 3
-            num_evals: 20
-        total_timesteps: 300_000
+            num_episodes: 2
+            num_evals: 10
+        total_timesteps: 1_500_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1

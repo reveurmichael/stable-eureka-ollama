@@ -4,4 +4,5 @@ Please carefully analyze the policy feedback and provide a new, improved reward 
     (b) Re-writing the reward component
     (c) Discarding the reward component
 (2) If some reward components’ magnitude is significantly larger, then you must re-scale its value to a proper range
+(3) The fitness score is a ground truth evaluator. You want to maximize it!
 Please analyze each existing reward component in the suggested manner above first, and then write the reward function code.

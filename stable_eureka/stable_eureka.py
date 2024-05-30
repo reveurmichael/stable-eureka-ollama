@@ -16,6 +16,7 @@ from stable_eureka.utils import (read_from_file, generate_text,
                                  indent_code, save_to_txt, save_to_json,
                                  make_env, reflection_component_to_str, read_from_json)
 from stable_eureka.rl_trainer import RLTrainer
+from stable_eureka.rl_evaluator import RLEvaluator
 from gymnasium.envs.registration import register
 
 import multiprocessing
@@ -37,6 +38,8 @@ class StableEureka:
             self._experiment_path /= datetime.utcnow().strftime('%Y-%m-%d')
 
         self._experiment_path.mkdir(parents=True, exist_ok=True)
+
+        shutil.copy(config_path, self._experiment_path / 'config.yaml')
 
         self._regex = [
             r'```python(.*?)```'
@@ -75,6 +78,10 @@ class StableEureka:
                          'reward_reflection': ''
                          }
 
+        initial_reward_prompt_path = self._root_path / 'envs' / self._config['environment']['name'] / 'initial_reward_prompt.txt'
+        if self._config['eureka']['use_initial_reward_prompt'] and initial_reward_prompt_path.exists():
+            self._prompts['initial_reward'] = read_from_file(initial_reward_prompt_path)
+
         self._best_reward = ('', -float('inf'))  # (reward code, fitness value)
 
         self._record_results: Dict = {}
@@ -106,11 +113,15 @@ class StableEureka:
         )
 
         for iteration in range(self._config['eureka']['iterations']):
-            prompt = (self._prompts['initial_system'] +
-                      '\nCoding instructions: ' + self._prompts['coding_instructions'] +
-                      '\nTask description: ' + self._prompts['task_description'] +
-                      '\nEnvironment code:\n' + self._prompts['env_code'] +
-                      '\nReward reflection:\n' + self._prompts['reward_reflection'])
+            prompt = self._prompts['initial_system'] + \
+                      '\nCoding instructions: ' + self._prompts['coding_instructions'] + \
+                      '\nTask description: ' + self._prompts['task_description'] + \
+                      '\nEnvironment code:\n' + self._prompts['env_code']
+
+            if iteration == 0 and 'initial_reward' in self._prompts:
+                prompt += '\nInitial reward proposal:\n' + self._prompts['initial_reward']
+            else:
+                prompt += '\nReward reflection:\n' + self._prompts['reward_reflection']
 
             save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'prompt.txt', prompt)
 
@@ -225,9 +236,10 @@ class StableEureka:
 
             # create the reward reflection prompt
             reward_reflection = reflection_component_to_str(best_eval)
-            reward_reflection_prompt = 'Stable-Eureka best output: \n' + best_reward_code + '\n\n' + \
-                                       self._prompts['reward_reflection_init'] + reward_reflection + '\n\n' + \
-                                       self._prompts['reward_reflection_end']
+            reward_reflection_prompt = (self._prompts['reward_reflection_init'] + reward_reflection + '\n' +
+                                        self._prompts['reward_reflection_end'] +
+                                        'Stable-Eureka best iteration  (you should modify it!): \n' +
+                                        best_reward_code + '\n')
 
             self._prompts['reward_reflection'] = reward_reflection_prompt
 
@@ -239,23 +251,24 @@ class StableEureka:
                 self._best_reward = (best_reward_code, best_fitness, iteration, best_idx)
 
                 save_to_json(self._experiment_path / 'code' / 'best_reward.txt',
-                             {'reward': best_reward_code, 'fitness': best_fitness, 'iteration': iteration, 'sample': best_idx})
+                             {'reward': best_reward_code, 'fitness': best_fitness, 'iteration': iteration,
+                              'sample': best_idx})
 
             save_to_json(self._experiment_path / 'code' / 'best_iteration_rewards.json',
                          self._record_results)
 
-        # TODO: evaluate the best! generate video, etc
-        # model_path = self._experiment_path / 'code' / f'iteration_{self._best_reward[2]}' / f'sample_{self._best_reward[3]}' / 'model.zip'
-        # env_name = f'base_env-v0'
-        # register(id=env_name,
-        #          entry_point=f"envs.{self._config['environment']['module_name']}:{self._config['environment']['class_name']}",
-        #          max_episode_steps=self._config['environment']['max_episode_steps'])
-        # env = make_env(env_class=env_name,
-        #                env_kwargs=self._config['environment'].get('kwargs', None),
-        #                n_envs=1,
-        #                is_atari=self._config['rl']['training'].get('is_atari', False),
-        #                state_stack=self._config['rl']['training'].get('state_stack', 1),
-        #                multithreaded=self._config['rl']['training'].get('multithreaded', False))
+        # evaluate the best reward
+        model_path = self._experiment_path / 'code' / f'iteration_{self._best_reward[2]}' / f'sample_{self._best_reward[3]}' / 'model.zip'
+        env_name = f'iteration_{self._best_reward[2]}_sample_{self._best_reward[3]}_env-v0'
 
+        env = make_env(env_class=env_name,
+                       env_kwargs=self._config['environment'].get('kwargs', None),
+                       n_envs=1,
+                       is_atari=self._config['rl']['training'].get('is_atari', False),
+                       state_stack=self._config['rl']['training'].get('state_stack', 1),
+                       multithreaded=self._config['rl']['training'].get('multithreaded', False))
+
+        evaluator = RLEvaluator(model_path, algo=self._config['rl']['training']['algo'])
+        evaluator.run(env, seed=10, n_episodes=10, save_gif=True, logger=logger)
 
 

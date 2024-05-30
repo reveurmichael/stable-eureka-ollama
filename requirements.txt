@@ -1,5 +1,6 @@
 ollama
 gymnasium[accept-rom-license, box2d]
 tensorboard
+imageio
 stable-baselines3
 pyyaml

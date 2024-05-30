@@ -619,8 +619,8 @@ class BipedalWalker(gym.Env, EzPickle):
 
         return reward
 
-    def compute_reward(self, pos, action, state):
-        return self.compute_fitness_score(pos, action, state), {}
+    # def compute_reward(self, pos, action, state):
+    #     return self.compute_fitness_score(pos, action, state), {}
 
     def render(self):
         if self.render_mode is None:
