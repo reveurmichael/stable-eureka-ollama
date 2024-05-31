@@ -123,7 +123,9 @@ class StableEureka:
 
             if iteration == 0 and 'initial_reward' in self._prompts:
                 prompt += '\nInitial reward proposal:\n' + self._prompts['initial_reward']
-                prompt += '\nYou must provide a variation from the initial reward proposal! This is just a suggestion!'
+                prompt += ('\nYou must provide a variation from the initial reward proposal! '
+                           'This is just a suggestion! It is crucial that you provide the code for '
+                           'the reward function using the previous coding tips. Please the entire code snippet!')
             else:
                 prompt += '\nReward reflection:\n' + self._prompts['reward_reflection']
 
@@ -148,7 +150,7 @@ class StableEureka:
             for idx, reward_response in enumerate(rewards):
                 save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}'
                             / f'sample_{idx}' / 'llm_response.txt',
-                            str(reward_response['message']['content']))
+                            reward_response)
                 code = get_code_from_response(reward_response, self._regex)
 
                 save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}'

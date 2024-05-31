@@ -17,6 +17,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 ```
 
 ## Available LLMs
+### Ollama
 You have to pull the LLMs you want to use from the ollama repository. For example, to pull the llama3 LLM:
 ```bash
 ollama pull llama3
@@ -30,10 +31,16 @@ ollama pull llama3
 
 If the model is too large to be run on gpu, it will use some of the available cpu cores. This will be much slower than running entirely on gpu.
 
+### OpenAI
+You can use OpenAI LLMs by providing an API key. It depends on the model you want to use, how much it will cost.
+You must set the environment variable `OPENAI_API_KEY` with your key.
+
+
 ## Configuration
 You must fill a configuration file with the following structure:
 ```yaml
 eureka:
+    backend: 'ollama'  # 'ollama' or 'openai'
     model: 'llama3'
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
@@ -130,3 +137,4 @@ This allows us to save all this values for later reward reflection.
 
 # TODO:
 - Add support for OpenAI LLMs (_you need an API key_).
+- Sometimes it generates other functions, make a filter to ignore them on the generated code.
