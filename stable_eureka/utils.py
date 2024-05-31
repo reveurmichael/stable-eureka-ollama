@@ -1,10 +1,8 @@
 import re
 from pathlib import Path
-import time
 import numpy as np
 from typing import List, Optional, Dict
 import json
-import ollama
 
 from stable_baselines3.common.vec_env import VecFrameStack, VecEnv
 from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv

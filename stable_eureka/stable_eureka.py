@@ -5,14 +5,13 @@ from pathlib import Path
 import numpy as np
 import yaml
 from datetime import datetime
-import ollama
 import os
 import shutil
 from typing import Dict
 
 from stable_eureka.logger import get_logger, EmptyLogger
 from stable_eureka.ollama_generator import OllamaGenerator
-from stable_eureka.utils import (read_from_file, generate_text,
+from stable_eureka.utils import (read_from_file,
                                  get_code_from_response, append_and_save_to_txt,
                                  indent_code, save_to_txt, save_to_json,
                                  make_env, reflection_component_to_str, read_from_json)
