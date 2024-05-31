@@ -1,8 +1,8 @@
 eureka:
-    model: 'llama3'
+    model: 'codestral'
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
-    samples: 12
+    samples: 6
     use_initial_reward_prompt: true  # if available, use the initial reward prompt
 
 environment:
@@ -13,7 +13,7 @@ environment:
 
 experiment:
     parent: 'experiments'
-    name: 'bipedal_walker'
+    name: 'bipedal_walker_final'
     use_datetime: true
 
 rl:

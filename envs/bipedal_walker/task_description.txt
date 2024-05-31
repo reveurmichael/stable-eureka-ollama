@@ -1,1 +1,1 @@
-The goal is to make the agent get as far as possible in the game.
+The goal is to make the agent move as far as possible from the origin to the right.

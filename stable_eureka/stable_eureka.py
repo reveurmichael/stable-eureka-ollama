@@ -34,8 +34,10 @@ class StableEureka:
         self._experiment_path = self._root_path / self._config['experiment']['parent'] / self._config['experiment'][
             'name']
 
+        self._experiment_datetime = None
         if self._config['experiment']['use_datetime']:
-            self._experiment_path /= datetime.utcnow().strftime('%Y-%m-%d')
+            self._experiment_datetime = datetime.utcnow().strftime('%Y-%m-%d')
+            self._experiment_path /= self._experiment_datetime
 
         self._experiment_path.mkdir(parents=True, exist_ok=True)
 
@@ -98,7 +100,7 @@ class StableEureka:
         torch.multiprocessing.set_start_method('spawn')  # required for multiprocessing
 
     def run(self, verbose: bool = True):
-
+        init_run_time = time.time()
         if verbose:
             logger = get_logger()
         else:
@@ -120,6 +122,7 @@ class StableEureka:
 
             if iteration == 0 and 'initial_reward' in self._prompts:
                 prompt += '\nInitial reward proposal:\n' + self._prompts['initial_reward']
+                prompt += '\nYou must provide a variation from the initial reward proposal! This is just a suggestion!'
             else:
                 prompt += '\nReward reflection:\n' + self._prompts['reward_reflection']
 
@@ -129,17 +132,27 @@ class StableEureka:
             rewards = generate_text(model=self._config['eureka']['model'],
                                     options=ollama_options,
                                     prompt=prompt,
-                                    k=self._config['eureka']['samples'])
+                                    k=self._config['eureka']['samples'],
+                                    logger=logger)
             end_t = time.time()
             elapsed = end_t - init_t
             logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++")
             logger.info(f"Iteration {iteration}/{self._config['eureka']['iterations'] - 1} - "
                         f"LLM generation time: {elapsed:.2f}s")
+            
+            time.sleep(5*60)  # wait for 5 minutes (to avoid gpu cuda memory issues)
 
             reward_codes = []
             processes = []
             for idx, reward_response in enumerate(rewards):
+                save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}'
+                            / f'sample_{idx}' / 'llm_response.txt',
+                            str(reward_response['message']['content']))
                 code = get_code_from_response(reward_response, self._regex)
+
+                save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}'
+                            / f'sample_{idx}' / 'reward_code.txt', code)
+
                 logger.info(f"Sample {idx}"
                             f"/{self._config['eureka']['samples'] - 1}")
                 logger.info(f"Reward: \n{code}")
@@ -161,7 +174,7 @@ class StableEureka:
                 try:
                     module_name = f"{self._config['experiment']['parent']}.{self._config['experiment']['name']}"
                     if self._config['experiment']['use_datetime']:
-                        module_name += f".{datetime.utcnow().strftime('%Y-%m-%d')}"
+                        module_name += f".{self._experiment_datetime}"
 
                     module_name += f".code.iteration_{iteration}.sample_{idx}.env"
 
@@ -206,9 +219,6 @@ class StableEureka:
                     process.join()
 
             logger.info("Training loop finished...")
-
-            save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'reward_codes.txt',
-                        '\n\n'.join(reward_codes))
 
             best_eval = None
             best_fitness = -float('inf')
@@ -257,7 +267,6 @@ class StableEureka:
             save_to_json(self._experiment_path / 'code' / 'best_iteration_rewards.json',
                          self._record_results)
 
-        # evaluate the best reward
         model_path = self._experiment_path / 'code' / f'iteration_{self._best_reward[2]}' / f'sample_{self._best_reward[3]}' / 'model.zip'
         env_name = f'iteration_{self._best_reward[2]}_sample_{self._best_reward[3]}_env-v0'
 
@@ -272,5 +281,10 @@ class StableEureka:
         evaluator.run(env, seed=self._config['rl']['evaluation']['seed'],
                       n_episodes=self._config['rl']['evaluation']['num_episodes'],
                       logger=logger, save_gif=self._config['rl']['evaluation']['save_gif'])
+
+        end_run_time = time.time()
+        delta_time = end_run_time - init_run_time
+        logger.info(f"Stable-Eureka optimization finished in {delta_time:.2f}s ("
+                    f"{delta_time / 60:.2f}m) ({delta_time / 3600:.2f}h)")
 
 
