@@ -2,7 +2,6 @@ import re
 from pathlib import Path
 import time
 import numpy as np
-import ollama
 from typing import List, Optional, Dict
 import json
 

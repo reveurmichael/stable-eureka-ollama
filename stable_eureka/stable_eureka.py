@@ -11,6 +11,7 @@ import shutil
 from typing import Dict
 
 from stable_eureka.logger import get_logger, EmptyLogger
+from stable_eureka.ollama_generator import OllamaGenerator
 from stable_eureka.utils import (read_from_file, generate_text,
                                  get_code_from_response, append_and_save_to_txt,
                                  indent_code, save_to_txt, save_to_json,
@@ -99,6 +100,11 @@ class StableEureka:
 
         torch.multiprocessing.set_start_method('spawn')  # required for multiprocessing
 
+        if self._config['eureka']['backend'] == 'ollama':
+            self._llm_generator = OllamaGenerator(model=self._config['eureka']['model'])
+        else:
+            raise ValueError(f"Backend {self._config['eureka']['backend']} not available")
+
     def run(self, verbose: bool = True):
         init_run_time = time.time()
         if verbose:
@@ -109,10 +115,6 @@ class StableEureka:
         logger.info(f"Starting stable-eureka optimization. Iterations: {self._config['eureka']['iterations']}, "
                     f"samples: {self._config['eureka']['samples']}")
         logger.info(f"Using LLM: {self._config['eureka']['model']} with T={self._config['eureka']['temperature']}")
-
-        ollama_options = ollama.Options(
-            temperature=self._config['eureka']['temperature'],
-        )
 
         for iteration in range(self._config['eureka']['iterations']):
             prompt = self._prompts['initial_system'] + \
@@ -129,8 +131,8 @@ class StableEureka:
             save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'prompt.txt', prompt)
 
             init_t = time.time()
-            rewards = generate_text(model=self._config['eureka']['model'],
-                                    options=ollama_options,
+            rewards = self._llm_generator.generate(
+                                    temperature=self._config['eureka']['temperature'],
                                     prompt=prompt,
                                     k=self._config['eureka']['samples'],
                                     logger=logger)

@@ -1,4 +1,5 @@
 eureka:
+    backend: 'ollama'  # 'ollama' or 'openai'
     model: 'codestral'
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
