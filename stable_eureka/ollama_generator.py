@@ -9,7 +9,7 @@ class OllamaGenerator(LLMGeneratorBase):
 
         # TODO: check if the model is valid or pulled
 
-    def generate(self, prompt, k, logger, temperature):
+    def generate(self, prompt, k, logger, temperature) -> list[str]:
 
         options = ollama.Options(
             temperature=temperature
@@ -25,10 +25,10 @@ class OllamaGenerator(LLMGeneratorBase):
                 options=options
             )
             end_t = time.time()
-            responses.append(response)
+            responses.append(response['message']['content'])
             if logger is not None:
                 logger.info(f"Generation {i + 1}/{k} completed in {end_t - init_t:.2f} seconds")
                 logger.info(f"Response: {response['message']['content']}")
                 logger.info("+---------------------------------+")
 
-        return responses  # TODO: this should be generic, not dependant of ollama
+        return responses

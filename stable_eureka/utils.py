@@ -4,6 +4,7 @@ import time
 import numpy as np
 from typing import List, Optional, Dict
 import json
+import ollama
 
 from stable_baselines3.common.vec_env import VecFrameStack, VecEnv
 from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
@@ -16,29 +17,9 @@ def read_from_file(path: Path) -> str:
         return file.read()
 
 
-def generate_text(model: str, options: ollama.Options, prompt: str, k: int, logger=None) -> List[ollama.ChatResponse]:
-    responses = []
-    for i in range(k):
-        init_t = time.time()
-        response = ollama.chat(
-            model=model,
-            messages=[{'role': 'user', 'content': prompt}],
-            stream=False,
-            options=options
-        )
-        end_t = time.time()
-        responses.append(response)
-        if logger is not None:
-            logger.info(f"Generation {i + 1}/{k} completed in {end_t - init_t:.2f} seconds")
-            logger.info(f"Response: {response['message']['content']}")
-            logger.info("+---------------------------------+")
-
-    return responses
-
-
-def get_code_from_response(response: ollama.ChatResponse, regex: List[str]) -> str:
+def get_code_from_response(response: str, regex: List[str]) -> str:
     for reg in regex:
-        code = re.search(reg, response['message']['content'], re.DOTALL)
+        code = re.search(reg, response, re.DOTALL)
         if code:
             return code.group(1).strip()
 
