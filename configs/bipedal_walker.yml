@@ -1,10 +1,10 @@
 eureka:
-    backend: 'ollama'  # 'ollama' or 'openai'
-    model: 'codestral'
+    backend: 'openai'  # 'ollama' or 'openai'
+    model: 'gpt-4o'
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
-    samples: 6
-    use_initial_reward_prompt: true  # if available, use the initial reward prompt
+    samples: 8
+    use_initial_reward_prompt: false  # if available, use the initial reward prompt
 
 environment:
     name: 'bipedal_walker'

@@ -11,6 +11,7 @@ from typing import Dict
 
 from stable_eureka.logger import get_logger, EmptyLogger
 from stable_eureka.ollama_generator import OllamaGenerator
+from stable_eureka.openai_generator import OpenAIGenerator
 from stable_eureka.utils import (read_from_file,
                                  get_code_from_response, append_and_save_to_txt,
                                  indent_code, save_to_txt, save_to_json,
@@ -101,8 +102,11 @@ class StableEureka:
 
         if self._config['eureka']['backend'] == 'ollama':
             self._llm_generator = OllamaGenerator(model=self._config['eureka']['model'])
+        elif self._config['eureka']['backend'] == 'openai':
+            self._llm_generator = OpenAIGenerator(model=self._config['eureka']['model'])
         else:
-            raise ValueError(f"Backend {self._config['eureka']['backend']} not available")
+            raise ValueError(f"Backend {self._config['eureka']['backend']} not available. "
+                             f"Choose from ['ollama', 'openai']")
 
     def run(self, verbose: bool = True):
         init_run_time = time.time()
@@ -142,8 +146,10 @@ class StableEureka:
             logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++")
             logger.info(f"Iteration {iteration}/{self._config['eureka']['iterations'] - 1} - "
                         f"LLM generation time: {elapsed:.2f}s")
-            
-            time.sleep(5*60)  # wait for 5 minutes (to avoid gpu cuda memory issues)
+
+            if isinstance(self._llm_generator, OllamaGenerator):
+                logger.info(f"Sleeping to avoid CUDA memory issues...")
+                time.sleep(5*60)  # wait for 5 minutes (to avoid gpu cuda memory issues)
 
             reward_codes = []
             processes = []

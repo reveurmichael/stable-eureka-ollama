@@ -8,6 +8,7 @@ The code output should be formatted as a python code string: "```python ... ```"
     (4) Most importantly, the reward code’s input variables must contain only attributes of the provided environment class definition (namely, variables that have prefix self.)
 Under no circumstance can you introduce new input variables.
 You must ensure that the code must start as: "```python ... ```"
-You must not use self. vars that are not defined on the code that has been provided to you
+You must not use self. vars that are not defined on the code that has been provided to you.
 Please, you must pass self as the first argument of the function, as in the example code provided.
 Remember you should not compute any fitness_score component on this function!
+You should answer with only the code of the reward function, avoiding any extra explanation, just a final max 50 words explanation of your approach.
