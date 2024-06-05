@@ -14,7 +14,7 @@ environment:
 
 experiment:
     parent: 'experiments'
-    name: 'bipedal_walker_final'
+    name: 'bipedal_walker_gpt4o'
     use_datetime: true
 
 rl:
@@ -43,7 +43,7 @@ rl:
             seed: 5
             num_episodes: 2
             num_evals: 10
-        total_timesteps: 1_500_000
+        total_timesteps: 1_000_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1

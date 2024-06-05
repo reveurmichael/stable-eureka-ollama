@@ -1,8 +1,8 @@
-Please carefully analyze the policy feedback and provide a new, improved reward function that can better solve the task. Some helpful tips for analyzing the policy feedback:
-(1) If the values for a certain reward component are near identical throughout, then this means RL is not able to optimize this component as it is written. You may consider
-    (a) Changing its scale or the value of its temperature parameter
-    (b) Re-writing the reward component
-    (c) Discarding the reward component
-(2) If some reward components’ magnitude is significantly larger, then you must re-scale its value to a proper range
-(3) The fitness score is a ground truth evaluator. You want to maximize it!
-Please analyze each existing reward component in the suggested manner above first, and then write the reward function code.
+Please analyze the policy feedback and provide an improved reward function to better solve the task. Tips for analyzing feedback:
+1. If a reward component's values are nearly identical:
+    a. Change its scale or temperature parameter.
+    b. Re-write the component.
+    c. Discard the component.
+2. If a component's magnitude is significantly larger, re-scale it.
+3. You want to maximize the fitness score as it is the ground truth evaluator.
+Analyze each existing reward component first, then write the new reward function code proposal.

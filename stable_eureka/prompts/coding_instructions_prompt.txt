@@ -1,14 +1,13 @@
-The output of the reward function should consist of two items:
-(1) the total reward as a float,
-(2) a dictionary of each individual reward component.
-The code output should be formatted as a python code string: "```python ... ```". Some helpful tips for writing the reward function code:
-    (1) You may find it helpful to normalize the reward to a fixed range by applying transformations like np.exp to the overall reward or its components. Smooth transformations can help to stabilize the learning process.
-    (2) If you choose to transform a reward component, then you must also introduce a temperature parameter inside the transformation function; this parameter must be a named variable in the reward function and it must not be an input variable. Each transformed reward component should have its own temperature variable
-    (3) Make sure the type of each input variable is correctly specified; a float input variable should not be specified as np.ndarray
-    (4) Most importantly, the reward code’s input variables must contain only attributes of the provided environment class definition (namely, variables that have prefix self.)
-Under no circumstance can you introduce new input variables.
-You must ensure that the code must start as: "```python ... ```"
-You must not use self. vars that are not defined on the code that has been provided to you.
-Please, you must pass self as the first argument of the function, as in the example code provided.
-Remember you should not compute any fitness_score component on this function!
-You should answer with only the code of the reward function, avoiding any extra explanation, just a final max 50 words explanation of your approach.
+The reward function output should include:
+1. Total reward (float)
+2. Dictionary of individual reward components
+Format as a Python code string: "```python ... ```". Tips:
+1. Normalize rewards using transformations like np.exp. Introduce temperature parameters for each transformation.
+2. Ensure input types match expected types.
+3. Use only self. attributes from the environment class definition and input variables.
+4. No new input variables.
+5. The python code must begin with: "```python ... ```"
+6. Pass self as the first argument.
+7. Do not compute fitness_score components.
+8. Only create the reward function, do not create more functions.
+Provide the function code only, followed by a brief explanation (max 50 words).

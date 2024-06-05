@@ -1,1 +1,1 @@
-We trained a RL policy using the provided reward function code and tracked the values of the individual components in the reward function as well as global policy metrics such as fitness scores and episode lengths after some epochs and the maximum, mean, minimum values encountered:
+We trained a RL policy using the provided reward function code and tracked the values of individual reward components, along with global policy metrics such as fitness scores and episode lengths. After several epochs, we recorded the maximum, mean, and minimum values encountered.

@@ -129,7 +129,7 @@ class StableEureka:
                 prompt += '\nInitial reward proposal:\n' + self._prompts['initial_reward']
                 prompt += ('\nYou must provide a variation from the initial reward proposal! '
                            'This is just a suggestion! It is crucial that you provide the code for '
-                           'the reward function using the previous coding tips. Please the entire code snippet!')
+                           'the reward function using the previous coding tips!')
             else:
                 prompt += '\nReward reflection:\n' + self._prompts['reward_reflection']
 
