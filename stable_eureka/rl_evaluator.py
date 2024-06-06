@@ -20,7 +20,7 @@ class RLEvaluator:
 
         self._log_dir = model_path.parent
 
-    def run(self, env, seed, n_episodes, save_gif=False, logger=None, is_benchmark=False):
+    def run(self, env, seed, n_episodes, save_gif=False, logger=None):
         rewards = []
         video_images = []
         fitness_scores = []
