@@ -8,13 +8,13 @@ import json
 
 
 def evaluate_policy(
-    model,
-    env,
-    n_eval_episodes: int = 10,
-    deterministic: bool = True,
-    seed: Optional[int] = None):
-
-    seed = seed if seed is not None else np.random.randint(0, 2**32 - 1)
+        model,
+        env,
+        n_eval_episodes: int = 10,
+        deterministic: bool = True,
+        seed: Optional[int] = None,
+        is_benchmark: bool = False):
+    seed = seed if seed is not None else np.random.randint(0, 2 ** 32 - 1)
 
     rewards = []
     ep_lengths = []
@@ -37,6 +37,12 @@ def evaluate_policy(
             info.pop('episode', None)
             info.pop('terminal_observation', None)
 
+            if is_benchmark:
+                if 'fitness_score' not in info_master:
+                    info_master['fitness_score'] = reward[0]
+                else:
+                    info_master['fitness_score'] += reward[0]
+
             for key, value in info.items():
                 if key not in info_master:
                     info_master[key] = value
@@ -54,10 +60,10 @@ def evaluate_policy(
 
     # compute the mean of the infos
     for key, value in infos.items():
-        infos[key] = np.mean(value)
+        infos[key] = float(np.mean(value))
 
-    infos['reward'] = np.mean(rewards)
-    infos['episode_length'] = np.mean(ep_lengths)
+    infos['reward'] = float(np.mean(rewards))
+    infos['episode_length'] = float(np.mean(ep_lengths))
 
     return infos
 
@@ -65,12 +71,13 @@ def evaluate_policy(
 class RLEvalCallback(EventCallback):
 
     def __init__(
-        self,
-        eval_env: Union[gym.Env, VecEnv],
-        seed: Optional[int] = None,
-        n_eval_episodes: int = 5,
-        eval_freq: int = 10000,
-        log_path: Optional[Path] = None
+            self,
+            eval_env: Union[gym.Env, VecEnv],
+            seed: Optional[int] = None,
+            n_eval_episodes: int = 5,
+            eval_freq: int = 10000,
+            log_path: Optional[Path] = None,
+            is_benchmark: bool = False
     ):
         super().__init__(None, verbose=0)
 
@@ -80,6 +87,7 @@ class RLEvalCallback(EventCallback):
         self.eval_env = eval_env
         self.log_path = log_path
         self.seed = seed
+        self.is_benchmark = is_benchmark
 
         self.results_dict = {}
 
@@ -95,6 +103,7 @@ class RLEvalCallback(EventCallback):
                 self.eval_env,
                 n_eval_episodes=self.n_eval_episodes,
                 seed=self.seed,
+                is_benchmark=self.is_benchmark
             )
 
             # Add to current Logger

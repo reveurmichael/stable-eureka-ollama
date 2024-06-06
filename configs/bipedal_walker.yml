@@ -11,6 +11,7 @@ environment:
     max_episode_steps: 1600
     class_name: 'BipedalWalker'
     kwargs: null
+    benchmark: 'BipedalWalker-v3'  # if benchmark available, set it to train the agent with the same params
 
 experiment:
     parent: 'experiments'

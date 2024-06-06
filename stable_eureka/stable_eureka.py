@@ -81,7 +81,8 @@ class StableEureka:
                          'reward_reflection': ''
                          }
 
-        initial_reward_prompt_path = self._root_path / 'envs' / self._config['environment']['name'] / 'initial_reward_prompt.txt'
+        initial_reward_prompt_path = self._root_path / 'envs' / self._config['environment'][
+            'name'] / 'initial_reward_prompt.txt'
         if self._config['eureka']['use_initial_reward_prompt'] and initial_reward_prompt_path.exists():
             self._prompts['initial_reward'] = read_from_file(initial_reward_prompt_path)
 
@@ -119,11 +120,41 @@ class StableEureka:
                     f"samples: {self._config['eureka']['samples']}")
         logger.info(f"Using LLM: {self._config['eureka']['model']} with T={self._config['eureka']['temperature']}")
 
+        if self._config['environment']['benchmark'] is not None:
+
+            log_dir = self._experiment_path / 'code' / 'benchmark'
+            log_dir.mkdir(parents=True, exist_ok=True)
+            # train the benchmark id environment (in a parallel process)
+            benchmark_env = make_env(env_class=self._config['environment']['benchmark'],
+                                     env_kwargs=self._config['environment'].get('kwargs', None),
+                                     n_envs=self._config['rl']['training'].get('num_envs', 1),
+                                     is_atari=self._config['rl']['training'].get('is_atari', False),
+                                     state_stack=self._config['rl']['training'].get('state_stack', 1),
+                                     multithreaded=self._config['rl']['training'].get('multithreaded', False))
+
+            eval_env = make_env(env_class=self._config['environment']['benchmark'],
+                                env_kwargs=self._config['environment'].get('kwargs', None),
+                                n_envs=1,
+                                is_atari=self._config['rl']['training'].get('is_atari', False),
+                                state_stack=self._config['rl']['training'].get('state_stack', 1),
+                                multithreaded=self._config['rl']['training'].get('multithreaded', False))
+
+            rl_trainer = RLTrainer(benchmark_env, config=self._config['rl'], log_dir=log_dir)
+
+            is_benchmark = True
+            process = multiprocessing.Process(target=rl_trainer.run,
+                                              args=(eval_env,
+                                                    self._config['rl']['training']['eval']['seed'],
+                                                    self._config['rl']['training']['eval']['num_episodes'],
+                                                    self._config['rl']['training']['eval']['num_evals'],
+                                                    logger, is_benchmark))
+            process.start()
+
         for iteration in range(self._config['eureka']['iterations']):
             prompt = self._prompts['initial_system'] + \
-                      '\nCoding instructions: ' + self._prompts['coding_instructions'] + \
-                      '\nTask description: ' + self._prompts['task_description'] + \
-                      '\nEnvironment code:\n' + self._prompts['env_code']
+                     '\nCoding instructions: ' + self._prompts['coding_instructions'] + \
+                     '\nTask description: ' + self._prompts['task_description'] + \
+                     '\nEnvironment code:\n' + self._prompts['env_code']
 
             if iteration == 0 and 'initial_reward' in self._prompts:
                 prompt += '\nInitial reward proposal:\n' + self._prompts['initial_reward']
@@ -137,10 +168,10 @@ class StableEureka:
 
             init_t = time.time()
             rewards = self._llm_generator.generate(
-                                    temperature=self._config['eureka']['temperature'],
-                                    prompt=prompt,
-                                    k=self._config['eureka']['samples'],
-                                    logger=logger)
+                temperature=self._config['eureka']['temperature'],
+                prompt=prompt,
+                k=self._config['eureka']['samples'],
+                logger=logger)
             end_t = time.time()
             elapsed = end_t - init_t
             logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -149,7 +180,7 @@ class StableEureka:
 
             if isinstance(self._llm_generator, OllamaGenerator):
                 logger.info(f"Sleeping to avoid CUDA memory issues...")
-                time.sleep(5*60)  # wait for 5 minutes (to avoid gpu cuda memory issues)
+                time.sleep(5 * 60)  # wait for 5 minutes (to avoid gpu cuda memory issues)
 
             reward_codes = []
             processes = []
@@ -269,7 +300,7 @@ class StableEureka:
                 logger.info(f"Reward code:\n{best_reward_code}")
                 self._best_reward = (best_reward_code, best_fitness, iteration, best_idx)
 
-                save_to_json(self._experiment_path / 'code' / 'best_reward.txt',
+                save_to_json(self._experiment_path / 'code' / 'best_reward.json',
                              {'reward': best_reward_code, 'fitness': best_fitness, 'iteration': iteration,
                               'sample': best_idx})
 
@@ -295,5 +326,3 @@ class StableEureka:
         delta_time = end_run_time - init_run_time
         logger.info(f"Stable-Eureka optimization finished in {delta_time:.2f}s ("
                     f"{delta_time / 60:.2f}m) ({delta_time / 3600:.2f}h)")
-
-

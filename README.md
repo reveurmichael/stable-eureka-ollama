@@ -40,22 +40,23 @@ You must set the environment variable `OPENAI_API_KEY` with your key.
 You must fill a configuration file with the following structure:
 ```yaml
 eureka:
-    backend: 'ollama'  # 'ollama' or 'openai'
-    model: 'llama3'
+    backend: 'openai'  # 'ollama' or 'openai'
+    model: 'gpt-4o'
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
-    samples: 12
-    use_initial_reward_prompt: true  # if available, use the initial reward prompt
+    samples: 8
+    use_initial_reward_prompt: false  # if available, use the initial reward prompt
 
 environment:
     name: 'bipedal_walker'
     max_episode_steps: 1600
     class_name: 'BipedalWalker'
     kwargs: null
+    benchmark: 'BipedalWalker-v3'  # if benchmark available, set it to train the agent with the same params
 
 experiment:
     parent: 'experiments'
-    name: 'bipedal_walker'
+    name: 'bipedal_walker_gpt4o'
     use_datetime: true
 
 rl:
@@ -84,7 +85,7 @@ rl:
             seed: 5
             num_episodes: 2
             num_evals: 10
-        total_timesteps: 1_500_000
+        total_timesteps: 1_000_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1

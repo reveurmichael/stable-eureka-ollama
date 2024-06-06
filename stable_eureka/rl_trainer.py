@@ -49,17 +49,21 @@ class RLTrainer:
 
         self._params = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][1](env, self._config, self._log_dir)
 
-    def run(self, eval_env, eval_seed, eval_episodes, num_evals, logger=None):
+    def run(self, eval_env, eval_seed, eval_episodes, num_evals, logger=None, is_benchmark=False):
 
         eval_freq = max(1, int(self._config['training']['total_timesteps'] // self._config['training']['num_envs'] / num_evals))
         info_saver_callback = RLEvalCallback(eval_env, seed=eval_seed,
                                              n_eval_episodes=eval_episodes,
                                              eval_freq=eval_freq,
-                                             log_path=self._log_dir)
+                                             log_path=self._log_dir,
+                                             is_benchmark=is_benchmark)
 
         model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
         model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",
                     callback=info_saver_callback)
         model.save(self._log_dir / "model")
         if logger:
-            logger.info(f"Training done for {self._log_dir} experiment!")
+            if is_benchmark:
+                logger.info(f"Training done for benchmark!")
+            else:
+                logger.info(f"Training done for {self._log_dir} experiment!")
