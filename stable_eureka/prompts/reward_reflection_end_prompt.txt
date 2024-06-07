@@ -5,4 +5,6 @@ Please analyze the policy feedback and provide an improved reward function to be
     c. Discard the component.
 2. If a component's magnitude is significantly larger, re-scale it.
 3. You want to maximize the fitness score as it is the ground truth evaluator.
+4. You want to maximize positive reward components values during training and minimize negative reward components values.
+5. If the fitness score is not improving during training, try to change the reward function.
 Analyze each existing reward component first, then write the new reward function code proposal.

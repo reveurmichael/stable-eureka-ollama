@@ -1,7 +1,6 @@
 # Stable Eureka
 Stable Eureka is an iterative llm-based reward designer for reinforcement learning. It integrates
-stable-baselines3, open-source LLMs and gym-based environments. This repo is based on [NVIDIA Eureka](https://github.com/eureka-research/Eureka/tree/main).
-
+[stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/), open-source LLMs (running locally with [ollama](https://www.ollama.com/)) and [gymnasium](https://gymnasium.farama.org/)-based environments. This repo is based on [NVIDIA Eureka](https://github.com/eureka-research/Eureka/tree/main).
 
 ## Installation
 
@@ -24,10 +23,10 @@ ollama pull llama3
 ```
 - `llama3`: very fast model, not very accurate 7B
 - `codestral`: too large for my gpu (`rtx4070 8gb` too slow)
-- `codellama`: a bit slower than llama3.
-- `mistral`:
-- `phi3`:
-- `gemma`:
+- `codellama`: a bit slower than llama3
+- `mistral`
+- `phi3`
+- `gemma`
 
 If the model is too large to be run on gpu, it will use some of the available cpu cores. This will be much slower than running entirely on gpu.
 
@@ -107,6 +106,7 @@ envs/
         env.py
         step.py
         task_description.txt
+        initial_reward_prompt.txt
 ```
 
 The code will copy the code into the experiments folder and append the reward function to it. The reward function should 
@@ -127,7 +127,7 @@ fitness_score = self.compute_fitness_score(param1, param2, param3)
 > Same as reward is the sum of the intermediate rewards during the episode. If the total fitness score is a binary value such as 1 for success, 
 > then you will provide always 0 until the episode ends where it will return a 1.
 
-Finally, you must set to in the insert in the individual_rewards dict the `fitness_score` value:
+Finally, you must set in the individual_rewards dict the `fitness_score` value:
 ```python
 individual_rewards.update({'fitness_score': fitness_score})
 ```
@@ -136,6 +136,21 @@ This allows us to save all this values for later reward reflection.
 > [!TIP]
 > You can add a `initial_reward_prompt.txt` with a reward prompt that will be used as the initial reward function (e.g. human-designed reward).
 
-# TODO:
-- Add support for OpenAI LLMs (_you need an API key_).
-- Sometimes it generates other functions, make a filter to ignore them on the generated code.
+## Contributors
+
+**Rodrigo Sánchez Molina**
+  - Email: rsanchezm98@gmail.com
+  - Linkedin: [rsanchezm98](https://www.linkedin.com/in/rsanchezm98/)
+  - Github: [rsanchezmo](https://github.com/rsanchezmo)
+
+## Citation
+If you find `stable-eureka` useful, please consider citing:
+
+```bibtex
+  @misc{2024stableeureka,
+    title     = {Stable Eureka},
+    author    = {Rodrigo Sánchez Molina},
+    year      = {2024},
+    howpublished = {https://github.com/rsanchezmo/stable-eureka}
+  }
+```

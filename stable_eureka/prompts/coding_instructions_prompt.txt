@@ -10,4 +10,5 @@ Format as a Python code string: "```python ... ```". Tips:
 6. Pass self as the first argument.
 7. Do not compute fitness_score components.
 8. Only create the reward function, do not create more functions.
+9. Try to make everything smooth (when possible).
 Provide the function code only, followed by a brief explanation (max 50 words).

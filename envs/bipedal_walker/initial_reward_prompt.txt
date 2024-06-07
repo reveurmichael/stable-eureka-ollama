@@ -1,25 +1,36 @@
 def compute_reward(self, pos, action, state):
-    # Define temperature parameters for normalization
-    distance_temp = 0.01
-    velocity_temp = 0.01
+    # Distance-based reward: incentivizing movement to the right
+    distance_reward = pos.x
+    distance_reward = np.exp(distance_reward / 400.0) - 1
 
-    # Compute individual reward components
-    distance_reward = pos[0]
-    velocity_reward = state[2]  # Using normalized velocity in the x-direction
+    # Stability reward: penalizing large angle and angular velocity
+    angle_penalty = -np.abs(state[0])
+    angle_penalty = np.tanh(angle_penalty / 0.5)  # More stringent scaling
 
-    # Apply transformations for smooth learning
-    distance_reward_transformed = np.exp(distance_temp * distance_reward) - 1
-    velocity_reward_transformed = np.exp(velocity_temp * velocity_reward) - 1
+    angular_velocity_penalty = -np.abs(state[1])
+    angular_velocity_penalty = np.tanh(angular_velocity_penalty / 0.5)  # Increased impact with stringent scaling
 
-    # Compute total reward
-    total_reward = distance_reward_transformed + velocity_reward_transformed
+    # Smoothness reward: penalizing high-speed actions
+    action_penalty = -np.sum(np.abs(action)) / len(action)
+    action_penalty = np.tanh(action_penalty / 0.5)  # Increased impact
 
-    # Create a dictionary of individual reward components
+    # Proximity to Lidar points: encouraging avoidance of obstacles
+    obstacle_penalty = -np.min([l.fraction for l in self.lidar])
+    obstacle_penalty = np.exp(obstacle_penalty)  # Exponential scaling for higher penalty
+
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward
+              + 0.1 * angle_penalty
+              + 0.1 * angular_velocity_penalty
+              + 0.2 * action_penalty
+              + 0.5 * obstacle_penalty)  # Higher weight given to obstacle penalty and action penalty
+
     individual_reward = {
-        'distance_reward': distance_reward,
-        'velocity_reward': velocity_reward,
-        'distance_reward_transformed': distance_reward_transformed,
-        'velocity_reward_transformed': velocity_reward_transformed
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "action_penalty": action_penalty,
+        "obstacle_penalty": obstacle_penalty,
     }
 
-    return total_reward, individual_reward
+    return reward, individual_reward

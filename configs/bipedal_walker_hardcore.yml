@@ -3,8 +3,8 @@ eureka:
     model: 'gpt-4o'
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
-    samples: 8
-    use_initial_reward_prompt: false  # if available, use the initial reward prompt
+    samples: 10
+    use_initial_reward_prompt: true  # if available, use the initial reward prompt
 
 environment:
     name: 'bipedal_walker'
@@ -12,7 +12,7 @@ environment:
     max_episode_steps: 2000
     kwargs:
         hardcore: true
-    benchmark: 'BipedalWalker-v3'  # if benchmark available, set it to train the agent with the same params
+    benchmark: 'BipedalWalkerHardcore-v3'  # if benchmark available, set it to train the agent with the same params
 
 experiment:
     parent: 'experiments'
@@ -35,7 +35,7 @@ rl:
         max_grad_norm: 0.5
 
     architecture:
-        net_arch: {'pi': [64, 64], 'vf': [64, 64]}
+        net_arch: {'pi': [128, 128], 'vf': [128, 128]}
         activation_fn: 'ReLU'
         share_features_extractor: false
 
@@ -43,9 +43,9 @@ rl:
         seed: 0
         eval:
             seed: 5
-            num_episodes: 2
-            num_evals: 10
-        total_timesteps: 1_500_000
+            num_episodes: 5
+            num_evals: 15
+        total_timesteps: 2_000_000
         device: 'cuda'
         num_envs: 4
         state_stack: 1
@@ -53,5 +53,5 @@ rl:
 
     evaluation:
         seed: 10
-        num_episodes: 10
+        num_episodes: 2
         save_gif: true

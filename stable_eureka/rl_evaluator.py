@@ -90,6 +90,9 @@ class RLEvaluator:
 
         save_to_json(self._log_dir / 'eval.json', results)
 
-        imageio.mimsave(self._log_dir / 'eval.gif', video_images, fps=30)
+        # remove one frame out of two to reduce the size of the gif
+        video_images = video_images[::2]
+
+        imageio.mimsave(self._log_dir / 'eval.gif', video_images, fps=30, optimize=True)
 
         return results

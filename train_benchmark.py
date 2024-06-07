@@ -5,10 +5,10 @@ import yaml
 
 if __name__ == '__main__':
 
-    exp_path = Path('/home/rsanchezmo/Projects/stable-eureka/experiments/bipedal_walker_gpt4o/2024-06-05/')
+    exp_path = Path('/home/rsanchezmo/Projects/stable-eureka/experiments/bipedal_walker_hardcore_gpt4o/2024-06-07/')
 
     config = yaml.safe_load(open(exp_path / 'config.yaml', 'r'))
-    env_name = f'BipedalWalker-v3'
+    env_name = f'BipedalWalkerHardcore-v3'
 
     log_dir = exp_path / 'code' / 'benchmark'
     log_dir.mkdir(parents=True, exist_ok=True)
