@@ -283,10 +283,10 @@ You can find the hyperparameters used on these tests in the `configs` folder. Be
 
 | Gymnasium Environment      | Stable Eureka | Benchmark | LLM used    | Reward                                                        |
 |----------------------------|---------------|-----------|-------------|---------------------------------------------------------------|
-| `BipedalWalker-v3`         | YES           | YES       | `gpt4o`     | ![bipedal_walker](./img/bipedal_walker.png)                   |
-| `BipedalWalkerHardcore-v3` | NO            | NO        | `gpt4o`     | ![bipedal_walker_hardcore](./img/bipedal_walker_hardcore.png) |
+| `BipedalWalker-v3`         | YES           | YES       | `gpt-4o`    | ![bipedal_walker](./img/bipedal_walker.png)                   |
+| `BipedalWalkerHardcore-v3` | NO            | NO        | `gpt-4o`    | ![bipedal_walker_hardcore](./img/bipedal_walker_hardcore.png) |
 | `MountainCarContinuous-v0` | YES           | NO        | `llama3-8B` | ![mountain_car_continuous](./img/mountain_car_continuous.png) |
-
+| `LunarLander-v2`           | YES           | YES       | `gpt-4o`    | ![lunar_lander](./img/lunar_lander.png)                       |
 
 ## Contributors
 
