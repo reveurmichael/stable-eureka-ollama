@@ -1,6 +1,9 @@
 # Stable Eureka
-Stable Eureka is an iterative llm-based reward designer for reinforcement learning. It integrates
+Stable Eureka is an iterative and autonomous llm-based reward designer for reinforcement learning. It integrates
 [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/), open-source LLMs (running locally with [ollama](https://www.ollama.com/)) and [gymnasium](https://gymnasium.farama.org/)-based environments. This repo is based on [NVIDIA Eureka](https://github.com/eureka-research/Eureka/tree/main).
+
+You only need to provide the environment with a brief task description, model and algorithm hyperparameters and let `stable-eureka`
+do the rest!
 
 ## Installation
 
