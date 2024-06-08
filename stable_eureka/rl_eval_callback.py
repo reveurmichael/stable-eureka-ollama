@@ -77,7 +77,9 @@ class RLEvalCallback(EventCallback):
             n_eval_episodes: int = 5,
             eval_freq: int = 10000,
             log_path: Optional[Path] = None,
-            is_benchmark: bool = False
+            is_benchmark: bool = False,
+            logger: Optional[Any] = None,
+            name: str = '1'
     ):
         super().__init__(None, verbose=0)
 
@@ -90,6 +92,8 @@ class RLEvalCallback(EventCallback):
         self.is_benchmark = is_benchmark
 
         self.results_dict = {}
+        self._logger = logger
+        self._name = name
 
     def _init_callback(self):
         ...
@@ -128,6 +132,10 @@ class RLEvalCallback(EventCallback):
             # Trigger callback after every evaluation, if needed
             if self.callback is not None:
                 continue_training = continue_training and self._on_event()
+
+            if self._logger is not None:
+                self._logger.info(f"[{self._name}] Eval at timestep "
+                                  f"{self.num_timesteps} with fitness score: {results['fitness_Score']}")
 
         return continue_training
 

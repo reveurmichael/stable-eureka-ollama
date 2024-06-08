@@ -121,7 +121,6 @@ class StableEureka:
         logger.info(f"Using LLM: {self._config['eureka']['model']} with T={self._config['eureka']['temperature']}")
 
         if self._config['environment']['benchmark'] is not None:
-
             log_dir = self._experiment_path / 'code' / 'benchmark'
             log_dir.mkdir(parents=True, exist_ok=True)
             # train the benchmark id environment (in a parallel process)
@@ -184,7 +183,7 @@ class StableEureka:
 
             if isinstance(self._llm_generator, OllamaGenerator):
                 logger.info(f"Sleeping to avoid CUDA memory issues...")
-                time.sleep(5 * 60)  # wait for 5 minutes (to avoid gpu cuda memory issues)
+                time.sleep(5 * 60)  # wait for 5 minutes (to avoid cuda memory issues: remove the model from gpu memory)
 
             reward_codes = []
             processes = []

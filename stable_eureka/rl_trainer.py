@@ -56,13 +56,14 @@ class RLTrainer:
                                              n_eval_episodes=eval_episodes,
                                              eval_freq=eval_freq,
                                              log_path=self._log_dir,
-                                             is_benchmark=is_benchmark)
+                                             is_benchmark=is_benchmark,
+                                             logger=logger)
 
         if self._pretrained_model is None:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
         else:
-            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(self._pretrained_model,
-                                                                            device=self._params['device'])
+            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
+                                                                            **self._params)
 
         model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",
                     callback=info_saver_callback)
