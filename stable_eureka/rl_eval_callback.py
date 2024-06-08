@@ -115,7 +115,11 @@ class RLEvalCallback(EventCallback):
             self.logger.record("eval/mean_ep_length", float(results['episode_length']))
             self.logger.record("eval/fitness_score", float(results['fitness_score']))
 
-            # Dump log so the evaluation results are printed with the correct timestep
+            if self._logger is not None:
+                self._logger.info(f"[{self._name}] Eval at timestep "
+                                  f"{self.num_timesteps} with fitness score: {results['fitness_score']} and "
+                                  f"episode length: {results['episode_length']}")
+
             self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
             self.logger.dump(self.num_timesteps)
 
@@ -132,10 +136,6 @@ class RLEvalCallback(EventCallback):
             # Trigger callback after every evaluation, if needed
             if self.callback is not None:
                 continue_training = continue_training and self._on_event()
-
-            if self._logger is not None:
-                self._logger.info(f"[{self._name}] Eval at timestep "
-                                  f"{self.num_timesteps} with fitness score: {results['fitness_Score']}")
 
         return continue_training
 
