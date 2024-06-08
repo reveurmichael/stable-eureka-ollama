@@ -181,9 +181,9 @@ class StableEureka:
             logger.info(f"Iteration {iteration}/{self._config['eureka']['iterations'] - 1} - "
                         f"LLM generation time: {elapsed:.2f}s")
 
-            if isinstance(self._llm_generator, OllamaGenerator):
-                logger.info(f"Sleeping to avoid CUDA memory issues...")
-                time.sleep(5 * 60)  # wait for 5 minutes (to avoid cuda memory issues: remove the model from gpu memory)
+            # if isinstance(self._llm_generator, OllamaGenerator):
+            #     logger.info(f"Sleeping to avoid CUDA memory issues...")
+            #     time.sleep(5 * 60)  # wait for 5 minutes (to avoid cuda memory issues: remove the model from gpu memory)
 
             reward_codes = []
             processes = []
