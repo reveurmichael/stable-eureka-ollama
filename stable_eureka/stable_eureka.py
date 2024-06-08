@@ -138,7 +138,7 @@ class StableEureka:
                                 state_stack=self._config['rl']['training'].get('state_stack', 1),
                                 multithreaded=self._config['rl']['training'].get('multithreaded', False))
 
-            rl_trainer = RLTrainer(benchmark_env, config=self._config['rl'], log_dir=log_dir)
+            rl_trainer = RLTrainer(benchmark_env, config=self._config['rl'], log_dir=log_dir, name='benchmark')
 
             is_benchmark = True
             process = multiprocessing.Process(target=rl_trainer.run,
@@ -245,12 +245,15 @@ class StableEureka:
                         best_sample = self._best_reward[3]
 
                         if best_iteration is not None and best_sample is not None:
-                            best_model_path = self._experiment_path / 'code' / f'iteration_{best_iteration}' / f'sample_{best_sample}' / 'model.zip'
+                            best_model_path = (self._experiment_path / 'code' / f'iteration_{best_iteration}'
+                                               / f'sample_{best_sample}' / 'model.zip')
                             if best_model_path.exists():
                                 pretrained_model = best_model_path
+                                # remove the .zip extension because of sb3 load method
+                                pretrained_model = str(pretrained_model).split('.zip')[0]
 
                     rl_trainer = RLTrainer(env, config=self._config['rl'], log_dir=log_dir,
-                                           pretrained_model=pretrained_model)
+                                           pretrained_model=pretrained_model, name=f'iteration_{iteration}_sample_{idx}')
                     process = multiprocessing.Process(target=rl_trainer.run,
                                                       args=(eval_env,
                                                             self._config['rl']['training']['eval']['seed'],
@@ -284,9 +287,12 @@ class StableEureka:
 
                 evals = read_from_json(log_dir)
                 fitness_scores = evals['fitness_score']
-
-                if np.max(fitness_scores) > best_fitness:
-                    best_fitness = np.max(fitness_scores)
+                if len(fitness_scores) < 2:  # we want to ignore initial values, as they are not reliable
+                    max_value = np.max(fitness_scores)
+                else:
+                    max_value = np.max(fitness_scores[2:])
+                if max_value > best_fitness:
+                    best_fitness = max_value
                     best_idx = idx
                     best_eval = copy.deepcopy(evals)
 

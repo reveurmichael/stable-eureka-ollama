@@ -4,7 +4,7 @@ The reward function output should include:
 Format as a Python code string: "```python ... ```". Tips:
 1. Normalize rewards using transformations like np.exp. Introduce temperature parameters for each transformation.
 2. Ensure input types match expected types.
-3. Use only self. attributes from the environment class definition and input variables. If you create one (self var), you must know that it is not previously defined in the environment class. So it would fail if you try to use it on the first call.
+3. Use only self. attributes from the environment class definition and input variables. If you create a self var inside the compute_reward function you must consider that it is not previously defined in the environment class. You should first call create it, and then use it.
 4. No new input variables.
 5. The python code must begin with: "```python ... ```"
 6. Pass self as the first argument.

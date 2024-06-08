@@ -37,8 +37,9 @@ def get_ppo_params(env, config: Dict, log_dir: Path):
 class RLTrainer:
     AVAILABLE_ALGOS = {'ppo': (PPO, get_ppo_params)}
 
-    def __init__(self, env, config: Dict, log_dir: Path, pretrained_model=None):
+    def __init__(self, env, config: Dict, log_dir: Path, pretrained_model=None, name='1'):
         self._config = config
+        self._name = name
         self._log_dir = log_dir
 
         if self._config['algo'] not in RLTrainer.AVAILABLE_ALGOS.keys():
@@ -57,7 +58,8 @@ class RLTrainer:
                                              eval_freq=eval_freq,
                                              log_path=self._log_dir,
                                              is_benchmark=is_benchmark,
-                                             logger=logger)
+                                             logger=logger,
+                                             name=self._name)
 
         if self._pretrained_model is None:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
