@@ -4,11 +4,13 @@ The reward function output should include:
 Format as a Python code string: "```python ... ```". Tips:
 1. Normalize rewards using transformations like np.exp. Introduce temperature parameters for each transformation.
 2. Ensure input types match expected types.
-3. Use only self. attributes from the environment class definition and input variables. If you create a self var inside the compute_reward function you must consider that it is not previously defined in the environment class. You should first call create it, and then use it.
-4. No new input variables.
-5. The python code must begin with: "```python ... ```"
-6. Pass self as the first argument.
-7. Do not compute fitness_score components.
-8. Only create the reward function, do not create more functions.
-9. Try to make everything smooth (when possible).
+3. Use only self. attributes from the environment class definition and input variables.
+4. If you create a self var inside the compute_reward function you must consider that it is not previously defined in the environment class:
+    e.g. if hasattr(self, 'var') is False: self.var = 0 else self.var += 1
+5. No new input variables.
+6. The python code must begin with: "```python ... ```"
+7. Pass self as the first argument.
+8. Do not compute fitness_score components.
+9. Only create the reward function, do not create more functions.
+10. Try to make everything smooth (when possible).
 Provide the function code only, followed by a brief explanation (max 50 words).
