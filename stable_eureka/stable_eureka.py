@@ -163,6 +163,10 @@ class StableEureka:
                            'the reward function using the previous coding tips!')
             else:
                 prompt += '\nReward reflection:\n' + self._prompts['reward_reflection']
+                if self._config['eureka']['pretraining_with_best_model']:
+                    prompt += ('\nThe next training will take the best model weights '
+                               'so it reuses some of the relevant information '
+                               'from the previous training!')
 
             save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'prompt.txt', prompt)
 
