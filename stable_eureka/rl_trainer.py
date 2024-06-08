@@ -1,4 +1,3 @@
-import time
 from typing import Dict
 from stable_baselines3 import PPO
 import torch
@@ -13,7 +12,6 @@ def get_ppo_params(env, config: Dict, log_dir: Path):
         'share_features_extractor': config['architecture'].get('share_features_extractor', False)
     }
 
-    # TODO: set default params (get)
     ppo_params = {
         'policy': config['algo_params'].get('policy', 'MlpPolicy'),
         'env': env,
@@ -63,7 +61,8 @@ class RLTrainer:
         if self._pretrained_model is None:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
         else:
-            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(self._pretrained_model)
+            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(self._pretrained_model,
+                                                                            device=self._params['device'])
 
         model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",
                     callback=info_saver_callback)
