@@ -3,7 +3,7 @@ eureka:
     model: 'gpt-4o'
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
-    samples: 10
+    samples: 8
     use_initial_reward_prompt: false  # if available, use the initial reward prompt
     pretraining_with_best_model: true  # use best model weights for pretraining the next models
 
@@ -25,8 +25,8 @@ rl:
     algo_params:
         policy: 'MlpPolicy'
         learning_rate: 0.0003
-        n_steps: 2048
-        batch_size: 64
+        n_steps: 4096
+        batch_size: 128
         n_epochs: 10
         gamma: 0.99
         gae_lambda: 0.95
@@ -54,5 +54,5 @@ rl:
 
     evaluation:
         seed: 10
-        num_episodes: 2
+        num_episodes: 3
         save_gif: true
