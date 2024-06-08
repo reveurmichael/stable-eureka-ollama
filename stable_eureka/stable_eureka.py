@@ -86,7 +86,7 @@ class StableEureka:
         if self._config['eureka']['use_initial_reward_prompt'] and initial_reward_prompt_path.exists():
             self._prompts['initial_reward'] = read_from_file(initial_reward_prompt_path)
 
-        self._best_reward = ('', -float('inf'))  # (reward code, fitness value)
+        self._best_reward = ('', -float('inf'), None, None)  # (reward code, fitness value, iteration, sample)
 
         self._record_results: Dict = {}
 
@@ -236,7 +236,18 @@ class StableEureka:
                                         state_stack=self._config['rl']['training'].get('state_stack', 1),
                                         multithreaded=self._config['rl']['training'].get('multithreaded', False))
 
-                    rl_trainer = RLTrainer(env, config=self._config['rl'], log_dir=log_dir)
+                    pretrained_model = None
+                    if self._config['eureka'].get('pretraining_with_best_model', False):
+                        best_iteration = self._best_reward[2]
+                        best_sample = self._best_reward[3]
+
+                        if best_iteration is not None and best_sample is not None:
+                            best_model_path = self._experiment_path / 'code' / f'iteration_{best_iteration}' / f'sample_{best_sample}' / 'model.zip'
+                            if best_model_path.exists():
+                                pretrained_model = best_model_path
+
+                    rl_trainer = RLTrainer(env, config=self._config['rl'], log_dir=log_dir,
+                                           pretrained_model=pretrained_model)
                     process = multiprocessing.Process(target=rl_trainer.run,
                                                       args=(eval_env,
                                                             self._config['rl']['training']['eval']['seed'],

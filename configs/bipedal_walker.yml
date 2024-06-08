@@ -5,6 +5,7 @@ eureka:
     iterations: 5
     samples: 8
     use_initial_reward_prompt: false  # if available, use the initial reward prompt
+    pretraining_with_best_model: false  # use best model weights for pretraining the next models
 
 environment:
     name: 'bipedal_walker'

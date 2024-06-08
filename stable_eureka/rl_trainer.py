@@ -39,7 +39,7 @@ def get_ppo_params(env, config: Dict, log_dir: Path):
 class RLTrainer:
     AVAILABLE_ALGOS = {'ppo': (PPO, get_ppo_params)}
 
-    def __init__(self, env, config: Dict, log_dir: Path):
+    def __init__(self, env, config: Dict, log_dir: Path, pretrained_model=None):
         self._config = config
         self._log_dir = log_dir
 
@@ -48,6 +48,8 @@ class RLTrainer:
                              f"Choose from {RLTrainer.AVAILABLE_ALGOS.keys()}")
 
         self._params = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][1](env, self._config, self._log_dir)
+
+        self._pretrained_model = pretrained_model
 
     def run(self, eval_env, eval_seed, eval_episodes, num_evals, logger=None, is_benchmark=False):
 
@@ -58,7 +60,11 @@ class RLTrainer:
                                              log_path=self._log_dir,
                                              is_benchmark=is_benchmark)
 
-        model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
+        if self._pretrained_model is None:
+            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
+        else:
+            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(self._pretrained_model)
+
         model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",
                     callback=info_saver_callback)
         model.save(self._log_dir / "model")

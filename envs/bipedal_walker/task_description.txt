@@ -2,3 +2,4 @@ The goal is to make a biped navigate a 2D environment:
 - The biped starts standing at the left end of the terrain with the hull horizontal, and both legs in the same position with a slight knee angle
 - The biped has to reach the right end of the terrain and avoid falling down, getting stuck, or hitting obstacles
 - We do not want the biped to get stuck in a certain position, he should keep moving forward, as far as possible
+- The biped should go as fast as possible, so it gets to the end in less steps. The fewer episode steps, the better if getting to the end

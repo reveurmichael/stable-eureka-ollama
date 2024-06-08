@@ -4,7 +4,8 @@ eureka:
     temperature: 1.0  # if this value is too low, it is almost deterministic
     iterations: 5
     samples: 10
-    use_initial_reward_prompt: true  # if available, use the initial reward prompt
+    use_initial_reward_prompt: false  # if available, use the initial reward prompt
+    pretraining_with_best_model: true  # use best model weights for pretraining the next models
 
 environment:
     name: 'bipedal_walker'

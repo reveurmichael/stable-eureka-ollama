@@ -1,5 +1,5 @@
 Please analyze the policy feedback and provide an improved reward function to better solve the task. Tips for analyzing feedback:
-1. If a reward component's values are nearly identical:
+1. If a reward component's values are nearly identical, or it increases when it should decrease (minimize) and vice versa, consider the following options:
     a. Change its scale or temperature parameter.
     b. Re-write the component.
     c. Discard the component.
