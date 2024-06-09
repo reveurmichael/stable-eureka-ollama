@@ -27,7 +27,7 @@ rl:
         n_steps: 2048
         batch_size: 128
         n_epochs: 10
-        gamma: 0.999
+        gamma: 0.99
         gae_lambda: 0.95
         clip_range: 0.2
         ent_coef: 0.0
@@ -35,7 +35,7 @@ rl:
         max_grad_norm: 0.5
 
     architecture:
-        net_arch: {'pi': [64, 64], 'vf': [64, 64]}
+        net_arch: {'pi': [128, 128], 'vf': [128, 128]}
         activation_fn: 'ReLU'
         share_features_extractor: false
 
@@ -43,7 +43,7 @@ rl:
         seed: 0
         eval:
             seed: 5
-            num_episodes: 2
+            num_episodes: 5
             num_evals: 10
         total_timesteps: 1_000_000
         device: 'cuda'
@@ -53,5 +53,5 @@ rl:
 
     evaluation:
         seed: 10
-        num_episodes: 10
+        num_episodes: 5
         save_gif: true

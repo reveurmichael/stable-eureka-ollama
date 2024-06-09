@@ -281,12 +281,12 @@ As you will see, you will be able to display every experiment as well as the ben
 In the following table, you can see results obtained on `gymnasium` environments against the same parameters but using the original reward (benchmark). 
 You can find the hyperparameters used on these tests in the `configs` folder. Benchmark curve is shown in **black**. Recall that `fitness_score` is the ground truth reward function.
 
-| Gymnasium Environment      | Stable Eureka | Benchmark | LLM used    | Reward                                                        |
-|----------------------------|---------------|-----------|-------------|---------------------------------------------------------------|
-| `BipedalWalker-v3`         | YES           | YES       | `gpt-4o`    | ![bipedal_walker](./img/bipedal_walker.png)                   |
-| `BipedalWalkerHardcore-v3` | NO            | NO        | `gpt-4o`    | ![bipedal_walker_hardcore](./img/bipedal_walker_hardcore.png) |
-| `MountainCarContinuous-v0` | YES           | NO        | `llama3-8B` | ![mountain_car_continuous](./img/mountain_car_continuous.png) |
-| `LunarLander-v2`           | YES           | YES       | `gpt-4o`    | ![lunar_lander](./img/lunar_lander.png)                       |
+| Gymnasium Environment      | Solved by Stable Eureka | Solved by Benchmark | LLM used    | Reward                                                        |
+|----------------------------|-------------------------|---------------------|-------------|---------------------------------------------------------------|
+| `BipedalWalker-v3`         | YES                     | YES                 | `gpt-4o`    | ![bipedal_walker](./img/bipedal_walker.png)                   |
+| `BipedalWalkerHardcore-v3` | NO                      | NO                  | `gpt-4o`    | ![bipedal_walker_hardcore](./img/bipedal_walker_hardcore.png) |
+| `MountainCarContinuous-v0` | YES                     | NO                  | `llama3-8B` | ![mountain_car_continuous](./img/mountain_car_continuous.png) |
+| `LunarLander-v2`           | YES                     | YES                 | `gpt-4o`    | ![lunar_lander](./img/lunar_lander.png)                       |
 
 ## Contributors
 
