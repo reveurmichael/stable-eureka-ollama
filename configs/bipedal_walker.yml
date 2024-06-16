@@ -40,6 +40,7 @@ rl:
         share_features_extractor: false
 
     training:
+        torch_compile: true
         seed: 0
         eval:
             seed: 5

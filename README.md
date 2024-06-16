@@ -13,7 +13,7 @@ cd stable-eureka
 pip install .
 ```
 
-You must install ollama before running the code:
+You must install `ollama` before running the code:
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ```
@@ -24,9 +24,9 @@ You have to pull the LLMs you want to use from the ollama repository. For exampl
 ```bash
 ollama pull llama3
 ```
-- `llama3`: very fast model, not very accurate 7B
-- `codestral`: too large for my gpu (`rtx4070 8gb` too slow)
-- `codellama`: a bit slower than llama3
+- `llama3`
+- `codestral`
+- `codellama`
 - `mistral`
 - `phi3`
 - `gemma`
@@ -83,6 +83,7 @@ rl:
         share_features_extractor: false
 
     training:
+        torch_compile: true
         seed: 0
         eval:
             seed: 5
@@ -100,18 +101,35 @@ rl:
         save_gif: true
 ```
 
+## RL Algorithms
+Stable Eureka uses `stable-baselines3` to train the agent. You can use the following algorithms (with the same hp as in `stable-baselines3`):
+- PPO
+- SAC
+- DQN
+- TD3
+- DDPG
+
+You can use the base parameters for each algorithm, or you can set your own parameters in the `algo_params` section.
+
 ## Environment
-You must provide the env code in a `env.py` file for now. You should include take the step func into a `step.py` file, and must
-create a `task_description.txt` file with the task description:
+You must provide the env main code (`gymnasium.Env`) in a single `env.py` inside the `env_code` folder. You should include take the step func into a `step.py` file, and must
+create a `task_description.txt` file with the task description. You could additionally provide an `initial_reward_prompt.txt` file with the initial reward prompt (human-designed reward):
 
 ```
 envs/
     bipedal_walker/
-        env.py
+        env_code/
+            env.py
+            other_folders/
+            other_files.py
         step.py
         task_description.txt
         initial_reward_prompt.txt
 ```
+
+> [!NOTE] 
+> You can have your environment in multiple `.py` files, organised in folders, the only requirement is that the gymnasium environment class must be in a 
+> single file with the name `env.py`. This is to guarantee a successful automatic code injection of the reward function once the LLM has generated it.
 
 The code will copy the code into the experiments folder and append the reward function to it. The reward function should 
 satisfy the signature:

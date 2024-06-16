@@ -67,6 +67,10 @@ class RLTrainer:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
                                                                             **self._params)
 
+        if self._config['training'].get('torch_compile', False):
+            torch.set_float32_matmul_precision('high')
+            model.policy = torch.compile(model.policy)
+
         model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",
                     callback=info_saver_callback)
         model.save(self._log_dir / "model")

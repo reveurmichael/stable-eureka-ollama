@@ -96,8 +96,8 @@ class StableEureka:
                 (self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{sample}').mkdir(parents=True,
                                                                                                        exist_ok=True)
 
-                shutil.copy(self._root_path / 'envs' / self._config['environment']['name'] / 'env.py',
-                            self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{sample}' / 'env.py')
+                shutil.copytree(self._root_path / 'envs' / self._config['environment']['name'] / 'env_code',
+                            self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{sample}' / 'env_code')
 
         torch.multiprocessing.set_start_method('spawn')  # required for multiprocessing
 
@@ -155,17 +155,20 @@ class StableEureka:
                      '\nTask description: ' + self._prompts['task_description'] + \
                      '\nEnvironment code:\n' + self._prompts['env_code']
 
-            if iteration == 0 and 'initial_reward' in self._prompts:
-                prompt += '\nInitial reward proposal:\n' + self._prompts['initial_reward']
-                prompt += ('\nYou must provide a variation from the initial reward proposal! '
-                           'This is just a suggestion! It is crucial that you provide the code for '
-                           'the reward function using the previous coding tips!')
+            if iteration == 0:
+                if 'initial_reward' in self._prompts:
+                    prompt += '\nInitial reward proposal:\n' + self._prompts['initial_reward']
+                    prompt += ('\nYou must provide a variation from the initial reward proposal! '
+                               'This is just a suggestion! It is crucial that you provide the code for '
+                               'the reward function using the previous coding tips!')
             else:
                 prompt += '\nReward reflection:\n' + self._prompts['reward_reflection']
                 if self._config['eureka']['pretraining_with_best_model']:
                     prompt += ('\nThe next training will take the best model weights '
                                'so it reuses some of the relevant information '
                                'from the previous training!')
+
+            prompt += '\nYour reward code is: '
 
             save_to_txt(self._experiment_path / 'code' / f'iteration_{iteration}' / 'prompt.txt', prompt)
 
@@ -209,6 +212,7 @@ class StableEureka:
                                        / 'code'
                                        / f'iteration_{iteration}'
                                        / f'sample_{idx}'
+                                       / 'env_code'
                                        / 'env.py', code)
 
                 log_dir = self._experiment_path / 'code' / f'iteration_{iteration}' / f'sample_{idx}'
@@ -219,7 +223,7 @@ class StableEureka:
                     if self._config['experiment']['use_datetime']:
                         module_name += f".{self._experiment_datetime}"
 
-                    module_name += f".code.iteration_{iteration}.sample_{idx}.env"
+                    module_name += f".code.iteration_{iteration}.sample_{idx}.env_code.env"
 
                     register(id=f'iteration_{iteration}_sample_{idx}_env-v0',
                              entry_point=f"{module_name}:{self._config['environment']['class_name']}",
