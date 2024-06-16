@@ -1,13 +1,13 @@
 from pathlib import Path
 import numpy as np
 import torch
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, SAC, DDPG, TD3, DQN
 from stable_eureka.utils import save_to_json
 import imageio
 
 
 class RLEvaluator:
-    AVAILABLE_ALGOS = {'ppo': PPO}
+    AVAILABLE_ALGOS = {'ppo': PPO, 'sac': SAC, 'ddpg': DDPG, 'td3': TD3, 'dqn': DQN}
 
     def __init__(self, model_path: Path, algo: str):
 

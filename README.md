@@ -65,7 +65,7 @@ experiment:
 rl:
     algo: 'ppo'
     algo_params:
-        policy: 'MlpPolicy'
+        policy: 'MlpPolicy'  # 'CnnPolicy' or 'MlpPolicy'
         learning_rate: 0.0003
         n_steps: 2048
         batch_size: 64
@@ -103,13 +103,17 @@ rl:
 
 ## RL Algorithms
 Stable Eureka uses `stable-baselines3` to train the agent. You can use the following algorithms (with the same hp as in `stable-baselines3`):
-- PPO
-- SAC
-- DQN
-- TD3
-- DDPG
+- `PPO`
+- `SAC`
+- `DQN`
+- `TD3`
+- `DDPG`
 
 You can use the base parameters for each algorithm, or you can set your own parameters in the `algo_params` section.
+This library expects you to know the basics of `stable-baselines3`. If you are not familiar with it, please check the [documentation](https://stable-baselines3.readthedocs.io/en/master/guide/quickstart.html).
+
+> [!WARNING]
+> Stable Eureka does not support yet the use of custom network or custom policies.
 
 ## Environment
 You must provide the env main code (`gymnasium.Env`) in a single `env.py` inside the `env_code` folder. You should include take the step func into a `step.py` file, and must
