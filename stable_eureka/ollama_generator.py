@@ -7,8 +7,6 @@ class OllamaGenerator(LLMGeneratorBase):
     def __init__(self, model: str):
         super().__init__(model)
 
-        # TODO: check if the model is valid or pulled
-
     def generate(self, prompt, k, logger, temperature) -> list[str]:
 
         options = ollama.Options(

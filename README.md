@@ -34,39 +34,40 @@ ollama pull llama3
 If the model is too large to be run on gpu, it will use some of the available cpu cores. This will be much slower than running entirely on gpu.
 
 ### OpenAI
-You can use OpenAI LLMs by providing an API key. It depends on the model you want to use, how much it will cost.
-You must set the environment variable `OPENAI_API_KEY` with your key.
+You can use OpenAI LLMs by providing an API key. Total cost will depend on the model you use.
+You must set the environment variable `OPENAI_API_KEY` with your API key.
 
 
 ## Configuration
 You must fill a configuration file with the following structure:
 ```yaml
 eureka:
-    backend: 'openai'  # 'ollama' or 'openai'
-    model: 'gpt-4o'
-    temperature: 1.0  # if this value is too low, it is almost deterministic
-    iterations: 5
-    samples: 8
-    use_initial_reward_prompt: false  # if available, use the initial reward prompt
-    pretraining_with_best_model: true  # use best model weights for pretraining the next models
+    backend: 'openai'                   # 'ollama' or 'openai'
+    model: 'gpt-4o'                     # name of the model (from ollama or openai models)
+    temperature: 1.0                    # the higher it is, the more random the output will be
+    iterations: 5                       # number of total iterations
+    samples: 8                          # number of samples to generate per iteration, they will run in parallel, so consider your HW      
+    sleep_time_per_iteration: 5         # sleep time between iterations in minutes (only if using ollama to avoid cuda memory issues)
+    use_initial_reward_prompt: false    # if available, use the initial reward prompt provided in the environment folder
+    pretraining_with_best_model: true   # use best model weights for pretraining the next iteration set of models
 
 environment:
-    name: 'bipedal_walker'
-    max_episode_steps: 1600
-    class_name: 'BipedalWalker'
-    kwargs: null
-    benchmark: 'BipedalWalker-v3'  # if benchmark available, set it to train the agent with the same params
+    name: 'bipedal_walker'              # name of the environment folder
+    max_episode_steps: 1600             # maximum number of steps per episode (truncate the episode)
+    class_name: 'BipedalWalker'         # name of the gymnasium environment class
+    kwargs: null                        # kwargs to pass to the environment class
+    benchmark: 'BipedalWalker-v3'       # if benchmark available, train the agent with the same params to compare
 
-experiment:
-    parent: 'experiments'
-    name: 'bipedal_walker_gpt4o'
-    use_datetime: true
+experiment: 
+    parent: 'experiments'               # parent folder where the experiments will be saved
+    name: 'bipedal_walker_gpt4o'        # name of the experiment folder
+    use_datetime: true                  # use datetime in the experiment folder name
 
 rl:
-    algo: 'ppo'
-    algo_params:
-        policy: 'MlpPolicy'  # 'CnnPolicy' or 'MlpPolicy'
-        learning_rate: 0.0003
+    algo: 'ppo'                         # 'ppo', 'sac', 'dqn', 'td3', 'ddpg'               
+    algo_params:                        # hyperparameters for the algorithm (it depends on the algorithm, same as in sb3)          
+        policy: 'MlpPolicy'             
+        learning_rate: 0.0003           
         n_steps: 2048
         batch_size: 64
         n_epochs: 10
@@ -77,28 +78,28 @@ rl:
         vf_coef: 0.5
         max_grad_norm: 0.5
 
-    architecture:
-        net_arch: {'pi': [64, 64], 'vf': [64, 64]}
+    architecture:                       # architecture of the networks (it depends on the algorithm, same as in sb3)
+        net_arch: {'pi': [64, 64], 'vf': [64, 64]}  
         activation_fn: 'ReLU'
         share_features_extractor: false
 
     training:
-        torch_compile: true
-        seed: 0
+        torch_compile: true             # compile the model with torch.compile to be faster
+        seed: 0                         # seed for reproducibility
         eval:
-            seed: 5
-            num_episodes: 2
-            num_evals: 10
-        total_timesteps: 1_000_000
-        device: 'cuda'
-        num_envs: 4
-        state_stack: 1
-        is_atari: false
+            seed: 5                     # seed for evaluation        
+            num_episodes: 2             # number of episodes to evaluate
+            num_evals: 10               # number of evaluations to perform during training
+        total_timesteps: 1_000_000      # total timesteps to train the agent
+        device: 'cuda'                  # 'cuda' or 'cpu'
+        num_envs: 4                     # number of environments to run in parallel 
+        state_stack: 1                  # number of frames to stack
+        is_atari: false                 # if the environment is an atari game
 
     evaluation:
-        seed: 10
-        num_episodes: 10
-        save_gif: true
+        seed: 10                        # seed for final evaluation
+        num_episodes: 10                # number of episodes to evaluate
+        save_gif: true                  # save gif of the best model
 ```
 
 ## RL Algorithms
@@ -300,8 +301,8 @@ As you will see, you will be able to display every experiment as well as the ben
 
 
 ## Results
-In the following table, you can see results obtained on `gymnasium` environments against the same parameters but using the original reward (benchmark). 
-You can find the hyperparameters used on these tests in the `configs` folder. Benchmark curve is shown in **black**. Recall that `fitness_score` is the ground truth reward function.
+In the following table, you can see some results obtained on several `gymnasium` environments. They are trained with the algorithm base parameters but using the original reward (benchmark) as the `fitness_score`. 
+You can find the hyperparameters used on these tests in the `configs` folder. Benchmark curve is shown in **black** and some of the best models provided by `stable-eureka` are shown with other colors. As you can see, `stable-eureka` is able to provide good quality reward functions that allow the agent to solve the task.
 
 |    Gymnasium Environment    |  Algorithm  |  Solved by Stable Eureka  |  Solved by Benchmark  |   LLM used    |                             Reward                              |
 |:---------------------------:|:-----------:|:-------------------------:|:---------------------:|:-------------:|:---------------------------------------------------------------:|
@@ -310,6 +311,7 @@ You can find the hyperparameters used on these tests in the `configs` folder. Be
 | `MountainCarContinuous-v0`  |     PPO     |            YES            |          NO           |  `llama3-8B`  |  ![mountain_car_continuous](./img/mountain_car_continuous.png)  |
 |      `LunarLander-v2`       |     PPO     |            NO             |          YES          |   `gpt-4o`    |             ![lunar_lander](./img/lunar_lander.png)             |
 
+As this repository is mainly based on `Eureka`, you can find more results and a detailed justification that showcases the potential of this approach on the original repository [here](https://github.com/eureka-research/Eureka/tree/main).
 
 ## Future Work
 - Add support for custom networks and policies
@@ -320,7 +322,13 @@ You can find the hyperparameters used on these tests in the `configs` folder. Be
 **Rodrigo Sánchez Molina**
   - Email: rsanchezm98@gmail.com
   - Linkedin: [rsanchezm98](https://www.linkedin.com/in/rsanchezm98/)
-  - Github: [rsanchezmo](https://github.com/rsanchezmo)
+
+**Nicolás Gastón Rozado**
+  - Linkedin: [nicogroz](https://www.linkedin.com/in/nicogroz/)
+
+**David León Pérez**
+  - Linkedin: [david-leon-ai](https://www.linkedin.com/in/david-leon-ai/)
+
 
 ## Citation
 If you find `stable-eureka` useful, please consider citing:
@@ -328,7 +336,7 @@ If you find `stable-eureka` useful, please consider citing:
 ```bibtex
   @misc{2024stableeureka,
     title     = {Stable Eureka},
-    author    = {Rodrigo Sánchez Molina},
+    author    = {Rodrigo Sánchez Molina, Nicolás Gastón Rozado and David León Pérez},
     year      = {2024},
     howpublished = {https://github.com/rsanchezmo/stable-eureka}
   }

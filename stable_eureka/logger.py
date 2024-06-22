@@ -4,6 +4,7 @@ import logging
 DEFAULT_LOGGER_NAME = 'stable_eureka_logger'
 LOGGER_NAME = os.getenv('LOGGER_NAME', DEFAULT_LOGGER_NAME)
 
+
 def get_logger():
     if LOGGER_NAME not in logging.Logger.manager.loggerDict.keys():
         logger = logging.getLogger(LOGGER_NAME)
