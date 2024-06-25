@@ -317,19 +317,6 @@ As this repository is mainly based on `Eureka`, you can find more results and a 
 - Add support for custom networks and policies
 - Test `stable-eureka` on more environments
 
-## Contributors
-
-**Rodrigo Sánchez Molina**
-  - Email: rsanchezm98@gmail.com
-  - Linkedin: [rsanchezm98](https://www.linkedin.com/in/rsanchezm98/)
-
-**Nicolás Gastón Rozado**
-  - Linkedin: [nicogroz](https://www.linkedin.com/in/nicogroz/)
-
-**David León Pérez**
-  - Linkedin: [david-leon-ai](https://www.linkedin.com/in/david-leon-ai/)
-
-
 ## Citation
 If you find `stable-eureka` useful, please consider citing:
 
