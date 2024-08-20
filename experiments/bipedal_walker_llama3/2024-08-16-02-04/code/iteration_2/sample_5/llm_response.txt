@@ -1,0 +1,13 @@
+```python
+def compute_reward(self, pos, action, state):
+    terminal_position = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP
+    distance_reward = np.exp((1 + np.tanh((pos[0] - terminal_position) / 10)) / 2)
+    speed_reward = np.exp((action[0]**2 + action[1]**2)**0.5 / 2)
+    obstacle_avoidance_reward = np.exp(-np.sum([l.fraction > 0 for l in self.lidar]) / len(self.lidar))
+    stability_reward = 1 - (abs(state[3]) + abs(state[7])) / 10
+    reward = distance_reward * speed_reward * obstacle_avoidance_reward * stability_reward
+    individual_reward = {'distance': distance_reward, 'speed': speed_reward, 'obstacle_avoidance': obstacle_avoidance_reward, 'stability': stability_reward}
+    return reward, individual_reward
+```
+
+This reward function aims to encourage the agent to move forward quickly while avoiding obstacles and maintaining stability. The distance reward increases as the agent approaches the end of the terrain, providing a strong incentive for reaching the goal. The speed reward promotes fast movement by penalizing slow actions. The obstacle avoidance reward discourages the agent from getting too close to obstacles, while the stability reward ensures that the agent maintains balance by reducing its overall reward when it's not stable.

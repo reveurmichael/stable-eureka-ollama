@@ -1,0 +1,9 @@
+def compute_reward(self, pos, action, state):
+    done_reach = 1 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0
+    done_fall = 1 if pos[1] < 0 or self.game_over else 0
+    
+    reward = done_reach + 0.5 * done_fall
+    
+    individual_reward = {'reach': done_reach, 'fall_avoidance': done_fall}
+    
+    return reward, individual_reward

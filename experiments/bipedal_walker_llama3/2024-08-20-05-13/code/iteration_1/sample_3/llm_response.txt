@@ -1,0 +1,43 @@
+After analyzing the policy feedback, I've identified some areas for improvement in the existing reward function. Here's a proposal for an updated reward function:
+
+**Analyze each existing reward component:**
+
+1. **Movement**: The values are quite high and consistent, which indicates that the agent is indeed moving forward effectively. This component seems to be working well.
+2. **Fall**: The values are all zeros, indicating that the agent is not falling or getting stuck at all during training. This might be due to the fact that the penalty term (`fall_penalty`) is only applied when `hull_angle` is negative. Since all values are zero, it's possible that the hull angle is always positive or non-negative.
+3. **Fitness Score**: The values are mostly negative and quite large in magnitude. This indicates that the agent is not improving its fitness score during training. This could be due to the fact that the reward function is biased towards movement rather than fitness.
+
+**New Reward Function Proposal:**
+
+To address the issues with the fitness score and fall components, I propose modifying the existing reward function as follows:
+
+```
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    terminal = (pos[0] < 0) or self.game_over
+    
+    if terminal:
+        reward = -1.0
+        individual_reward = {"fall": -1.0}
+    else:
+        # Encourage forward movement
+        movement_reward = np.exp((pos[0] + VIEWPORT_W / SCALE / 5) / TERRAIN_LENGTH)
+        
+        # Adjust the fall penalty to consider both negative and positive hull angles
+        fall_penalty = np.tanh(hull_angle)
+        
+        # Punish low fitness scores
+        fitness_penalty = -np.exp(-self.fitness_score(state))
+        
+        reward = movement_reward + (1 - fall_penalty) * (1 - fitness_penalty)
+        individual_reward = {"movement": movement_reward, "fall": fall_penalty, "fitness": fitness_penalty}
+    
+    return reward, individual_reward
+```
+
+**Changes:**
+
+1. Modified the `fall_penalty` term to use the hyperbolic tangent (`np.tanh`) function, which will allow for a more nuanced treatment of both positive and negative hull angles.
+2. Introduced a new penalty term for low fitness scores (`fitness_penalty`). This will encourage the agent to improve its fitness score during training.
+
+These changes aim to balance the reward components and provide a more effective guidance for the agent to solve the task.

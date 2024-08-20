@@ -1,0 +1,38 @@
+A reinforcement learning problem! I'll help you design an effective reward function for this task.
+
+The goal of the lander agent is to successfully land on the helipad while minimizing penalties. We can break down the reward into several components:
+
+1. **Landing success**: If the lander reaches the helipad and all legs are in contact, a high positive reward should be given.
+2. **Distance from helipad**: The closer the lander is to the helipad, the higher the reward. This encourages the agent to get as close as possible before landing.
+3. **Altitude**: The lower the altitude, the higher the reward. This discourages the agent from hovering too high and instead encourages it to descend.
+4. **Velocity**: A low velocity is preferred, as it indicates a controlled descent.
+
+Here's a potential reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    reward = 0
+
+    # Landing success (100 points if successful)
+    if state[6] == 1 and state[7] == 1:  # All legs in contact on the helipad
+        reward += 100.0
+
+    # Distance from helipad (-10 points per meter away)
+    distance = abs(state[1]) - LEG_DOWN / SCALE
+    reward -= distance * 10.0
+
+    # Altitude (5 points per meter lower than the helipad)
+    altitude = self.helipad_y + LEG_DOWN / SCALE - state[1]
+    reward += altitude * 5.0
+
+    # Velocity (-2 points per unit of velocity)
+    reward -= state[3] * 2.0
+
+    if terminated:
+        # Penality for not landing successfully
+        reward -= 50.0
+
+    return reward, {"landing_success": int(state[6] == 1 and state[7] == 1)}
+```
+This reward function encourages the agent to land successfully on the helipad while minimizing penalties for distance, altitude, and velocity. The individual_reward dictionary provides a breakdown of the rewards.
+
+Feel free to adjust these values or add more components as needed to suit your specific requirements.

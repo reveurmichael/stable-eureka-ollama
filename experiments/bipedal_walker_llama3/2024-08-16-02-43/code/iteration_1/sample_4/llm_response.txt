@@ -1,0 +1,19 @@
+```python
+def compute_reward(self, pos, action, state):
+    # Normalize position-based rewards using temperature parameter
+    pos_reward = -np.exp(-((pos[0] - self.TERRAIN_LENGTH) / TERRAIN_GRASS)**2)
+    
+    # Reward for moving forward (faster the better)
+    forward_reward = np.clip(action[0], -1, 1) * 10.0
+    
+    # Penalty for falling down
+    fall_penalty = int(pos[0] < 0) * -100.0
+    
+    # Total reward is sum of individual components
+    total_reward = pos_reward + forward_reward + fall_penalty
+    
+    # Dictionary of individual reward components
+    return total_reward, {'position_reward': pos_reward, 'forward_reward': forward_reward, 'fall_penalty': fall_penalty}
+```
+
+This reward function aims to encourage the biped to move forward and reach the end of the terrain while avoiding falling down. The position-based reward is calculated using a temperature parameter and exponential transformation to emphasize rewards for reaching the end of the terrain. The forward reward incentivizes the agent to move at a higher speed, while the fall penalty discourages it from falling down.

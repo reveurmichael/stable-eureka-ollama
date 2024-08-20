@@ -1,0 +1,13 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    ground_contact = (state[10] + state[14]) > 0.5
+    
+    progress_reward = np.exp(-(pos[0] / TERRAIN_LENGTH) ** 2)
+    stability_reward = np.exp(-hull_angle ** 2)
+    velocity_reward = np.exp(vel_x ** 2)
+    ground_contact_penalty = -1 if not ground_contact else 0
+
+    reward = progress_reward + stability_reward + velocity_reward + ground_contact_penalty
+    
+    return reward, {"progress": progress_reward, "stability": stability_reward, "velocity": velocity_reward, "ground_contact": ground_contact_penalty}

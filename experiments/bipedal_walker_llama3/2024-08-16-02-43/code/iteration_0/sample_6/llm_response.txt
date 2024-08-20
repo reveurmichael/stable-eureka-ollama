@@ -1,0 +1,17 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = (state[0] + math.pi) % (2 * math.pi)
+    orientation_penalty = -10 * abs(hull_angle)
+
+    velocity = (state[2], state[3])
+    speed_penalty = -5 * math.sqrt(velocity[0]**2 + velocity[1]**2)
+
+    distance_traveled = pos[0]
+    progress_reward = 10 * (distance_traveled / TERRAIN_LENGTH)
+
+    obstacle_avoidance = sum([l.fraction for l in self.lidar]) * -5
+    stability_reward = 5 * (1 - math.exp(-(state[2]**2 + state[3]**2) / 0.05))
+
+    reward = progress_reward + orientation_penalty + speed_penalty + stability_reward + obstacle_avoidance
+
+    return reward, {"progress": progress_reward, "orientation": orientation_penalty, "speed": speed_penalty, "stability": stability_reward, "obstacle_avoidance": obstacle_avoidance}

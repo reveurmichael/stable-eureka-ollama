@@ -1,0 +1,45 @@
+A great opportunity to analyze and improve a reward function!
+
+**Analysis**
+
+1. **Movement**: The values are quite consistent, with a maximum value of 1679.69. This suggests that the movement component is well-designed, as it encourages the policy to move forward.
+2. **Fall**: All values are zero, indicating that the policy has not fallen off the edge in any episode during evaluation. This suggests that the fall penalty is effective, but perhaps too harsh or unnecessary since all episodes terminated at 1600 steps (see **Episode Length**).
+3. **Fitness Score**: The minimum value is -53.25, which is quite low. This indicates that the fitness score is not improving during training, possibly due to an overly harsh penalty for falling.
+4. **Reward**: Similar to the movement component, the values are consistent, with a maximum value of 1679.69.
+
+**New Reward Function Proposal**
+
+Based on the analysis, I propose the following changes:
+
+1. **Fall Penalty**: Instead of using `max(-np.exp(hull_angle), 0)`, which can be quite harsh, let's introduce a more gradual penalty for falling.
+2. **Fitness Score**: To encourage improving fitness scores, we'll use a scaled version of the fitness score as a reward component.
+
+Here's the new reward function code:
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    terminal = (pos[0] < 0) or self.game_over
+    
+    if terminal:
+        reward = -1.0
+        individual_reward = {"fall": -0.5}
+    else:
+        # Encourage forward movement
+        movement_reward = np.exp((pos[0] + VIEWPORT_W / SCALE / 5) / TERRAIN_LENGTH)
+        # Gradual fall penalty
+        fall_penalty = (hull_angle > 1.5) * (np.exp(-hull_angle) - 1)
+        # Scaled fitness score reward
+        fitness_reward = np.clip(self.fitness_score, -10, 0) / 10.0
+        reward = movement_reward + fitness_reward - fall_penalty
+        individual_reward = {"movement": movement_reward, "fall": fall_penalty, "fitness": fitness_reward}
+    
+    return reward, individual_reward
+```
+**Changes**
+
+1. Replaced the harsh `max` function with a more gradual fall penalty using an exponential decay.
+2. Introduced a scaled fitness score reward component to encourage improving fitness scores during training.
+3. Kept the movement component largely unchanged, as it seems well-designed.
+
+Please let me know if you'd like me to elaborate on any of these changes or if you have any specific questions about this proposal!

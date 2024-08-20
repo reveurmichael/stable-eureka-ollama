@@ -1,0 +1,10 @@
+def compute_reward(self, pos, action, state):
+    reaching_end = int(pos[0] / (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP > 0.8)
+    falling_down = not self.hull.isGrounded()
+    moving_forward = any([joint.speed for joint in [self.joints[i].motorSpeed for i in range(4)]])
+    
+    reward = (reaching_end + 1) - 10 * falling_down - 5 * not moving_forward
+    
+    individual_reward = {"reaching_end": reaching_end, "falling_down": falling_down, "moving_forward": moving_forward}
+    
+    return np.exp(reward / 3.0), individual_reward

@@ -1,0 +1,14 @@
+```python
+def compute_reward(self, pos, action, state):
+    reach_end = int((pos[0] - 0) / TERRAIN_STEP)
+    speed = (state[2]**2 + state[3]**2)**0.5
+    fall_down = not self.hull.linearVelocity[1] > 0
+    stuck = all([l.ground_contact for l in self.legs])
+
+    reward = -10 * (reach_end < TERRAIN_LENGTH) + 20 * (not stuck or reach_end >= TERRAIN_LENGTH) - 5 * fall_down
+
+    individual_reward = {"reaching": not (reach_end < TERRAIN_LENGTH), "stuck": not (not stuck or reach_end >= TERRAIN_LENGTH), "falling": fall_down, "speed": speed}
+    return reward, individual_reward
+```
+
+Explanation: The reward function encourages the agent to reach the end of the terrain, while penalizing it for falling down and getting stuck. The reward is a combination of these components. The "reaching" component increases as the agent moves closer to the end of the terrain. The "stuck" component decreases when the agent is not stuck or has reached the end of the terrain. The "falling" component penalizes the agent for falling down. The "speed" component is a measure of the agent's speed and can be used as an additional feedback mechanism to encourage the agent to move faster.

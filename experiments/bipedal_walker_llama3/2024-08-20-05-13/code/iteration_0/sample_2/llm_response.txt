@@ -1,0 +1,27 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    angular_velocity = state[1]
+    x_velocity = state[2]
+    y_velocity = state[3]
+    joints_angle = [state[4], state[7], state[10]]
+    speed_ratio = max([abs(s) for s in state[5:9]])
+    
+    # Reward for moving forward
+    forward_reward = np.exp((TERRAIN_LENGTH - pos[0]) / TERRAIN_STEP) * 0.1
+    
+    # Punish for falling down or getting stuck
+    fall_penalty = np.exp(-(pos[0] + VIEWPORT_W / SCALE / 5) / (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP) * 0.5
+    
+    # Reward for maintaining balance
+    balance_reward = np.exp(-angular_velocity) * 0.05
+    
+    # Punish for not moving forward or being slow
+    speed_penalty = np.exp(-(x_velocity + y_velocity) / (VIEWPORT_W / SCALE / FPS)) * 0.3
+    
+    reward_components = {"forward_reward": forward_reward, "fall_penalty": fall_penalty, "balance_reward": balance_reward, "speed_penalty": speed_penalty}
+    
+    # Calculate the total reward
+    total_reward = -sum([component for component in reward_components.values()])
+    
+    return total_reward, reward_components

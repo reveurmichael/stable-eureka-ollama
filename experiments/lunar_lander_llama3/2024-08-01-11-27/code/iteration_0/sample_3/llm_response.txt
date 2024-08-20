@@ -1,0 +1,44 @@
+As a reward engineer, my goal is to design an effective reward function for this reinforcement learning task. Here's my proposed solution:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define the reward structure
+    reward = -1.0  # default reward value (penalty)
+
+    # Reward for reaching the target position
+    if abs(state[0]) < 0.5:  # adjust the threshold as needed
+        reward += 10.0
+
+    # Reward for not crashing or landing on the helipad
+    if terminated:
+        reward -= 100.0  # significant penalty for game over
+
+    # Reward for maintaining a certain altitude (e.g., above the helipad)
+    if state[1] > -LEG_DOWN / SCALE:  # adjust the threshold as needed
+        reward += 5.0
+
+    # Reward for using the main engines efficiently
+    if m_power > 0:
+        reward += 2.0 * m_power  # adjust the scaling factor as needed
+
+    # Reward for using the side engines efficiently
+    if s_power > 0:
+        reward += 1.5 * s_power  # adjust the scaling factor as needed
+
+    # Add individual rewards (fitness score)
+    reward += individual_reward['fitness_score']
+
+    return reward, individual_reward
+```
+
+This reward function provides a mix of intrinsic and extrinsic motivations:
+
+* **Target position**: Reach the target position without crashing or landing on the helipad.
+* **Safety**: Avoid game over situations (crashing or landing on the helipad).
+* **Altitude**: Maintain a certain altitude above the helipad to ensure safe landing.
+* **Main engine efficiency**: Use the main engines effectively by applying gentle forces to maintain control.
+* **Side engine efficiency**: Use the side engines effectively by adjusting the orientation and thrust to maintain balance.
+
+The reward values are intentionally set to be relatively low to encourage exploration, experimentation, and learning. The individual rewards (fitness score) are added to provide an additional motivation for achieving specific goals.
+
+Feel free to adjust or modify this reward function as needed to suit your specific requirements!

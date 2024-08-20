@@ -1,0 +1,14 @@
+def compute_reward(self, pos, action, state):
+    # Calculate distance to the end of the terrain and normalize it
+    distance_to_end = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
+    normalized_distance = np.exp(-distance_to_end / 10.0)
+
+    # Calculate penalty for falling down
+    if self.game_over:
+        reward = -1.0
+    else:
+        reward = normalized_distance
+
+    individual_reward = {"reached_the_end": normalized_distance}
+
+    return reward, individual_reward

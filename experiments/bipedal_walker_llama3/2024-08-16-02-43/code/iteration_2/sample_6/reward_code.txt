@@ -1,0 +1,8 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = pos[0] - TERRAIN_LENGTH + TERRAIN_GRASS * TERRAIN_STEP
+    falling_down = pos[1] < 0 or any(l.ground_contact for l in self.legs)
+    
+    reward = np.exp(-distance_to_goal / REWARD_DISTANCE_SCALE) * (1 if not falling_down else -np.exp(-falling_down / REWARD_FALLING_SCALE))
+    individual_reward = {"goal_distance": distance_to_goal, "falling_down": 0 if not falling_down else -1}
+    
+    return reward, individual_reward

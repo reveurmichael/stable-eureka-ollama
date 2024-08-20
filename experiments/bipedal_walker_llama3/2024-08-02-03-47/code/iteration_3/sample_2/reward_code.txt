@@ -1,0 +1,15 @@
+def compute_reward(self, pos, action, state):
+    hull_height = self.hull.position[1]
+    speed_x = pos[0] - self.scroll
+    speed_y = self.hull.linearVelocity[1]
+
+    if speed_y < -0.5 or hull_height > 1.2:
+        reward = -10
+    elif speed_x > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP and not self.game_over:
+        reward = 100
+    else:
+        reward = -0.1
+
+    individual_reward = {'speed_y': -0.5 * np.exp(0.05 * speed_y), 'hull_height': -np.exp(0.2 * hull_height), 'progress': 0.5 * np.exp(-0.02 * speed_x)}
+
+    return reward, individual_reward

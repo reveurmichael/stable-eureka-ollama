@@ -1,0 +1,7 @@
+def compute_reward(self, pos, action, state):
+    done = pos[0] < 0 or self.game_over
+    reward = -1 if not done else 10 + (pos[0] - TERRAIN_LENGTH) / TERRAIN_STEP  # reaching the end
+    individual_reward = {"reached_end": -1 if not done else 10 + (pos[0] - TERRAIN_LENGTH) / TERRAIN_STEP,
+                          "moving_forward": np.exp(-abs(action).sum() * 2)  # moving forward is good
+                         }
+    return reward, individual_reward

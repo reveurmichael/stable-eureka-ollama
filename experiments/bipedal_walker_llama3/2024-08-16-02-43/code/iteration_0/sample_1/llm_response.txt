@@ -1,0 +1,18 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    hull_velocity_x = state[2]
+    is_stuck = all([1.0 if leg.ground_contact else 0.0 for leg in self.legs])
+
+    reward = -abs(hull_velocity_x)  # negative reward for moving forward
+    individual_reward = {'movement': -abs(hull_velocity_x), 'stability': 1.0 - abs(hull_angle)}
+
+    if is_stuck:
+        reward -= 10.0  # penalty for getting stuck
+        individual_reward['stuck'] = -10.0
+
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:  # reaching the end of terrain
+        reward += 100.0  # large positive reward for reaching the end
+        individual_reward['end_reached'] = 100.0
+
+    return reward, individual_reward

@@ -1,0 +1,33 @@
+Based on the provided feedback, I can analyze each existing reward component and suggest improvements to create a better reward function.
+
+1. **distance**: The values are mostly negative, indicating that the policy should move away from the goal. However, there seems to be a plateau around -301386.80247950554, which suggests that the policy may have converged or reached a local optimum. To improve this component, we could re-scale it to emphasize the importance of reaching the goal.
+
+New suggestion: `distance_to_goal = 1 - (abs(pos[0] - TERRAIN_LENGTH) / TERRAIN_LENGTH)` This will incentivize the policy to move closer to the goal by rewarding smaller distances.
+
+2. **falling**: The values are all zeros, indicating that the policy is not falling at any point during training. Since this component should be minimized, it's likely that the penalty for falling is too low or ineffective. We could increase the penalty value or re-write the component to better capture the situation where the agent falls.
+
+New suggestion: `penalty_for_falling = -10 * (pos[1] / TERRAIN_STEP)` This will penalize the policy more severely when it falls and encourage it to stay on the terrain.
+
+3. **fitness_score**: The values are mostly negative, indicating that the fitness score is not being maximized during training. Since this component should be maximized, we could re-write it or increase its scale to make it more impactful.
+
+New suggestion: `fitness_reward = 10 * (1 - (fitness_score / TERRAIN_LENGTH))` This will reward the policy for achieving higher fitness scores and encourage it to optimize the fitness function.
+
+With these suggestions, I propose the following improved reward function:
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = 1 - (abs(pos[0] - TERRAIN_LENGTH) / TERRAIN_LENGTH)
+    penalty_for_falling = -10 * (pos[1] / TERRAIN_STEP)
+    fitness_reward = 10 * (1 - (fitness_score / TERRAIN_LENGTH))
+    
+    reward = distance_to_goal + penalty_for_falling + fitness_reward
+    individual_reward = {'distance': distance_to_goal, 'falling': penalty_for_falling, 'fitness': fitness_reward}
+    
+    return reward, individual_reward
+```
+This revised reward function aims to improve the policy's performance by:
+
+* Rewarding the policy for moving closer to the goal (distance)
+* Punishing the policy for falling (falling)
+* Encouraging the policy to optimize the fitness score (fitness)
+
+These changes should help the policy converge towards a better solution and improve its overall performance.

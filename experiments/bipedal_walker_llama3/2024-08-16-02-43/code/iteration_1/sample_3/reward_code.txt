@@ -1,0 +1,11 @@
+def compute_reward(self, pos, action, state):
+    done = False if pos[0] < TERRAIN_LENGTH else True
+    
+    if done:
+        reward = 10.0 * (1 - (pos[0] / TERRAIN_LENGTH)) ** 2
+    else:
+        reward = -0.05
+    
+    individual_reward = {'reward': reward, 'done': done}
+    
+    return reward, individual_reward

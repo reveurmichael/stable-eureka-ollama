@@ -1,0 +1,21 @@
+```python
+def compute_reward(self, pos, action, state):
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        # Agent has reached the end of the terrain
+        total_reward = 10.0 - np.exp(-0.5 * state[8]) - np.exp(-0.2 * state[9])
+    elif pos[0] < 0:
+        # Agent has fallen off the terrain or is still at the starting position
+        total_reward = -10.0 - np.exp(1.5 * action[0]**2) - np.exp(action[3]**2)
+    else:
+        # Agent is somewhere in the middle of the terrain
+        total_reward = 0.0
+
+    individual_rewards = {
+        'reached_end': 0 if pos[0] <= (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 10,
+        'distance_travelled': 2 * pos[0],
+        'smoothness': -np.exp(-0.5 * state[8]) - np.exp(-0.2 * state[9]),
+        'stability': -np.exp(1.5 * action[0]**2) - np.exp(action[3]**2),
+    }
+
+    return total_reward, individual_rewards
+```

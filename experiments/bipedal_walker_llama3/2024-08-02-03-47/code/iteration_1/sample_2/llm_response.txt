@@ -1,0 +1,26 @@
+```python
+def compute_reward(self, pos, action, state):
+    # Calculate distance to target and current speed
+    target_distance = pos[0] / (TERRAIN_LENGTH - TERRAIN_GRASS)
+    speed = state[2] * (VIEWPORT_W / SCALE) / FPS
+    
+    # Reward for reaching the end
+    reach_end_reward = np.exp(target_distance)  # Adjust temperature if needed
+    reward_components = {'reach_end': reach_end_reward}
+    
+    # Punish falling or getting stuck
+    fall_punishment = -np.exp(-speed)  # Adjust temperature if needed
+    reward_components['fall'] = fall_punishment
+    
+    # Reward for speed and movement
+    speed_reward = np.exp(speed) * 0.5  # Adjust temperature if needed
+    reward_components['speed'] = speed_reward
+    
+    total_reward, individual_rewards = 0, reward_components.copy()
+    for key, value in reward_components.items():
+        total_reward += value
+    
+    return float(total_reward), individual_rewards
+```
+
+Explanation: This code calculates a reward based on the distance to the target (the end of the terrain) and the current speed. The agent receives a reward for reaching the end, which is higher when closer to the target. It also receives a punishment for falling or getting stuck, which is stronger when the agent is not moving. Additionally, it receives a reward for its speed, with more reward given for faster movements.

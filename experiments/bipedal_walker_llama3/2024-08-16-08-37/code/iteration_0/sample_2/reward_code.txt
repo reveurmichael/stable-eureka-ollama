@@ -1,0 +1,14 @@
+def compute_reward(self, pos, action, state):
+    # Reward for reaching the end of the terrain (more desirable)
+    end_reach_reward = np.exp((TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]) / 10.0
+    
+    # Penalty for falling down
+    fall_penalty = np.exp(-pos[1] * 5.0) if pos[1] < 0 else 0
+    
+    # Bonus for moving forward (more steps in fewer episodes)
+    movement_bonus = np.exp(pos[0]) / 10.0
+    
+    reward = end_reach_reward + fall_penalty - movement_bonus
+    individual_rewards = {'end_reach': end_reach_reward, 'fall': fall_penalty, 'movement': movement_bonus}
+    
+    return reward, individual_rewards

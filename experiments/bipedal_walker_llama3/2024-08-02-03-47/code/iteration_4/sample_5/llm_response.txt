@@ -1,0 +1,20 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = 0
+    individual_reward = {'reached_end': 0, 'fell_down': 0, 'stuck': 0}
+    
+    # Reward for reaching the end of the terrain
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward += np.exp(np.tanh(1))  # Use a temperature parameter here
+        individual_reward['reached_end'] = np.exp(np.tanh(1))
+    
+    # Penalty for falling down or getting stuck
+    if pos[0] < 0 or any(self.legs[i].ground_contact and self.joints[i*2+1].speed == 0 for i in range(2)):
+        reward -= np.exp(-np.tanh(0.5))  # Use a temperature parameter here
+        individual_reward['fell_down'] = -np.exp(-np.tanh(0.5))
+        individual_reward['stuck'] = -np.exp(-np.tanh(0.5))
+    
+    return reward, individual_reward
+```
+
+The goal is to create a reward function that encourages the biped to reach the end of the terrain while avoiding falling down and getting stuck. The reward function calculates a total reward value and individual components for reaching the end, falling down, and getting stuck.

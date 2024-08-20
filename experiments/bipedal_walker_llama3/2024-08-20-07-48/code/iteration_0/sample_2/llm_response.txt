@@ -1,0 +1,8 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_reward = 0.1 - 0.05 * (pos[0] / TERRAIN_LENGTH) ** 2
+    velocity_reward = 0.5 * np.clip(action[0], -1, 1) + 0.2 * np.exp(np.abs(action[1])) + 0.3 * np.exp(np.abs(action[2])) + 0.2 * np.exp(np.abs(action[3]))
+    stability_reward = -np.sum([l.fraction for l in self.lidar])
+    reward = distance_reward + velocity_reward + stability_reward
+    individual_reward = {'distance': distance_reward, 'velocity': velocity_reward, 'stability': stability_reward}
+    return reward, individual_reward

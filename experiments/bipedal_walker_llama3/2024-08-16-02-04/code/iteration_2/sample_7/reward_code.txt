@@ -1,0 +1,7 @@
+def compute_reward(self, pos, action, state):
+    distance_to_end = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
+    stability_penalty = np.exp(-state[2] ** 2 - state[3] ** 2) * 10
+    forward_reward = np.exp((distance_to_end / TERRAIN_LENGTH) ** 4) * 100
+    reward = forward_reward - stability_penalty
+    individual_rewards = {'forward_reward': forward_reward, 'stability_penalty': stability_penalty}
+    return reward, individual_rewards

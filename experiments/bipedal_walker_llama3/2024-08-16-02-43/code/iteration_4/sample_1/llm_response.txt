@@ -1,0 +1,18 @@
+```python
+def compute_reward(self, pos, action, state):
+    # Calculate distance to the end of the terrain and normalize it
+    distance_to_end = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
+    normalized_distance = np.exp(-distance_to_end / 10.0)
+
+    # Calculate penalty for falling down
+    if self.game_over:
+        reward = -1.0
+    else:
+        reward = normalized_distance
+
+    individual_reward = {"reached_the_end": normalized_distance}
+
+    return reward, individual_reward
+```
+
+Explanation: The reward function rewards the agent for moving forward (reaching the end of the terrain) and penalizes it for falling down. The distance to the end is normalized using an exponential transformation with a temperature parameter set to 10.0, which means the reward decreases rapidly as the agent moves away from the end.

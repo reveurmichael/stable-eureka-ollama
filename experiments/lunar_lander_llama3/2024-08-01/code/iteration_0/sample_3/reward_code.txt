@@ -1,0 +1,18 @@
+def compute_reward(state, m_power, s_power, terminated):
+    # Define constants
+    LANDING_BONUS = 10.0
+    SMOOTH_LANDING_BONUS = 5.0
+    POWER_PENALTY = -1.0
+
+    # Calculate the reward based on the state
+    reward = 0.0
+    if not terminated:
+        # Encourage landing safely and efficiently
+        reward += LANDING_BONUS * (1.0 - abs(state[0]))  # proximity to the helipad
+        reward += SMOOTH_LANDING_BONUS * (1.0 - np.square(state[2]))  # smoothness of the landing
+
+        # Penalize excessive power usage
+        reward -= POWER_PENALTY * (m_power + s_power)
+
+    return reward, {'landing_bonus': LANDING_BONUS * (1.0 - abs(state[0])),
+                    'smooth_landing_bonus': SMOOTH_LANDING_BONUS * (1.0 - np.square(state[2]))}

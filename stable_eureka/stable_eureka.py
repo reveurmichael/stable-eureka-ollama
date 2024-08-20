@@ -37,7 +37,7 @@ class StableEureka:
 
         self._experiment_datetime = None
         if self._config['experiment']['use_datetime']:
-            self._experiment_datetime = datetime.utcnow().strftime('%Y-%m-%d')
+            self._experiment_datetime = datetime.utcnow().strftime('%Y-%m-%d-%H-%M')
             self._experiment_path /= self._experiment_datetime
 
         self._experiment_path.mkdir(parents=True, exist_ok=True)
@@ -85,6 +85,7 @@ class StableEureka:
             'name'] / 'initial_reward_prompt.txt'
         if self._config['eureka']['use_initial_reward_prompt'] and initial_reward_prompt_path.exists():
             self._prompts['initial_reward'] = read_from_file(initial_reward_prompt_path)
+            print(f"Successfully read initial reward prompt file from: {initial_reward_prompt_path}")
 
         self._best_reward = ('', -float('inf'), None, None)  # (reward code, fitness value, iteration, sample)
 

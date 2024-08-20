@@ -1,0 +1,38 @@
+I see you want me to write the reward function!
+
+Based on the provided code, I'm assuming the goal of the lander is to reach a certain height and position while avoiding crashes. Here's my attempt at writing an effective reward function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define constants for reward shaping
+    HIGHEST_HEIGHT = 1.0
+    REWARD_PER_HEIGHT_UNIT = -0.05
+    PUNISHMENT_PER_CRASH = -5.0
+    PUNISHMENT_PER_DISTANCE_FROM_GOAL = -0.01
+
+    height_reward = np.tanh(state[1] / HIGHEST_HEIGHT) * REWARD_PER_HEIGHT_UNIT
+    crash_punishment = 0.0
+    if terminated:
+        crash_punishment = PUNISHMENT_PER_CRASH
+
+    distance_from_goal = np.abs(state[0])
+    distance_punishment = PUNISHMENT_PER_DISTANCE_FROM_GOAL * distance_from_goal
+
+    reward = height_reward + distance_punishment - crash_punishment
+    individual_reward = {
+        'height_reward': height_reward,
+        'crash_punishment': crash_punishment,
+        'distance_punishment': distance_punishment,
+    }
+    return reward, individual_reward
+```
+
+This reward function aims to encourage the lander to:
+
+1. Reach a certain height (punished if it doesn't reach the desired height).
+2. Stay close to the goal position (punished if it's far away).
+3. Avoid crashing (severely punished if it does crash).
+
+The `np.tanh` function helps smooth out the reward curve for the height, while the `abs` function ensures the distance punishment is proportional to the distance from the goal.
+
+Please note that this is just one possible implementation of a reward function. You may need to adjust or modify it based on your specific requirements and experimentation.

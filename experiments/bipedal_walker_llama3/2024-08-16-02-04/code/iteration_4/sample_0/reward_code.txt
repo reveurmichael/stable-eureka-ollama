@@ -1,0 +1,10 @@
+def compute_reward(self, pos, action, state):
+    distance_reached = abs(pos[0] - TERRAIN_LENGTH) / TERRAIN_LENGTH
+    height_error = abs(state[0] * (VIEWPORT_H / SCALE))
+    speed = max(abs(action[0]), abs(action[2]))
+    falling = 1.0 if pos[1] < 0 else 0.0
+    
+    reward = -abs(height_error) - 0.5 * distance_reached + 0.05 * speed + 0.1 * falling
+    individual_reward = {'distance': -distance_reached, 'height': -height_error, 'speed': 0.05 * speed, 'falling': 0.1 * falling}
+    
+    return reward, individual_reward

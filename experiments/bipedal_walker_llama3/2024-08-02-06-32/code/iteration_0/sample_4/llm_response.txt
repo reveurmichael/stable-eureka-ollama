@@ -1,0 +1,27 @@
+```python
+def compute_reward(self, pos, action, state):
+    x, _ = pos
+    reach_end = x > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP
+    fall_down = self.hull.linearVelocity[1] < 0
+    
+    if reach_end:
+        return 10.0, {"reached_goal": 10.0}
+    elif fall_down:
+        return -20.0, {"fell_down": -20.0}
+    
+    speed_reward = (state[6] + state[12]) / SPEED_HIP
+    reward = 0.5 * np.exp(speed_reward)
+    
+    if reach_end or fall_down:
+        reward += 10.0
+    
+    return reward, {"speed_reward": speed_reward, "reach_end": reach_end, "fall_down": fall_down}
+```
+
+This reward function aims to encourage the agent to move forward quickly and reach the end of the terrain while avoiding falling down. The reward is structured into three components:
+
+- Reaching the goal: +10
+- Falling down: -20
+- Speed: exponential increase based on hip and knee speed, capped at 0.5
+
+The idea is to promote fast movement and progress towards the goal while penalizing failure conditions (falling down). The individual reward dictionary includes the three components above, which can be used for visualization or further analysis.

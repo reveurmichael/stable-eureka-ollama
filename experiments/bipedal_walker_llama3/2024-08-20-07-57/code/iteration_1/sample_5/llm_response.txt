@@ -1,0 +1,27 @@
+Based on the provided feedback and policy reflection, I can analyze each component to determine if any improvements can be made.
+
+**Distance**: The values for this component are mostly negative, which makes sense since the goal is to minimize the distance to the goal. However, the maximum value (-301386.80247950554) seems quite large compared to the mean and minimum values. This could indicate that the reward function is not effectively promoting exploration towards the goal.
+
+**Falling**: The values for this component are all zeros, which suggests that the policy is not falling during training (good!). However, having a separate component for "falling" might not be necessary if the agent is not actually falling. This component could be discarded or re-written to encourage more exploration.
+
+Considering these findings, I propose an updated reward function:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)  # Reward closer to the goal
+    penalty_for_falling = 10 if pos[1] < 0 else 0  # Punish for falling down
+
+    reward = np.exp(-distance_to_goal / TERRAIN_STEP) + (penalty_for_falling * 0.5)  # Scale down the falling penalty
+    individual_reward = {'distance': -distance_to_goal, 'falling': penalty_for_falling}
+
+    return reward, individual_reward
+```
+
+In this updated function:
+
+* I've replaced `TERRAIN_LENGTH` with `TERRAIN_STEP` to make the distance-to-goal calculation more meaningful.
+* I've scaled down the falling penalty by a factor of 0.5 to reduce its impact on the overall reward.
+
+By updating the reward function, we can encourage the agent to explore more effectively towards the goal while still penalizing it for falling.
+
+The new reward code is:

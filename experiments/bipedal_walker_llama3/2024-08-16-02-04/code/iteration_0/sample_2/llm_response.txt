@@ -1,0 +1,15 @@
+```python
+def compute_reward(self, pos, action, state):
+    # Reward for reaching the end of the terrain (higher is better)
+    end_of_terrain = -np.exp(-((pos[0] - TERRAIN_LENGTH) / TERRAIN_GRASS)**2 * TEMPERATURE_END)
+
+    # Penalty for falling or getting stuck
+    fall_or_stuck = -np.exp(-(1.0 - 2 * (self.legs[0].ground_contact + self.legs[1].ground_contact)) * TEMPERATURE_FALL)
+
+    # Incentivize movement and progress (higher is better)
+    movement = np.exp(0.5 * state[-12])  # Using the speed of the first leg
+
+    reward = end_of_terrain + fall_or_stuck + movement
+    individual_reward = {'end_of_terrain': end_of_temperature, 'fall_or_stuck': fall_or_stuck, 'movement': movement}
+
+    return reward, individual_reward

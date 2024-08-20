@@ -1,0 +1,47 @@
+Based on the provided policy feedback and analysis tips, here are my findings and suggestions for improving the reward function:
+
+1. `movement`:
+	* The values are mostly around 1670-1680, which suggests that this component is providing a decent signal to the agent.
+	* Since we want to maximize positive rewards, I'll keep this component as is.
+2. `fall`:
+	* All values are 0.0, indicating that the agent is not falling or getting stuck.
+	* This component seems redundant and doesn't provide any useful information to the agent.
+	* Suggest discarding this component.
+
+3. `fitness_score`:
+	* The values are mostly negative, suggesting that the agent is not maximizing fitness scores during training.
+	* Since we want to maximize fitness scores as a ground truth evaluator, I'll re-scale this component to provide more meaningful information to the agent.
+4. `episode_length`:
+	* All values are 1600.0, indicating that the episode length is constant and doesn't provide any useful information to the agent.
+	* Suggest discarding this component.
+
+New Reward Function Proposal:
+
+```
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    terminal = (pos[0] < 0) or self.game_over
+    
+    if terminal:
+        reward = -1.0
+        individual_reward = {"fitness": -100.0}  # high penalty for not maximizing fitness score
+    else:
+        # Encourage forward movement
+        movement_reward = np.exp((pos[0] + VIEWPORT_W / SCALE / 5) / TERRAIN_LENGTH)
+        # Re-scale fitness score to provide meaningful information to the agent
+        fitness_score_reward = (1 - np.abs(fitness_score)) * 50.0
+        reward = movement_reward + fitness_score_reward
+        individual_reward = {"movement": movement_reward, "fitness": fitness_score_reward}
+    
+    return reward, individual_reward
+```
+
+In this new proposal:
+
+* I've kept the `movement` component as is.
+* I've discarded the `fall` and `episode_length` components.
+* I've re-scaled the `fitness_score` to provide a more meaningful signal to the agent. The agent will now receive a higher reward for maximizing fitness scores during training.
+* I've added an individual reward component for `fitness`, which penalizes the agent for not maximizing fitness scores.
+
+This new reward function should better guide the agent towards solving the task, as it encourages forward movement and maximizes fitness scores while minimizing negative rewards.

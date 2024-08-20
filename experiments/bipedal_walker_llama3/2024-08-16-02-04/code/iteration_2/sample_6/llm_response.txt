@@ -1,0 +1,10 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = -abs(action[0]) * (1 + np.exp(-10 * state[2])) - abs(action[1]) * (1 + np.exp(-5 * state[3]))
+    if state[0] > 0.5:
+        reward -= 0.5
+    if pos[0] < 0 or self.game_over:
+        reward = -100
+    return reward, {'progress': -abs(action[0]) * (1 + np.exp(-10 * state[2])), 'smoothness': -abs(action[1]) * (1 + np.exp(-5 * state[3])), 'penalty': 0.5 if state[0] > 0.5 else 0, 'end_penalty': -100}
+```
+Explanation: This reward function aims to encourage the biped to move forward, avoid falling down and getting stuck, while keeping smooth movements. The penalty term for excessive rotation is introduced to prevent the agent from remaining in a certain position. The end penalty ensures that reaching the end of the terrain is the most important goal.

@@ -1,0 +1,20 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    terminal = (pos[0] < 0) or self.game_over
+
+    if terminal:
+        reward = -1.0
+        individual_reward = {"fall": -1.0}
+    else:
+        # Encourage forward movement and higher velocity
+        movement_reward = np.exp((pos[0] + VIEWPORT_W / SCALE / 5) / TERRAIN_LENGTH)
+        vel_x_reward = np.tanh(vel_x)  # Saturate velocity to encourage faster movement
+
+        # Punish falling or getting stuck, but scale down the penalty
+        fall_penalty = max(-np.exp(hull_angle) * 0.1, 0)
+
+        reward = movement_reward + vel_x_reward - fall_penalty
+        individual_reward = {"movement": movement_reward, "vel_x": vel_x_reward, "fall": fall_penalty}
+
+    return reward, individual_reward

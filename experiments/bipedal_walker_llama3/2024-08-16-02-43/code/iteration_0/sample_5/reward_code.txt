@@ -1,0 +1,16 @@
+def compute_reward(self, pos, action, state):
+    distance_reached = pos[0] / (TERRAIN_LENGTH - TERRAIN_GRASS)
+    speed_reward = np.tanh(state[3]) * 10.0
+    stability_reward = 1.0 - np.abs(state[2])
+    falling_penalty = int(pos[1] < 0) * 5.0
+    stuck_penalty = int(any(x for x in state[11:14])) * 5.0
+
+    reward = (distance_reached + speed_reward) * 10.0 - stability_reward - falling_penalty - stuck_penalty
+    individual_reward = {
+        'distance': distance_reached,
+        'speed': speed_reward,
+        'stability': stability_reward,
+        'falling': falling_penalty,
+        'stuck': stuck_penalty
+    }
+    return reward, individual_reward

@@ -1,0 +1,8 @@
+def compute_reward(self, pos, action, state):
+    distance_to_end = pos[0] / TERRAIN_LENGTH
+    falling_punishment = 1 - (min(0.5, abs(pos[1])) + min(0.5, abs(pos[2])))
+    speed_reward = max(action[0], 0) * SPEED_PENALTY
+    stuck_penalty = int(any(state[-12:-6]) > 0.8)
+    
+    reward = (distance_to_end - falling_punishment) * EXPLORE_REWARD + speed_reward + stuck_penalty * PENALTY_STUCK
+    return np.exp(reward / TEMPERATURE), {'distance_to_end': distance_to_end, 'falling_punishment': falling_punishment, 'speed_reward': speed_reward, 'stuck_penalty': stuck_penalty}

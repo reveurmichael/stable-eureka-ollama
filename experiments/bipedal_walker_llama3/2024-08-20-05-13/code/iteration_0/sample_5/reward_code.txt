@@ -1,0 +1,20 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    x_velocity = state[2]
+    y_velocity = state[3]
+
+    # Reward for reaching the end of the terrain
+    end_reward = np.exp((pos[0] - TERRAIN_LENGTH) / (TERRAIN_GRASS * TERRAIN_STEP)) if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0.0
+
+    # Punishment for falling down
+    fall_punishment = np.exp((pos[1] - GROUND_HEIGHT) / (GROUND_HEIGHT + 1.0)) if pos[1] < GROUND_HEIGHT else 0.0
+
+    # Reward for moving forward
+    move_reward = np.exp(x_velocity)
+
+    # Punishment for not moving at all
+    no_move_punishment = np.exp(-abs(y_velocity)) if abs(y_velocity) < 0.05 else 0.0
+
+    reward = end_reward + fall_punishment - move_reward - no_move_punishment
+
+    return reward, {'end_reward': end_reward, 'fall_punishment': fall_punishment, 'move_reward': move_reward, 'no_move_punishment': no_move_punishment}

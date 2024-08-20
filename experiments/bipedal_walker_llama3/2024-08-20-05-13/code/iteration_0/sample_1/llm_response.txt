@@ -1,0 +1,25 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = 0.0
+    individual_reward = {}
+    
+    # Reward for reaching the end of the terrain
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward += REACH_GOAL_REWARD
+        individual_reward['reach_goal'] = REACH_GOAL_REWARD
+    
+    # Penalty for falling down or getting stuck
+    if self.game_over or pos[0] < 0:
+        reward -= FALL_PENALTY
+        individual_reward['fall_penalty'] = -FALL_PENALTY
+    
+    # Reward for moving forward
+    reward += MOVE_FORWARD_REWARD * (1 + np.tanh(0.1 * (TERRAIN_LENGTH - pos[0]))/2)
+    individual_reward['move_forward'] = MOVE_FORWARD_REWARD * (1 + np.tanh(0.1 * (TERRAIN_LENGTH - pos[0]))/2)
+    
+    # Normalize the reward
+    total_steps = len(self.state_history) if hasattr(self, 'state_history') else 0
+    reward /= max(total_steps, 1e-6)
+    
+    return reward, individual_reward
+```

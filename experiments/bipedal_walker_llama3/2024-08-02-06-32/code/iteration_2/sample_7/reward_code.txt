@@ -1,0 +1,19 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = (state[0] + math.pi) % (2 * math.pi)
+    vertical_speed = -state[4]
+    forward_speed = -state[2]
+
+    step_reward = 0.1 if not self.game_over else -5
+    reach_goal_reward = 10 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0
+
+    stable_reward = math.exp(-(hull_angle ** 2 + vertical_speed ** 2) / (10 ** 2))
+    movement_reward = math.exp(forward_speed ** 2 / (1 ** 2))
+
+    reward = step_reward + reach_goal_reward + stable_reward * movement_reward
+    individual_reward = {
+        'step': step_reward,
+        'reach_goal': reach_goal_reward,
+        'stable': stable_reward,
+        'movement': movement_reward
+    }
+    return reward, individual_reward

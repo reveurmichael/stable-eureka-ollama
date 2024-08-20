@@ -1,0 +1,43 @@
+A classic reinforcement learning problem!
+
+The reward function I would suggest for this lunar lander task is a combination of rewards that encourage the agent to successfully land on the helipad while minimizing fuel consumption. Here's my proposal:
+
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    # Reward for landing on the helipad (1.0 if within 0.1m radius)
+    landed = np.abs(state[0]) <= 0.1
+
+    # Penalty for not being awake (i.e., the lander is stuck or crashed)
+    asleep = not state[-1] and not state[-2]
+
+    # Reward for fuel efficiency (negative reward for excessive m_power usage)
+    fuel_efficiency = -m_power
+
+    # Reward for side engines (proportional to s_power usage, but with a cap at 0.5)
+    side_engine_usage = np.clip(s_power, 0, 0.5)
+
+    if terminated:
+        # Terminal reward: -1.0 if failed to land or crashed
+        reward = -1.0
+    else:
+        # Non-terminal reward: sum of all rewards
+        reward = landed * 1.0 + (not asleep) * 0.5 + fuel_efficiency * 0.2 + side_engine_usage * 0.3
+
+    individual_reward = {
+        'landed': landed,
+        'asleep': asleep,
+        'fuel_efficiency': fuel_efficiency,
+        'side_engine_usage': side_engine_usage
+    }
+
+    return reward, individual_reward
+```
+
+This reward function encourages the agent to:
+
+1. Land on the helipad (reward: 1.0 if within a certain radius).
+2. Stay awake and avoid crashing or getting stuck (penalty: -1.0 if asleep).
+3. Conserve fuel by using main engines efficiently (negative reward for excessive m_power usage, capped at 0.5).
+4. Use side engines effectively while landing (reward proportional to s_power usage, capped at 0.5).
+
+Feel free to adjust these weights and thresholds to better suit your specific problem requirements!

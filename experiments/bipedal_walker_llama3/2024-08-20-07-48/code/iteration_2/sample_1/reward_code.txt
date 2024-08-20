@@ -1,0 +1,19 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = (TERRAIN_LENGTH - pos[0]) ** 2 / TERRAIN_LENGTH ** 2
+
+    if self.game_over or pos[0] < 0:
+        return -100.0, {"terminal": True}
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 100.0, {"success": True}
+
+    reward = distance_to_goal
+    individual_reward = {"distance_reward": reward}
+
+    if state[-1]:
+        individual_reward["fall"] = -10.0
+
+    # Introduce a "struggle" component to encourage the agent to avoid struggling
+    struggle_reward = 2.0 * (state[3] > 1.5) - 1.0
+    individual_reward["struggle"] = struggle_reward
+
+    return reward, individual_reward

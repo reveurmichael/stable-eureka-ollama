@@ -1,0 +1,18 @@
+```python
+def compute_reward(self, pos, action, state):
+    speed_reward = -np.square(action[0]**2 + action[1]**2) / 100.0
+    end_reward = np.exp((TERRAIN_LENGTH - TERRAIN_GRASS - pos[0]) * 10.0)
+    
+    if self.game_over:
+        reward = end_reward - 1.0
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward = end_reward
+    else:
+        reward = speed_reward
+    
+    individual_reward = {'speed': speed_reward, 'end': end_reward}
+    
+    return reward, individual_reward
+```
+
+Explanation: The goal is to incentivize the agent to move forward and reach the end of the terrain. I've implemented two main components in the reward function - a "speed" component that encourages fast movement (penalizes actions with high squared speed) and an "end" component that rewards progress towards the end of the terrain. The game_over flag is used to provide a higher reward when the agent reaches the end, and a lower reward if it fails to reach the end or gets stuck.

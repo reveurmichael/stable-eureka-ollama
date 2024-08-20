@@ -1,0 +1,8 @@
+def compute_reward(self, pos, action, state):
+    distance_reward = np.exp((self.hull.position[0] - TERRAIN_LENGTH) / MAX_REACH)
+    velocity_reward = np.exp(0.1 * self.hull.linearVelocity.x)
+    stability_reward = 1.0 if not self.game_over else 0.0
+    reward = distance_reward + velocity_reward + stability_reward
+
+    individual_reward = {"distance": distance_reward, "velocity": velocity_reward, "stability": stability_reward}
+    return reward, individual_reward

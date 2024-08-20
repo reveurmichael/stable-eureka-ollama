@@ -1,0 +1,14 @@
+def compute_reward(self, pos, action, state):
+    distance_reached = pos[0] / (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP
+    distance_penalize = np.exp(-10 * distance_reached)
+    
+    movement_reward = 1 + distance_reached
+    
+    fall_penalty = 1 if pos[1] < 0 else 0
+    stuck_penalty = 1 if action[0] == 0 and action[1] == 0 else 0
+    
+    reward = movement_reward - distance_penalize - fall_penalty - stuck_penalty
+    individual_reward = {'distance_reached': distance_reached, 'movement_reward': movement_reward, 
+                          'fall_penalty': fall_penalty, 'stuck_penalty': stuck_penalty}
+    
+    return reward, individual_reward

@@ -1,0 +1,13 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)  # Reward closer to the goal
+    penalty_for_falling = np.exp(-pos[1]) * 10  # Punish for falling down (stronger penalty)
+
+    # Scale rewards and penalties based on the terrain length
+    scaled_distance = distance_to_goal / TERRAIN_LENGTH
+    scaled_penalty = np.exp(-penalty_for_falling) * 10
+
+    reward = -scaled_distance + scaled_penalty  # Maximize fitness score, minimize negative rewards
+
+    individual_reward = {'distance': -scaled_distance, 'falling': scaled_penalty}
+
+    return reward, individual_reward

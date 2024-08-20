@@ -1,0 +1,12 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_reward = (1 - (pos[0] / TERRAIN_LENGTH)) * REWARD_MAX_DISTANCE
+    speed_reward = action[0] * REWARD_SPEED
+    angle_reward = abs(state[0]) * REWARD_ANGLE
+    terrain_reward = 1 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0
+    stability_reward = np.exp(-abs(action[0])) * REWARD_STABILITY
+    reward = distance_reward + speed_reward + angle_reward + terrain_reward - stability_reward
+    return reward, {'distance': distance_reward, 'speed': speed_reward, 'angle': angle_reward, 'terrain': terrain_reward, 'stability': -stability_reward}
+```
+
+This reward function encourages the agent to move forward as quickly and smoothly as possible while avoiding falling down or getting stuck. The distance reward decreases as the agent moves closer to the end of the terrain, the speed reward increases with the agent's velocity, the angle reward penalizes large deviations from the horizontal position, the terrain reward gives a bonus when the agent reaches the end of the terrain, and the stability reward encourages smooth movements by reducing the penalty for small actions.

@@ -1,0 +1,35 @@
+A reinforcement learning problem!
+
+Here's the reward function I'd propose:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        # Game over or out of bounds, no reward
+        return -100.0, {}
+
+    # Reward based on landing close to the helipad
+    distance_to_helipad = abs(state[1] - self.helipad_y - LEG_DOWN / SCALE)
+    proximity_reward = 10.0 * (1 - distance_to_helipad / (VIEWPORT_H / SCALE / 2))
+
+    # Reward for orientation and velocity
+    angle_error = np.abs(state[4] - np.pi)  # desired orientation is pi
+    angular_velocity_error = np.abs(state[5])  # desired angular velocity is 0
+    velocity_reward = 5.0 * (1 - np.hypot(state[2], state[3]) / (VIEWPORT_W / SCALE / 2))
+
+    individual_reward = {
+        'proximity': proximity_reward,
+        'orientation': 2.0 * (1 - angle_error),
+        'velocity': velocity_reward
+    }
+
+    return max(0, min(proximity_reward + velocity_reward, 50)), individual_reward
+```
+Here's a breakdown of the reward components:
+
+* `proximity`: Rewards the agent for landing close to the helipad.
+* `orientation`: Encourages the agent to orient itself correctly (around π).
+* `velocity`: Favors agents with low velocities.
+
+The maximum and minimum values ensure that the reward stays within a reasonable range. The individual_reward dictionary provides more detailed feedback on each aspect of the agent's performance.
+
+Feel free to adjust or add components based on your specific requirements!

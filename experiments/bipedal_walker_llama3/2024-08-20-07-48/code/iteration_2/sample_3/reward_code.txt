@@ -1,0 +1,19 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = TERRAIN_LENGTH - pos[0]
+    
+    if self.game_over or pos[0] < 0:
+        return -100.0, {"terminal": True}
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 100.0, {"success": True}
+    
+    reward = distance_to_goal / TERRAIN_LENGTH
+    individual_reward = {"distance_reward": reward}
+    
+    if state[-1]:
+        # Discard fall component and add a penalty for failure
+        individual_reward["failure_penalty"] = -10.0
+    elif state[3] > 1.5:
+        # Encourage progress towards fitness score
+        individual_reward["progress_bonus"] = 2.0
+    
+    return reward, individual_reward

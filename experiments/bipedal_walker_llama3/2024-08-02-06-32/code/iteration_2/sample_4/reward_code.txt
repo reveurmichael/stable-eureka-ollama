@@ -1,0 +1,12 @@
+def compute_reward(self, pos, action, state):
+    distance_to_end = abs(pos[0] - (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP)
+    if distance_to_end > 10:
+        temperature = 1.0
+    else:
+        temperature = np.exp(-distance_to_end / 5.0)
+    
+    reward = np.tanh(temperature * 2)  # More distant from the end, more penalty
+    
+    individual_reward = {'moving_forward': 0.5 if action[0] > 0 else -0.5}
+    
+    return reward, individual_reward

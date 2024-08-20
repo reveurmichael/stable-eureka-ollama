@@ -1,0 +1,16 @@
+```python
+def compute_reward(self, pos, action, state):
+    reaching_end = np.sign(pos[0] - TERRAIN_LENGTH + TERRAIN_GRASS) * (1.0 - abs((pos[0] - TERRAIN_LENGTH + TERRAIN_GRASS) / TERRAIN_STEP)) ** 2
+    avoiding_falls = 1.0 - (state[6] + state[14]) / 2.0
+    moving_forward = np.sign(action[0]) * abs(action[0])
+    
+    temperature = 5.0
+    reward_exponential = np.exp((reaching_end + avoiding_falls + moving_forward) / temperature)
+    total_reward = (reward_exponential - 1.0) / temperature
+    
+    individual_rewards = {"reaching_end": reaching_end, "avoiding_falls": avoiding_falls, "moving_forward": moving_forward}
+    
+    return total_reward, individual_rewards
+```
+
+Explanation: The reward function is designed to encourage the biped to reach the end of the terrain while avoiding falls and moving forward. The "reaching_end" component rewards the agent for progressing towards the right end of the terrain. The "avoiding_falls" component encourages the agent to avoid falling down by penalizing states where at least one leg is grounded. The "moving_forward" component rewards the agent for taking actions that move it forward. All components are normalized and transformed using an exponential function with a temperature parameter.

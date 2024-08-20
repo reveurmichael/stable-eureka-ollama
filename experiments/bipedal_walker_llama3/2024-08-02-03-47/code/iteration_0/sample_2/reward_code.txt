@@ -1,0 +1,12 @@
+def compute_reward(self, pos, action, state):
+    # Distance to the right end of terrain as a positive reward
+    reach_distance = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
+    reach_reward = np.exp(reach_distance / REACH_TEMPERATURE)
+
+    # Penalty for falling down or getting stuck
+    fall_penalty = 1.0 if pos[0] < 0 else 0.5 if any([l.fraction > 0.5 for l in self.lidar]) else 0.0
+
+    # Smoothness bonus
+    smooth_bonus = 1.0 - np.abs(state[2]) - np.abs(state[3])
+
+    return reach_reward * (1.0 - fall_penalty) + smooth_bonus, {'reach_distance': reach_distance, 'fall_penalty': fall_penalty, 'smooth_bonus': smooth_bonus}

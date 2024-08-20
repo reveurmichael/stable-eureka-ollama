@@ -1,0 +1,10 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = -abs(action[0]) - abs(action[1]) - abs(action[2]) - abs(action[3])
+    
+    individual_reward = {'velocity_x': -state[6], 'velocity_y': -state[7], 
+                          'distance_to_end': 10.0 - (pos[0] / (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP)}
+    
+    return reward, individual_reward
+```
+This code implements a reward function that encourages the biped to move forward by penalizing actions with high magnitude and rewarding progress towards the end of the terrain. The `reward` is calculated as the negative sum of the absolute values of the actions' components. The `individual_reward` dictionary contains three components: the negative velocities in the x- and y-directions, which discourage the biped from falling or moving backwards; and a term that rewards progress towards the end of the terrain, with higher rewards for closer proximity to the end.

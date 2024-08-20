@@ -1,0 +1,6 @@
+{
+    "0": [
+        "    # Generated code by stable-eureka\n    def compute_reward(self, pos, action, state):\n        distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)  # Reward closer to the goal\n        penalty_for_falling = 10 if pos[1] < 0 else 0  # Punish for falling down\n    \n        reward = np.exp(-distance_to_goal / TERRAIN_LENGTH) + np.exp(-penalty_for_falling)\n        individual_reward = {'distance': -distance_to_goal, 'falling': penalty_for_falling}\n    \n        return reward, individual_reward",
+        -49.01664939623625
+    ]
+}

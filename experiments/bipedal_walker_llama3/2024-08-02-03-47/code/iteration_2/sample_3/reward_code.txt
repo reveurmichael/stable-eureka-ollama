@@ -1,0 +1,8 @@
+def compute_reward(self, pos, action, state):
+    distance_to_end = min((TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0], 0)
+    
+    # More forward, the better. The fewer episode steps, the better.
+    reward = np.exp(temperature1 * (distance_to_end + 0.1)) if not self.game_over else 0
+    individual_reward = {'progress': distance_to_end}
+    
+    return reward, individual_reward

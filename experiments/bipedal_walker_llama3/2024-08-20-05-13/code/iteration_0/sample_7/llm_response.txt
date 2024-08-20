@@ -1,0 +1,25 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    vel_y = state[3]
+
+    # Reward for forward progress and stability
+    progress_reward = np.exp((pos[0] - self.start_pos[0]) / TERRAIN_LENGTH) * 0.1
+    stable_reward = np.exp(-np.abs(hull_angle)) * 0.05
+
+    if vel_y < -0.5:  # punish for falling down
+        fall_reward = -10.0
+    else:
+        fall_reward = 0.0
+
+    # Reward for avoiding obstacles
+    lidar_distances = state[24:]
+    obstacle_reward = sum([np.exp(-dist) * 0.1 for dist in lidar_distances])
+
+    total_reward = progress_reward + stable_reward + fall_reward + obstacle_reward
+
+    individual_reward = {'progress': progress_reward, 'stability': stable_reward, 'falling': fall_reward, 'obstacles': obstacle_reward}
+
+    return total_reward, individual_reward
+```

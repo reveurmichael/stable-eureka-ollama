@@ -1,0 +1,19 @@
+def compute_reward(self, pos, action, state):
+    reward = 0.0
+    individual_reward = {}
+    
+    # positive reward for forward movement and negative reward for backward movement
+    if pos[0] > self.scroll:
+        reward += 10.0 * (1 - math.exp(-(pos[0] - self.scroll) / 5))
+    else:
+        reward -= 2.0 * math.exp((self.scroll - pos[0]) / 3)
+    
+    # penalty for falling
+    if not self.legs[1].ground_contact and not self.legs[3].ground_contact:
+        reward -= 20
+    
+    individual_reward['forward'] = 10.0 * (1 - math.exp(-(pos[0] - self.scroll) / 5))
+    individual_reward['backward'] = 2.0 * math.exp((self.scroll - pos[0]) / 3)
+    individual_reward['falling'] = -20
+    
+    return reward, individual_reward

@@ -1,0 +1,20 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)  # penalty for not reaching end
+    stability_reward = 1 - (state[0]**2 + state[3]**2)  # penalize instability
+    speed_reward = state[2]  # reward high speed
+    fall_penalty = int(not pos[0] > 0)  # penalty for falling down
+    obstacles_penalty = sum(1 for sensor in self.lidar if sensor.fraction < 0.5)
+    
+    individual_rewards = {
+        'distance_to_goal': -distance_to_goal * np.exp(-temperature_distance),
+        'stability_reward': stability_reward,
+        'speed_reward': speed_reward * np.exp(-temperature_speed),
+        'fall_penalty': fall_penalty * np.exp(-temperature_fall),
+        'obstacles_penalty': obstacles_penalty * np.exp(-temperature_obstacles)
+    }
+    
+    total_reward = sum(individual_rewards.values())
+    
+    return total_reward, individual_rewards
+```

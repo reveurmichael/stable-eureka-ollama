@@ -1,0 +1,19 @@
+def compute_reward(self, pos, action, state):
+    reward = 0
+    individual_reward = {}
+
+    if not self.game_over and pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        # Reach the end of terrain
+        reward += 10
+        individual_reward['reach'] = 10
+
+    if pos[0] < 0:
+        # Fall down or stuck at left edge
+        reward -= 20
+        individual_reward['fall_or_stuck'] = -20
+
+    # Moving forward is good, more steps means less reward
+    reward += 5 / (state[2] * VIEWPORT_W / SCALE + state[3] * VIEWPORT_H / SCALE)
+    individual_reward['moving_forward'] = 5 / (state[2] * VIEWPORT_W / SCALE + state[3] * VIEWPORT_H / SCALE)
+
+    return reward, individual_reward

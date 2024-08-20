@@ -1,0 +1,42 @@
+Based on the provided policy feedback and analysis tips, I'll review each existing reward component and propose a new reward function.
+
+**Analysis**
+
+1. **Movement**: The values are similar, with a mean of around 1673. This suggests that the movement reward is not doing much to encourage exploration or exploitation.
+2. **Fall**: All values are 0, indicating that the fall penalty is not being triggered during training.
+3. **Fitness score**: The values are mostly negative, which means the fitness score is not improving during training.
+
+**Proposed New Reward Function**
+
+The goal is to maximize the fitness score while encouraging movement and minimizing falling or getting stuck. Here's a new reward function proposal:
+
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    terminal = (pos[0] < 0) or self.game_over
+
+    if terminal:
+        reward = -1.0
+        individual_reward = {"fall": -1.0}
+    else:
+        # Encourage forward movement and higher velocity
+        movement_reward = np.exp((pos[0] + VIEWPORT_W / SCALE / 5) / TERRAIN_LENGTH)
+        vel_x_reward = np.tanh(vel_x)  # Saturate velocity to encourage faster movement
+
+        # Punish falling or getting stuck, but scale down the penalty
+        fall_penalty = max(-np.exp(hull_angle) * 0.1, 0)
+
+        reward = movement_reward + vel_x_reward - fall_penalty
+        individual_reward = {"movement": movement_reward, "vel_x": vel_x_reward, "fall": fall_penalty}
+
+    return reward, individual_reward
+```
+
+**Changes**
+
+1. I've introduced a new reward component for velocity (`vel_x`) to encourage faster movement.
+2. I've scaled down the fall penalty to make it less dominant in the overall reward calculation.
+3. I've used `np.tanh` to saturate the velocity reward, so the agent doesn't get overly punished for small velocity increases.
+
+This new reward function should better balance exploration and exploitation, while still encouraging movement and minimizing falling or getting stuck.

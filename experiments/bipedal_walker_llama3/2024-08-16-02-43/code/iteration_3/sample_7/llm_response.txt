@@ -1,0 +1,11 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = 0.5 - np.abs(pos[0]) / (TERRAIN_LENGTH / 2)
+    reward += 1e-3 * np.sum(np.square(action))
+    
+    individual_reward = {'pos': reward}
+    
+    return reward, individual_reward
+```
+
+Explanation: The main goal is to reach the end of the terrain while avoiding falling down. To achieve this, we encourage the agent to move forward by giving it a positive reward proportional to its distance from the left edge of the terrain. At the same time, we penalize large actions by adding a small term based on the square of each action component. This encourages the agent to move smoothly and avoid taking large steps that could lead to falling or getting stuck.

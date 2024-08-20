@@ -1,0 +1,12 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH) / TERRAIN_STEP
+    distance_punishment = np.exp(-distance_to_goal)
+    
+    speed_reward = np.exp(action[0] + action[2]) * (1.0 if self.hull.linearVelocity > 0 else 0.5)
+    
+    stability_reward = np.exp(self.hull.angle) * (1.0 if abs(self.hull.angularVelocity) < 10 else 0.5)
+    
+    reward = -distance_punishment + speed_reward + stability_reward
+    individual_reward = {'distance': distance_to_goal, 'speed': speed_reward, 'stability': stability_reward}
+    return reward, individual_reward

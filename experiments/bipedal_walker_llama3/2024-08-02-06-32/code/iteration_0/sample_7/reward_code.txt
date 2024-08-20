@@ -1,0 +1,14 @@
+def compute_reward(self, pos, action, state):
+    x_position = pos[0]
+    
+    if x_position > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        total_reward = 100.0  # reach the end
+        individual_rewards = {"end_reached": 100.0}
+    elif self.game_over or x_position < 0:
+        total_reward = -10.0  # fell down or got stuck
+        individual_rewards = {"fell_down" : -10.0}
+    else:
+        total_reward = 1.0 - abs(2 * state[2] / FPS)  # negative reward for slow movement, more is better
+        individual_rewards = {"speed": 1.0 - abs(2 * state[2] / FPS)}
+    
+    return total_reward, individual_rewards

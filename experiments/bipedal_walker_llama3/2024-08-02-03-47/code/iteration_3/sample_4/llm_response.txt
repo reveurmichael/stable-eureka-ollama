@@ -1,0 +1,22 @@
+```python
+def compute_reward(self, pos, action, state):
+    done_penalty = -5 if self.game_over else 0
+    
+    # Forward movement
+    forward_movement_reward = (pos[0] - self.prev_pos[0]) / TERRAIN_STEP
+    
+    # Smoothness penalty: 
+    smoothness_penalty = abs(state[2]) + abs(state[3])
+    
+    # Leg contact and stability penalties: 
+    leg_contact_penalty = sum([1 if leg_contact else 0 for leg_contact in state[10:14]])
+    
+    # Lidar fraction (how well the robot is avoiding obstacles)
+    lidar_fraction = min(sum(state[22:]) / len(self.lidar), 1.0) * 2
+    
+    reward = forward_movement_reward + smoothness_penalty - leg_contact_penalty - lidar_fraction
+    individual_reward = {'forward_movement': forward_movement_reward, 'smoothness': -smoothness_penalty, 'leg_contact': -leg_contact_penalty, 'lidar_fraction': -lidar_fraction}
+    
+    self.prev_pos = pos
+    
+    return reward, individual_reward```

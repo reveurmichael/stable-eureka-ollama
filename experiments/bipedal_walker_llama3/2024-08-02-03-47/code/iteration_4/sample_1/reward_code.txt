@@ -1,0 +1,13 @@
+def compute_reward(self, pos, action, state):
+    distance_to_end = TERRAIN_LENGTH - pos[0]
+    fall_penalty = np.exp(-np.tanh(pos[1]))
+    speed_reward = np.exp(action[0] * SPEED_HIP + action[2] * SPEED_HIP)
+    if self.game_over:
+        reward = -20
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward = 10
+    else:
+        reward = -1.5 + 0.5 * np.exp(-np.tanh(pos[1])) - 0.05 * distance_to_end
+    return reward, {"distance_reward": -0.05 * distance_to_end,
+                    "fall_penalty": fall_penalty,
+                    "speed_reward": speed_reward}

@@ -1,0 +1,14 @@
+```python
+def compute_reward(self, pos, action, state):
+    reach_end = int(pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP)
+    fall_down = int(pos[1] < 0 or self.game_over)
+    reward_components = {
+        'reach_end': 10.0 * np.exp(reach_end / 5),
+        'avoid_falling': -10.0 * np.exp(fall_down / 5),
+        'move_forward': 2.0 * np.abs(action[0] + action[2]),
+        'stable_movement': 1.5 * (1.0 - abs(state[3]) - abs(state[7]))
+    }
+    total_reward = sum(reward_components.values())
+    return total_reward, reward_components
+```
+The reward function encourages the agent to reach the end of the terrain by awarding a high score when it does so. It also discourages the agent from falling down or getting stuck in one position for too long by subtracting points for those actions. The movement and stability components provide additional encouragement for forward progress and stable movement.

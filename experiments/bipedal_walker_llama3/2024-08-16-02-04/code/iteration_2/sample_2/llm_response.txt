@@ -1,0 +1,14 @@
+```python
+def compute_reward(self, pos, action, state):
+    done = pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP
+    if not done:
+        # positive reward for moving forward and avoiding falling down
+        movement_reward = np.exp(1 / (pos[0] + 10)) if pos[0] < (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0
+        reward = movement_reward - 0.01 * abs(action[0]) - 0.02 * abs(action[1])
+    else:
+        # terminal reward for reaching the end
+        reward = 10 if done else 0
+    return reward, {'movement': movement_reward, 'control': -0.01 * abs(action[0]) - 0.02 * abs(action[1]), 'termination': 10 if done else 0}
+```
+
+Explanation: The reward function encourages the biped to move forward and avoid falling down by giving a positive reward for each step taken towards the end of the terrain, while subtracting small penalties for actions that control the movement (to discourage oscillation). When the biped reaches the end, it receives a large terminal reward.

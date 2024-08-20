@@ -1,0 +1,25 @@
+def compute_reward(self, pos, action, state):
+    total_reward = 0.0
+    individual_rewards = {}
+
+    # penalty for falling down
+    if self.game_over:
+        total_reward -= 1000.0
+    else:
+        # reward for reaching the end of the terrain
+        if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+            total_reward += 500.0
+
+    # penalty for getting stuck
+    if state[-1] == 1.0 and state[10:] == [1.0]*14:
+        total_reward -= 100.0
+
+    # reward for moving forward
+    total_reward += 5.0 * (abs(action[0]) + abs(action[2]))
+
+    individual_rewards['reach_end'] = 500.0 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0.0
+    individual_rewards['avoid_falling'] = -1000.0 if self.game_over else 0.0
+    individual_rewards['avoid_getting_stuck'] = -100.0 if state[-1] == 1.0 and state[10:] == [1.0]*14 else 0.0
+    individual_rewards['move_forward'] = 5.0 * (abs(action[0]) + abs(action[2]))
+
+    return total_reward, individual_rewards

@@ -1,0 +1,36 @@
+```python
+def compute_reward(self, pos, action, state):
+    # Reward structure:
+    # - 1 for each step forward (to avoid standing still)
+    # - 0.5 for each successful step (over obstacle or grass terrain)
+    # - -1 for falling down
+    # - -2 for getting stuck in a certain position
+    reward = 0
+    individual_reward = {}
+
+    if pos[0] > self.prev_pos[0]:  # Moving forward
+        reward += 1
+        individual_reward['moving_forward'] = 1
+
+    obstacle_hit = any([lidar.fraction < 1.0 for lidar in self.lidar])
+    terrain_type = 'grass' if pos[0] > (self.TERRAIN_LENGTH - self.TERRAIN_GRASS) * self.TERRAIN_STEP else 'obstacle'
+    if obstacle_hit:
+        reward += 0.5
+        individual_reward['avoiding_obstacles'] = 0.5
+    elif terrain_type == 'grass':
+        reward += 0.5
+        individual_reward['reaching_grass'] = 0.5
+
+    if pos[1] > self.prev_pos[1]:  # Falling down
+        reward -= 1
+        individual_reward['falling_down'] = -1
+
+    stuck_threshold = 10  # Number of steps without movement
+    if (state[2] * (self.VIEWPORT_W / self.SCALE) / self.FPS).abs() < 0.1 and \
+       (state[3] * (self.VIEWPORT_H / self.SCALE) / self.FPS).abs() < 0.1:
+        reward -= 2
+        individual_reward['getting_stuck'] = -2
+
+    self.prev_pos = pos
+
+    return reward, individual_reward

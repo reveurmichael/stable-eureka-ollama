@@ -1,0 +1,30 @@
+Based on the feedback, here's an analysis of each existing reward component:
+
+1. **distance**: The values are mostly negative and decreasing as the policy improves, which suggests that this component is doing its job in guiding the policy towards the goal. Since the mean value is around -307026, I would suggest scaling it down to make it more comparable to other components.
+
+2. **falling**: All values are 0.0, indicating that the policy is not falling at all during training. This component seems to be doing its job well, so no changes are needed.
+
+3. **fitness_score**: The values are negative and increasing as the policy improves, which suggests that this component is indeed guiding the policy towards better fitness scores. However, since the mean value is around -62.325, I would suggest scaling it up to make it more comparable to other components.
+
+Based on these observations, I propose a new reward function code:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    falling_penalty = 10 if pos[1] < 0 else 0
+    fitness_reward = np.exp(fitness_score / 100)  # Scale up the fitness reward
+    
+    reward = (np.exp(-distance_to_goal / TERRAIN_LENGTH) + 
+              np.exp(-falling_penalty)) * fitness_reward
+    individual_reward = {'distance': -distance_to_goal, 'falling': falling_penalty, 'fitness': fitness_reward}
+    
+    return reward, individual_reward
+```
+
+This new code incorporates the lessons learned from the feedback:
+
+* Scales down the distance component to make it comparable to other components.
+* Keeps the falling component unchanged since it's doing its job well.
+* Scales up the fitness score component to make it more comparable to other components and emphasize its importance in guiding the policy.
+
+Note that this is just a proposal, and you may need to fine-tune the reward function further based on your specific task requirements.

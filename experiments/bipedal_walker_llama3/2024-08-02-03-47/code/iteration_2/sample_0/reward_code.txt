@@ -1,0 +1,7 @@
+def compute_reward(self, pos, action, state):
+    reward = -0.1 * np.square(action).sum()  # penalty for not moving
+    if self.hull.position[0] < 0:
+        reward -= 10  # punishment for falling off the platform
+    elif self.hull.position[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward += 100  # big bonus for reaching the end
+    return reward, {'action_penalty': -0.1 * np.square(action).sum(), 'fall_punishment': -10 if self.hull.position[0] < 0 else 0, 'end_bonus': 100 if self.hull.position[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0}

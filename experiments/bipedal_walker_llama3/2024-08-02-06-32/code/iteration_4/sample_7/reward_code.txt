@@ -1,0 +1,15 @@
+def compute_reward(self, pos, action, state):
+    x, y = pos
+    hull_angle = state[0]
+    velocity_x, velocity_y = state[2], state[3]
+
+    distance_to_end = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - x
+    forward_reward = np.exp(np.clip(-distance_to_end / 10.0, -5.0, 5.0))
+    
+    fall_penalty = 1.0 if velocity_y < 0 else 0.0
+    
+    smoothness_penalty = 1.0 - np.abs(hull_angle) - np.abs(velocity_x)
+    speed_reward = np.exp(np.clip(action[0], -2.0, 2.0)) * np.exp(np.clip(action[1], -2.0, 2.0))
+    
+    reward = forward_reward + fall_penalty + smoothness_penalty + speed_reward
+    return reward, {'forward': forward_reward, 'fall': fall_penalty, 'smoothness': smoothness_penalty, 'speed': speed_reward}

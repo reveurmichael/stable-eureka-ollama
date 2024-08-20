@@ -1,0 +1,29 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    velocity_x = state[2]
+    velocity_y = state[3]
+
+    distance_to_end = abs(pos[0] - TERRAIN_LENGTH)
+    
+    # Positive reward for moving forward and maintaining balance
+    movement_reward = np.exp(temperature_movement * (1 - 0.5 * (abs(action[0]) + abs(action[2]))))
+    balance_reward = np.exp(temperature_balance * (1 - 0.05 * hull_angle**2))
+
+    # Negative reward for falling down or losing balance
+    fall_reward = -np.exp(temperature_fall * velocity_y)
+    loss_balance_reward = -np.exp(temperature_loss_balance * abs(hull_angle))
+
+    # Reward for reaching the end
+    reach_end_reward = np.exp(temperature_reach_end * (1 - distance_to_end / TERRAIN_LENGTH))
+
+    individual_reward = {
+        'movement': movement_reward,
+        'balance': balance_reward,
+        'fall': fall_reward,
+        'loss_balance': loss_balance_reward,
+        'reach_end': reach_end_reward
+    }
+
+    total_reward = movement_reward + balance_reward - fall_reward - loss_balance_reward + reach_end_reward
+
+    return total_reward, individual_reward

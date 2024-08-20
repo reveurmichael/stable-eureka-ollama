@@ -1,0 +1,21 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = TERRAIN_LENGTH - pos[0]
+    
+    if self.game_over or pos[0] < 0:
+        return -100.0, {"terminal": True}
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 100.0, {"success": True}
+    
+    # Encourage progress towards the goal
+    reward = distance_to_goal / TERRAIN_LENGTH
+    
+    # Minimize penalties for falling or struggling
+    if state[-1]:
+        penalty = -5.0
+    elif state[3] > 1.5:
+        penalty = -2.0
+    
+    # Combine rewards and penalties
+    individual_reward = {"distance_reward": reward, "penalty": penalty}
+    
+    return reward + penalty, individual_reward

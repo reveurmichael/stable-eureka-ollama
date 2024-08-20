@@ -1,0 +1,25 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    velocity_x = state[2]
+    distance_traveled = pos[0] - self.starting_position[0]
+    reward_components = {}
+
+    # Reward for moving forward
+    reward_components['forward_progress'] = np.tanh(velocity_x * 5)
+
+    # Penalty for falling or being stuck
+    if pos[0] < 0:
+        reward_components['fall_penalty'] = -10
+    elif distance_traveled > TERRAIN_LENGTH / 2:
+        reward_components['stickiness_penalty'] = -5
+
+    # Reward for reaching the end of the terrain
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward_components['end_reward'] = 10
+
+    total_reward = np.exp(sum(reward_components.values()) / len(reward_components))
+    return total_reward, reward_components
+```
+
+Explanation: The reward function incentivizes the agent to move forward by rewarding its velocity and distance traveled. It also penalizes the agent for falling or being stuck in a certain position. Additionally, it provides a bonus when the agent reaches the end of the terrain. The rewards are normalized using exponential transformation with a temperature parameter.

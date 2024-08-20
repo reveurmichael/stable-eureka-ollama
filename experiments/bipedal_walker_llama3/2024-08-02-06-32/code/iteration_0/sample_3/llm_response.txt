@@ -1,0 +1,18 @@
+```python
+def compute_reward(self, pos, action, state):
+    speed = 0.3 * state[2] + 0.3 * state[3]
+    distance = pos[0]
+    stability = np.exp(1 - (state[5] ** 2 + state[11] ** 2)) * temperature_stability
+    progress = np.exp(distance / TERRAIN_LENGTH) * temperature_progress
+    reward = -abs(action[0]) - abs(action[1]) - abs(action[2]) - abs(action[3])
+    individual_reward = {'speed': speed, 'stability': stability, 'progress': progress, 'reward': reward}
+    return np.exp(reward), individual_reward
+```
+
+Explanation: The goal is to incentivize the biped to move forward quickly and maintain its balance. The reward function combines three components:
+
+* Speed: Encourages the agent to move faster by penalizing actions that slow it down.
+* Stability: Rewards the agent for maintaining its balance, measured by the square of the hip and knee joint angles.
+* Progress: Incentivizes the agent to reach the end of the terrain by rewarding progress made.
+
+The reward is calculated as the negative sum of the absolute values of the four actions. This encourages the agent to use fewer and more moderate actions. The individual reward components are normalized using exponential transformations with temperature parameters for stability and progress.

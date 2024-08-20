@@ -1,0 +1,8 @@
+def compute_reward(self, pos, action, state):
+    reward = 0.1 * (pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP)
+    individual_reward = {"reached_end": reward}
+    if control_speed:
+        reward -= 0.01 * np.sum(np.square(action))
+    else:
+        reward -= 0.005 * np.sum(np.abs(action))
+    return reward, individual_reward

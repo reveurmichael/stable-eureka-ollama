@@ -1,0 +1,12 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)  # Reward closer to the goal
+    penalty_for_falling = 10 if pos[1] < 0 else 0  # Punish for falling down
+
+    reward = np.exp(-distance_to_goal / TERRAIN_LENGTH) + np.exp(-penalty_for_falling)
+    individual_reward = {'distance': -distance_to_goal, 'falling': penalty_for_falling}
+
+    return reward, individual_reward
+```
+
+This reward function encourages the biped to move towards the right end of the terrain and avoid falling down. The `distance_to_goal` term rewards the agent for being closer to the goal, while the `penalty_for_falling` term punishes the agent for falling down. The exponential transformation helps to smooth out the reward and make it more continuous.

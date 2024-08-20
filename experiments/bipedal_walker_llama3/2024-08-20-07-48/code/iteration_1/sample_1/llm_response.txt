@@ -1,0 +1,47 @@
+Based on the provided feedback, here's an analysis and proposal for an improved reward function:
+
+**Distance Reward**: The values are relatively stable, with a mean value around 1562. This suggests that the distance reward component is performing well in guiding the policy towards reaching the goal. Since it's already doing well, we won't modify this component significantly.
+
+**Fall Reward**: The values are all -32000.0, which indicates that the fall penalty is not being triggered during training. This could be due to the agent not falling or the penalty being too severe. We'll keep an eye on this component in future iterations.
+
+**Fitness Score**: The mean value is around -49.6, indicating that the policy is not yet reaching the desired level of fitness. Since we want to maximize the fitness score, we'll aim to modify the reward function to better align with it.
+
+**Reward**: This is a combination of the individual rewards (distance, fall). The values are relatively stable, but the mean value is slightly higher than the distance reward component. This suggests that the policy is learning to balance the distance and other factors.
+
+**Episode Length**: All values are 1600.0, indicating that the agent is completing episodes successfully.
+
+Considering these insights, here's a proposal for an improved reward function:
+
+```python
+def compute_reward(self, pos, action, state):
+    # Encourage the agent to reach the goal while minimizing falls and struggles
+    distance_to_goal = TERRAIN_LENGTH - pos[0]
+    
+    if self.game_over or pos[0] < 0:
+        return -100.0, {"terminal": True}
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 100.0, {"success": True}
+    
+    # Introduce a scaling factor to balance distance and fitness
+    reward_scale = 1.5
+    
+    # Adjust the fall penalty to make it less severe
+    fall_penalty = -5.0 if state[-1] else 0.0
+    
+    # Calculate the struggle penalty based on agent's speed
+    struggle_penalty = -2.0 if state[3] > 1.5 else 0.0
+    
+    reward = (distance_to_goal / TERRAIN_LENGTH) * reward_scale + fall_penalty + struggle_penalty
+    individual_reward = {"distance_reward": (reward_scale * distance_to_goal) / TERRAIN_LENGTH,
+                          "fall": fall_penalty, "struggle": struggle_penalty}
+    
+    return reward, individual_reward
+```
+
+In this proposal:
+
+1. I've introduced a scaling factor (`reward_scale`) to balance the distance reward with the fitness score.
+2. I've reduced the fall penalty from -20.0 to -5.0 to make it less severe and encourage the agent to explore without fearing immediate penalties.
+3. I've also adjusted the struggle penalty based on the agent's speed, making it more dependent on the specific state.
+
+These changes should help the policy learn to balance reaching the goal with minimizing falls and struggles.

@@ -1,0 +1,28 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    velocity_x = state[2]
+    velocity_y = state[3]
+    hip_angle = state[4]
+    knee_angle = state[5]
+    legs_contact = (state[10], state[14])
+    
+    distance_reward = 1 - np.exp(-0.1 * pos[0] / TERRAIN_LENGTH)
+    stability_reward = 1 - np.exp(-0.01 * abs(hull_angle))
+    movement_reward = velocity_x + velocity_y
+    legs_contact_reward = 2 * (legs_contact[0] and legs_contact[1])
+    
+    reward = distance_reward + stability_reward + movement_reward + legs_contact_reward
+    
+    individual_reward = {'distance': distance_reward, 'stability': stability_reward, 'movement': movement_reward, 'legs_contact': legs_contact_reward}
+    
+    return reward, individual_reward
+```
+This reward function aims to encourage the biped to move forward, maintain a stable posture, and avoid getting stuck. The components of the reward are:
+
+- Distance reward: Incentivizes the agent to reach the end of the terrain, with the reward decreasing exponentially as it approaches the goal.
+- Stability reward: Penalizes the agent for having an unstable hull angle, promoting more upright postures.
+- Movement reward: Rewards the agent for moving forward, with a higher reward given to faster movements.
+- Legs contact reward: Incentivizes the agent to have both legs in contact with the ground, ensuring it does not get stuck.
+
+These components are combined and exponentially transformed to provide a smooth and continuous reward signal.

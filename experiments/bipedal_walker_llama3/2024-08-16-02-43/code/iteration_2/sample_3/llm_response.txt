@@ -1,0 +1,8 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = -1.0 + (state[2] ** 2) * 10.0  # penalty for moving slowly
+    individual_reward = {"position": (state[0] / math.pi) * 100.0}  # positive reward for reaching the end
+    return reward, individual_reward
+```
+
+The provided code aims to encourage the biped to move quickly towards the right end of the terrain while avoiding obstacles and getting stuck. The reward is a combination of a penalty term for moving slowly (higher speeds are rewarded) and a positive reward for reaching the end. The individual reward dictionary provides more information about the position and speed of the biped, which can help in understanding its performance.

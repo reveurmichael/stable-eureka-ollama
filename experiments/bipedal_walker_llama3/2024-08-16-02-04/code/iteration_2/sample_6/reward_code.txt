@@ -1,0 +1,7 @@
+def compute_reward(self, pos, action, state):
+    reward = -abs(action[0]) * (1 + np.exp(-10 * state[2])) - abs(action[1]) * (1 + np.exp(-5 * state[3]))
+    if state[0] > 0.5:
+        reward -= 0.5
+    if pos[0] < 0 or self.game_over:
+        reward = -100
+    return reward, {'progress': -abs(action[0]) * (1 + np.exp(-10 * state[2])), 'smoothness': -abs(action[1]) * (1 + np.exp(-5 * state[3])), 'penalty': 0.5 if state[0] > 0.5 else 0, 'end_penalty': -100}

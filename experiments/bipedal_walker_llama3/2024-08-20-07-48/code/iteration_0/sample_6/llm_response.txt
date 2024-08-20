@@ -1,0 +1,29 @@
+```python
+def compute_reward(self, pos, action, state):
+    terminal_reward = 0.0
+    if self.game_over or pos[0] < 0:
+        terminal_reward = -100.0
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        terminal_reward = 100.0
+
+    reward_components = {}
+
+    # Punish falling down
+    if state[-2]:  # legs[1].ground_contact
+        reward_components['fall'] = -10.0
+    else:
+        reward_components['fall'] = 0.0
+
+    # Reward reaching the end
+    if terminal_reward == 100.0:
+        reward_components['end'] = 100.0
+    elif terminal_reward == 0.0:
+        reward_components['end'] = -50.0
+
+    # Smooth movement penalty (try to move forward as much as possible)
+    if action[0] * state[-3] > 0:  # moving forward
+        reward_components['smooth'] = -0.1
+    else:
+        reward_components['smooth'] = 0.0
+
+    return terminal_reward + sum(reward_components.values()), reward_components

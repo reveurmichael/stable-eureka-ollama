@@ -1,0 +1,21 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    falling_punishment = max(0, 1.5 - state[2]) if pos[1] < 0 else 0
+    movement_encouragement = min(1.5, state[2])
+    
+    # Temperature for exponential transformation
+    temperature = 1.0
+    
+    distance_reward = np.exp(-distance_to_goal / 10) * temperature
+    falling_punishment = np.exp(falling_punishment) * temperature
+    movement_encouragement = np.exp(movement_encouragement) * temperature
+    
+    total_reward = distance_reward - falling_punishment + movement_encouragement
+    
+    individual_reward = {'distance_to_goal': distance_reward, 'falling_punishment': falling_punishment, 'movement_encouragement': movement_encouragement}
+    
+    return total_reward, individual_reward
+```
+
+Explanation: This reward function encourages the agent to move forward and reach the goal while avoiding falling down. The `distance_to_goal` reward decreases as the agent approaches the end of the terrain, providing a motivation for moving forward. The `falling_punishment` reward increases when the agent is falling (i.e., its vertical velocity is positive), discouraging this behavior. Finally, the `movement_encouragement` reward increases with the agent's horizontal speed, encouraging it to move as fast as possible while avoiding obstacles.

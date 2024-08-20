@@ -1,0 +1,7 @@
+def compute_reward(self, pos, action, state):
+    done = state[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP or pos[0] < 0
+    reward = 1.0 if not done else -10.0
+    
+    individual_reward = {'distance': (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - state[0], 'fell_down': -float(done)}
+    
+    return reward, individual_reward

@@ -1,0 +1,14 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    distance_to_end = (VIEWPORT_W / SCALE) - pos[0]
+
+    if self.game_over or pos[0] < 0:
+        reward = -1.0
+    else:
+        # Reward the agent for moving forward and avoiding obstacles
+        reward = np.exp(-abs(vel_x)) + np.exp(-distance_to_end)
+
+    individual_reward = {'hull_angle': -np.abs(hull_angle), 'velocity_x': vel_x, 'distance_to_end': distance_to_end}
+
+    return float(reward), individual_reward

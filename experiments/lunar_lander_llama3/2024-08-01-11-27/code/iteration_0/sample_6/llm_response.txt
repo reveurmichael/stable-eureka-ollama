@@ -1,0 +1,49 @@
+A challenge!
+
+After carefully reading the code and understanding the environment, I'll propose a reward function that encourages the agent to learn effective control policies.
+
+**Reward Function**
+
+Let's define the reward `R` as a combination of three components:
+
+1. **Progress towards the goal**: Encourage the agent to move closer to the helipad (target).
+2. **Control and stability**: Reward the agent for maintaining good control and stability, which is crucial for landing safely.
+3. **Penalty for crashes**: Penalize the agent if it crashes or falls too far from the target.
+
+Here's the reward function:
+
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    # Progress towards the goal (target)
+    goal_distance = np.sqrt((state[0] - 0) ** 2 + (state[1] - self.helipad_y - LEG_DOWN / SCALE) ** 2)
+    reward_goal = -goal_distance
+
+    # Control and stability
+    control_reward = 1.0 - abs(state[2]) / FPS - abs(state[3]) / FPS
+    reward_control = np.clip(control_reward, 0, 1)
+
+    # Penalty for crashes (distance from the target)
+    crash_penalty = abs(state[0])
+    if terminated:
+        reward_crash = -crash_penalty
+    else:
+        reward_crash = 0
+
+    # Combine rewards
+    individual_reward = {
+        'goal': reward_goal,
+        'control': reward_control,
+        'crash': reward_crash
+    }
+    total_reward = sum(individual_reward.values())
+    return total_reward, individual_reward
+```
+
+**Notes**
+
+* The `compute_fitness_score` function is not directly used in the reward calculation. I assume it's used for visualization or logging purposes.
+* The `individual_reward` dictionary provides a breakdown of the rewards for each component (goal, control, and crash).
+
+This reward function should encourage the agent to learn effective control policies that bring the lander close to the target while maintaining stability and avoiding crashes.
+
+Let me know if you'd like me to adjust or modify this reward function!

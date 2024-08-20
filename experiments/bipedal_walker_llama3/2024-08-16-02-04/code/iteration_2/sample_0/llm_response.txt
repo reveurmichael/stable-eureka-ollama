@@ -1,0 +1,13 @@
+```python
+def compute_reward(self, pos, action, state):
+    done_reach = 1 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0
+    done_fall = 1 if pos[1] < 0 or self.game_over else 0
+    
+    reward = done_reach + 0.5 * done_fall
+    
+    individual_reward = {'reach': done_reach, 'fall_avoidance': done_fall}
+    
+    return reward, individual_reward
+```
+
+This reward function is designed to encourage the agent to reach the end of the terrain while avoiding falling down or getting stuck in a certain position. The `done_reach` variable is 1 if the agent has reached the end of the terrain and 0 otherwise. The `done_fall` variable is 1 if the agent has fallen down or the game is over, and 0 otherwise. The reward is then calculated as the sum of these two variables, with a bonus for reaching the end and a penalty for falling down.

@@ -1,0 +1,25 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance = abs(pos[0] - TERRAIN_LENGTH)
+    velocity = math.sqrt(state[2]**2 + state[3]**2)
+    
+    # Reward for moving forward and reaching the end
+    reward_component1 = np.exp(-distance / 10.0) * (velocity ** 2.0)
+    
+    # Penalty for falling or getting stuck
+    if pos[0] < 0:
+        reward_component2 = -np.exp(5.0)
+    else:
+        reward_component2 = 0.0
+    
+    # Penalty for not moving
+    if velocity < 0.1:
+        reward_component3 = -np.exp(3.0)
+    else:
+        reward_component3 = 0.0
+    
+    total_reward = reward_component1 + reward_component2 + reward_component3
+    return total_reward, {'forward_progress': reward_component1, 'falling_penalty': reward_component2, 'stagnation_penalty': reward_component3}
+```
+
+Explanation: The goal is to encourage the biped to move forward and reach the end of the terrain while avoiding falling or getting stuck. We use a combination of rewards and penalties for this. A positive reward is given for moving forward (distance-based) and increasing velocity, with an exponential increase in the reward as the agent moves closer to the end. A penalty is given for falling off the edge, which strongly discourages this behavior. Additionally, a small penalty is given if the agent does not move at all, encouraging it to continue making progress.

@@ -196,11 +196,17 @@ class RLTrainer:
                                              logger=logger,
                                              name=self._name)
 
+        # if self._pretrained_model is None:
+        #     model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
+        # else:
+        #     model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
+        #                                                                     **self._params)
+
         if self._pretrained_model is None:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
         else:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
-                                                                            **self._params)
+                                                                            **self._params, strict=False)
 
         if self._config['training'].get('torch_compile', False):
             torch.set_float32_matmul_precision('high')

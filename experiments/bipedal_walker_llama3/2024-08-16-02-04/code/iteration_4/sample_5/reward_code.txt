@@ -1,0 +1,4 @@
+def compute_reward(self, pos, action, state):
+    reward = -1 * (abs(action[0]) + abs(action[1]) + abs(action[2]) + abs(action[3]))  # penalty for moving
+    individual_reward = {'moving': -1 * (abs(action[0]) + abs(action[1]) + abs(action[2]) + abs(action[3])), 'distance_to_end': np.exp((TERRAIN_LENGTH - pos[0] / TERRAIN_STEP) / 10)}
+    return reward, individual_reward

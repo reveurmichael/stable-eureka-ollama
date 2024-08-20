@@ -1,0 +1,9 @@
+def compute_reward(self, pos, action, state):
+    terminal = pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP or self.game_over or pos[0] < 0
+    if terminal:
+        reward = 1.0  # +10 for reaching the end of the terrain
+        individual_reward = {"reached_end": 1.0, "fell_off": -5.0}
+    else:
+        reward = np.exp(-(state[3]**2 + state[4]**2) / (5**2)) * 0.5 + np.exp((pos[0] - TERRAIN_LENGTH/2)**2/(10**2)) * 0.1
+        individual_reward = {"distance_to_end": np.exp((pos[0] - TERRAIN_LENGTH/2)**2/(10**2)) * 0.1, "stability": np.exp(-(state[3]**2 + state[4]**2) / (5**2)) * 0.5}
+    return reward, individual_reward

@@ -1,0 +1,14 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_end = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
+    
+    falling_reward = np.exp((pos[1] + LIDAR_RANGE) / 2.0)
+    
+    reward_speed = np.clip(3 * action[0] ** 2, 0, 10)
+    
+    reward_components = {"distance_to_end": distance_to_end, "falling_reward": falling_reward, "reward_speed": reward_speed}
+    
+    return sum(np.exp([x for x in reward_components.values()])) - 5, reward_components
+```
+
+This code calculates a reward based on the biped's position and action. The main components of the reward are: the distance to the end of the terrain (penalized for not reaching it), the height above the ground (encouraged to stay high), and the speed of the biped (rewarded for fast movement).

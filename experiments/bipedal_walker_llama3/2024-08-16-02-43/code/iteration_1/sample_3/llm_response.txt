@@ -1,0 +1,15 @@
+```python
+def compute_reward(self, pos, action, state):
+    done = False if pos[0] < TERRAIN_LENGTH else True
+    
+    if done:
+        reward = 10.0 * (1 - (pos[0] / TERRAIN_LENGTH)) ** 2
+    else:
+        reward = -0.05
+    
+    individual_reward = {'reward': reward, 'done': done}
+    
+    return reward, individual_reward
+```
+
+Explanation: The goal is to make the biped reach the right end of the terrain and avoid falling down or getting stuck while surpassing obstacles. The reward function reflects this by providing a positive reward for reaching the end (inversely proportional to the distance from the start) and a negative reward for moving forward. When the episode ends, the reward is calculated as the inverse square of the remaining distance from the start.

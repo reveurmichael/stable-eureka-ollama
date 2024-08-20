@@ -1,0 +1,18 @@
+```python
+def compute_reward(self, pos, action, state):
+    dist_to_end = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
+    speed = np.sqrt(state[2]**2 + state[3]**2)
+    reward = 10.0 - abs(action[0]) - abs(action[1])
+    
+    if dist_to_end > 0:
+        if speed > 0.5:
+            reward += 5.0
+        else:
+            reward -= 2.0
+    
+    if self.game_over or pos[0] < 0:
+        reward -= 10.0
+    
+    individual_reward = {'distance_to_end': dist_to_end, 'speed': speed, 'reward': reward}
+    
+    return reward, individual_reward

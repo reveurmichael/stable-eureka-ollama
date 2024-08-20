@@ -1,0 +1,33 @@
+Based on the provided feedback and analysis guidelines, I'll analyze each existing reward component:
+
+1. **distance**: The values are quite high in absolute value (-310569.5 to -301386.8), which suggests that this component should be scaled down significantly.
+
+2. **falling**: All values are 0.0, indicating that the policy is not falling during training. This component doesn't seem to affect the policy's behavior much and can be discarded or re-written to make it more meaningful.
+
+3. **fitness_score**: The values range from -80.1187106930577 to -44.05890569809044, which indicates that this component should be scaled down significantly.
+
+4. **reward**: The values are relatively high (2206.2119849324226 to 2223.978016257286), suggesting that the policy is generally rewarded for its actions.
+
+To improve the reward function, I'll keep the main ideas from the original code and make some adjustments:
+
+**New Reward Function:**
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)  # Reward closer to the goal
+    falling_penalty = int(pos[1] < 0)  # Punish for falling down (binary penalty)
+    
+    # Scale down large components and add a bonus term for high fitness scores
+    reward = -(distance_to_goal / TERRAIN_LENGTH) + falling_penalty - (fitness_score / 100.0)
+    
+    individual_reward = {'distance': -distance_to_goal, 'falling': falling_penalty}
+    
+    return reward, individual_reward
+```
+Here's what I changed:
+
+* Scaled down the `distance` and `fitness_score` components to make them less dominant in the overall reward.
+* Replaced the exponential function with a simple scaling (division by `TERRAIN_LENGTH`) for the `distance` component.
+* Introduced a binary penalty (`falling_penalty`) for falling, as the original values were all 0.0.
+* Added a bonus term `- (fitness_score / 100.0)` to encourage high fitness scores.
+
+This new reward function should better balance the exploration-exploitation trade-off and encourage the policy to move closer to the goal while avoiding falls and maximizing fitness scores.

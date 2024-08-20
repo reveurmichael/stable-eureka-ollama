@@ -1,0 +1,9 @@
+```python
+def compute_reward(self, pos, action, state):
+    done = state[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP or self.game_over or pos[0] < 0
+    reward = -1 if not done else 10
+    individual_reward = {'reach_end': 10 if done else 0, 'avoid_fall': -1, 'move_forward': action.sum() / 4.0}
+    return reward, individual_reward
+```
+
+This code calculates a reward based on the agent's performance in navigating to the end of the terrain while avoiding falling or getting stuck. The reward is negative for each step taken unless the goal is reached, at which point it becomes positive with a high value. Additionally, the 'individual_reward' dictionary provides more detailed information about the reward components: 'reach_end' for reaching the end of the terrain, 'avoid_fall' for avoiding falling or getting stuck, and 'move_forward' for moving forward without getting stuck.

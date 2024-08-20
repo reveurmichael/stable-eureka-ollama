@@ -1,0 +1,18 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    x_velocity = state[2]
+
+    # Reward for moving forward (faster the better)
+    move_reward = np.exp(2 * x_velocity)
+
+    # Punish falling or stuck in place
+    fall_punishment = np.exp(-10 * abs(hull_angle))
+    
+    # Encourage reaching end of terrain
+    reach_reward = np.exp(5 * (1 - (pos[0] / TERRAIN_LENGTH)))
+
+    reward = move_reward + reach_reward - fall_punishment
+
+    individual_reward = {'move': move_reward, 'reach': reach_reward, 'fall': fall_punishment}
+
+    return reward, individual_reward

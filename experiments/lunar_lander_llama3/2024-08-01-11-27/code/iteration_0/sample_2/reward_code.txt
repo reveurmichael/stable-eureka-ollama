@@ -1,0 +1,26 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define some constants
+    LANDING_BONUS = 10.0
+    VELOCITY_PENALTY = -0.5
+    ANGLE_PENALTY = -1.0
+
+    # Calculate the distance to the helipad
+    distance_to_helipad = abs(state[0]) + abs(state[1])
+
+    # Check if the agent has landed successfully (distance to helipad < 0.1)
+    if distance_to_helipad < 0.1:
+        return LANDING_BONUS, {"landing_bonus": LANDING_BONUS}
+
+    # Calculate the velocity penalty
+    velocity_reward = VELOCITY_PENALTY * (state[2] ** 2 + state[3] ** 2)
+
+    # Calculate the angle penalty
+    angle_reward = ANGLE_PENALTY * abs(state[4])
+
+    # Calculate the overall reward
+    reward = velocity_reward + angle_reward
+
+    if terminated:
+        return -100.0, {"game_over": True}
+
+    return reward, {"velocity_penalty": velocity_reward, "angle_penalty": angle_reward}

@@ -1,0 +1,33 @@
+Based on the analysis of the policy feedback, I propose the following improved reward function:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = TERRAIN_LENGTH - pos[0]
+    
+    if self.game_over or pos[0] < 0:
+        return -100.0, {"terminal": True}
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 100.0, {"success": True}
+    
+    reward = distance_to_goal / TERRAIN_LENGTH
+    individual_reward = {"distance_reward": max(0, min(reward, 1))}  # Clip the distance reward to [0, 1]
+    
+    if state[-1]:
+        individual_reward["fall"] = -20.0
+    elif state[3] > 1.5:
+        individual_reward["struggle"] = -10.0
+    
+    return max(0, sum(individual_reward.values())), {"success": individual_reward.get("success", False), "terminal": individual_reward.get("terminal", False)}
+```
+
+Key changes:
+
+1. The `distance_reward` is clipped to the range [0, 1] to prevent large rewards that may not be desirable.
+2. The overall reward is now the sum of all individual reward components, with a maximum value of 100. This allows the agent to balance multiple objectives and prioritize them correctly.
+
+These changes aim to improve the policy's performance by:
+
+* Encouraging the agent to move towards the goal (distance_reward) while preventing it from getting stuck in local optima.
+* Discouraging falls and struggles, which can lead to negative outcomes.
+
+The new reward function is designed to promote exploration and learning, as well as optimize the agent's behavior for achieving the desired outcome.

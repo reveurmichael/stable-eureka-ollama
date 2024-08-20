@@ -1,0 +1,10 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    vel_y = state[3]
+    done = (pos[0] < 0 or self.game_over)
+    
+    reward = -1.0 if not done else 10.0
+    individual_reward = {"velocity": -abs(vel_x), "falling": -10.0 if pos[0] < 0 else 0.0, "reached_end": 10.0 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0.0}
+    
+    return reward, individual_reward

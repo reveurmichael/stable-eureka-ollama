@@ -1,0 +1,36 @@
+As a reward engineer, my goal is to create effective reward functions that guide the agent's behavior towards desirable actions.
+
+In this case, I assume the reward function `compute_reward` should encourage the agent to navigate the lander safely and efficiently. Here's a suggested implementation:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        return -100.0, {'game_over': True}
+
+    # Reward for moving towards the target (helipad)
+    distance_to_target = np.linalg.norm(np.array([state[1], 0]) - self.helipad_y)
+    reward = 10.0 - distance_to_target
+
+    # Penalty for losing altitude
+    if state[1] < self.helipad_y:
+        reward -= 5.0 * (self.helipad_y - state[1])
+
+    # Penalty for using too much main engine power
+    if m_power > 0.2:
+        reward -= 10.0 * m_power
+
+    # Bonus for orienting the lander correctly
+    orientation_error = abs(state[4])
+    if orientation_error < 0.1:
+        reward += 5.0
+
+    return reward, {'main_engine_power': m_power, 'side_engine_power': s_power}
+```
+
+In this implementation:
+
+* The reward is structured into four components: moving towards the target (helipad), not losing altitude, using minimal main engine power, and orienting the lander correctly.
+* The reward values are intentionally set to be relatively small to encourage exploration and learning. You can adjust these values based on your specific task requirements.
+* The `individual_reward` dictionary allows for additional information to be stored and returned along with the reward value.
+
+This is just one possible implementation of a reward function, and you may need to adjust it or design a new one based on your specific problem and agent's behavior.

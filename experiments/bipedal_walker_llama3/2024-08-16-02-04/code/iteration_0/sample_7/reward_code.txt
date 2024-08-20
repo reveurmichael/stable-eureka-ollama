@@ -1,0 +1,16 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    vel_y = state[3]
+
+    # Positive reward for reaching the end of the terrain and moving forward
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 10.0, {'reached_end': 10.0}
+
+    # Penalty for falling down or getting stuck
+    if pos[1] < 0 or state[-1] == 0.0 or state[-4] == 0.0:
+        return -5.0, {'fell_down': -5.0}
+
+    # Reward for moving forward and keeping the hull angle close to horizontal
+    reward = vel_x * 2.0 + np.exp(-((hull_angle - math.pi/2) / (math.pi/4)) ** 2)
+    return reward, {'moving_forward': vel_x * 2.0, 'hull_angle': reward}

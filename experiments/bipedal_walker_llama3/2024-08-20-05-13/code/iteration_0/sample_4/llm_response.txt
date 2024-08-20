@@ -1,0 +1,12 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_reached = pos[0] / TERRAIN_LENGTH
+    velocity = (state[2]**2 + state[3]**2)**0.5
+    stability = np.exp(-1 * ((state[4]-state[8])**2 + (state[10]-state[14])**2))
+
+    reward = 0.9 * distance_reached - 0.05 * velocity - 0.02 * (1 - stability)
+    individual_reward = {'distance': distance_reached, 'velocity': velocity, 'stability': stability}
+
+    return reward, individual_reward
+```
+This code calculates a reward function for the biped's navigation task in a 2D environment. The reward is composed of three components: distance reached towards the right end of the terrain, velocity (penalizing high velocities), and stability (rewards smooth movement). The reward is normalized to be between -1 and 1 using exponential transformation with temperature parameter.

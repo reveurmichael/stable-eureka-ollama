@@ -1,0 +1,10 @@
+def compute_reward(self, pos, action, state):
+    velocity = state[2]
+    if self.game_over or pos[0] < 0:
+        reward = -1.0
+        individual_reward = {'game_over': -1.0}
+    else:
+        reward = np.exp((TERRAIN_LENGTH - pos[0]) / TERRAIN_STEP) * (velocity + 1)
+        individual_reward = {'progress': np.exp((TERRAIN_LENGTH - pos[0]) / TERRAIN_STEP), 'velocity': velocity}
+
+    return reward, individual_reward

@@ -1,0 +1,27 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
+    if distance_to_goal > 0:
+        stepwise_distance_reward = np.exp(-distance_to_goal / TERRAIN_LENGTH) * 10
+    else:
+        stepwise_distance_reward = 0
+
+    if not self.game_over and action.sum() > 0:  # Ensure some movement to avoid getting stuck
+        stability_reward = np.exp(-abs(action).sum() / 2)
+    else:
+        stability_reward = 1
+
+    if pos[1] < TERRAIN_HEIGHT - TERRAIN_GRASS:  # Avoid falling down
+        fall_penalty = -10
+    else:
+        fall_penalty = 0
+
+    if self.game_over:  # Reaching the end or game over
+        terminal_reward = 100
+    else:
+        terminal_reward = 0
+
+    reward = stepwise_distance_reward + stability_reward + fall_penalty + terminal_reward
+    individual_reward = {'distance': stepwise_distance_reward, 'stability': stability_reward, 'fall': fall_penalty, 'terminal': terminal_reward}
+    return reward, individual_reward
+```

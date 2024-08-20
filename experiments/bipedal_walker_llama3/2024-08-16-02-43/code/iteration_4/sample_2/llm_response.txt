@@ -1,0 +1,8 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = -0.1 + (pos[0] / TERRAIN_LENGTH) * 10.0 - 0.01 * abs(action[0]) - 0.01 * abs(action[1])
+    individual_reward = {'progress': (pos[0] / TERRAIN_LENGTH) * 10.0, 'action_penalty': 0.02 * abs(action[0]) + 0.02 * abs(action[1]), 'other': -0.1}
+    return reward, individual_reward
+```
+
+This reward function provides a balance between progressing forward and taking smooth actions. The first component is the progress towards the right end of the terrain, which encourages the agent to move forward as much as possible. The second component penalizes large actions in order to promote smoother movements. The third component is a constant penalty that discourages the agent from simply staying in place.

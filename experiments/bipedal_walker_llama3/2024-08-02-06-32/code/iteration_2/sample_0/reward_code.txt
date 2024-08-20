@@ -1,0 +1,10 @@
+def compute_reward(self, pos, action, state):
+    reaching_goal = -0.1 * (1 - (pos[0] / TERRAIN_LENGTH))
+    avoiding_falling = 0.2 if pos[1] > 0 else -10
+    moving_forward = -0.5 * (action[0]**2 + action[1]**2)
+    reward_components = {
+        'reaching_goal': reaching_goal,
+        'avoiding_falling': avoiding_falling,
+        'moving_forward': moving_forward
+    }
+    return np.exp(np.sum(list(reward_components.values())) / 3.0), reward_components

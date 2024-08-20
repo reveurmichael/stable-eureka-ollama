@@ -1,0 +1,21 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    hip_angles = [state[4], state[8]]
+    knee_angles = [state[5], state[9]]
+    
+    # Reward for reaching the end of the terrain
+    reach_reward = np.exp((pos[0] - TERRAIN_LENGTH + TERRAIN_GRASS) * TERRAIN_STEP / 10.0)
+    
+    # Penalty for falling down or getting stuck
+    penalty = 1.0 - np.exp(-abs(pos[0]) / 5.0)
+    
+    # Reward for moving forward and avoiding obstacles
+    movement_reward = np.exp((VIEWPORT_W / SCALE) * state[2] / FPS / 10.0)
+    
+    # Smoothness of the biped's movement
+    smoothness = 1.0 - np.sum([abs(angle) for angle in hip_angles + knee_angles]) / len(hip_angles + knee_angles)
+    
+    # Total reward
+    total_reward = reach_reward * temperature * (1 - penalty) * movement_reward * smoothness
+    
+    return total_reward, {'reach': reach_reward, 'penalty': penalty, 'movement': movement_reward, 'smoothness': smoothness}

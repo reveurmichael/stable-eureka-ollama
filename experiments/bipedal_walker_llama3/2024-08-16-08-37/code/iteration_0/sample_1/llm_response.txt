@@ -1,0 +1,17 @@
+```python
+def compute_reward(self, pos, action, state):
+    speed_reward = 0.1 * (state[2] + state[3])  # Reward for moving forward quickly
+    
+    if not self.game_over and pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        end_reward = 10
+    else:
+        end_reward = 0
+    
+    fall_penalty = -5 if state[2] < -1 or state[3] < -1 else 0
+    
+    stuck_penalty = -1 if abs(action[0]) + abs(action[1]) + abs(action[2]) + abs(action[3]) < 0.01 else 0
+    
+    return end_reward + speed_reward + fall_penalty + stuck_penalty, {"speed": speed_reward, "end": end_reward, "fall": fall_penalty, "stuck": stuck_penalty}
+```
+
+Explanation: The reward function aims to encourage the agent to move forward quickly and efficiently while avoiding falling or getting stuck. It rewards the agent for moving quickly (speed_reward) and reaching the end of the terrain (end_reward). However, it penalizes the agent for falling down (fall_penalty) or getting stuck in a certain position (stuck_penalty).

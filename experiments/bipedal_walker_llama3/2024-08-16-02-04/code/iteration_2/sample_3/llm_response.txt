@@ -1,0 +1,12 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_reward = np.exp((self.hull.position[0] - TERRAIN_LENGTH) / MAX_REACH)
+    velocity_reward = np.exp(0.1 * self.hull.linearVelocity.x)
+    stability_reward = 1.0 if not self.game_over else 0.0
+    reward = distance_reward + velocity_reward + stability_reward
+
+    individual_reward = {"distance": distance_reward, "velocity": velocity_reward, "stability": stability_reward}
+    return reward, individual_reward
+```
+
+This reward function is designed to encourage the biped to move forward quickly and avoid falling down. The `distance_reward` term increases exponentially as the biped approaches the end of the terrain, providing a strong incentive to reach the goal. The `velocity_reward` term rewards high speeds, but with a smaller exponential growth rate to discourage reckless movements. The `stability_reward` term is 1 when the biped is not game over and 0 otherwise, ensuring that the agent does not get stuck in a certain position.

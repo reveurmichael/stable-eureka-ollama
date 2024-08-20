@@ -1,0 +1,15 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    velocity = (state[3] + state[4]) / 2.0
+    
+    # Punish for falling or getting stuck
+    if state[1] > 0.5:
+        reward = -10.0
+    elif action[0] == 0 and action[1] == 0 and action[2] == 0 and action[3] == 0:  # Agent is idle
+        reward = -5.0
+    
+    # Reward for forward movement
+    else:
+        reward = np.exp(-distance_to_goal / TERRAIN_LENGTH) * velocity
+    
+    return reward, {'movement': reward}

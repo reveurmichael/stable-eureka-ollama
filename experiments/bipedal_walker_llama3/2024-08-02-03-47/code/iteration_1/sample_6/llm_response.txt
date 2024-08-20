@@ -1,0 +1,17 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    reached_end = pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP
+    
+    reward = 10.0 * (1.0 - np.exp(-0.01 * (np.abs(hull_angle)) ** 2)) + \
+             5.0 * (1.0 - np.exp(-0.005 * vel_x ** 2))
+    
+    if reached_end:
+        reward += 100.0
+    
+    individual_reward = {'hull_angle': hull_angle, 'velocity': vel_x}
+    return reward, individual_reward
+```
+
+Explanation: This reward function encourages the biped to maintain a stable hull angle and move at a reasonable velocity towards the end of the terrain. The first term rewards the agent for keeping its hull angle close to zero (horizontal), while the second term incentivizes it to move at moderate speeds. The agent receives a bonus when it reaches the end of the terrain, which encourages it to strive for this goal rather than getting stuck in a particular position.

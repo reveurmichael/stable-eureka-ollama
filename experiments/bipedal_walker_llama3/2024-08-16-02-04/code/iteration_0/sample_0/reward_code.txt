@@ -1,0 +1,20 @@
+def compute_reward(self, pos, action, state):
+    x, y = pos
+    x_goal = TERRAIN_LENGTH * TERRAIN_STEP
+    
+    # Reward for reaching the goal
+    goal_reward = np.exp(-(x - x_goal) / REACH_GOAL_TEMP) if x >= (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0.0
+    
+    # Penalty for falling down
+    fall_penalty = -10.0 if y < 0 else 0.0
+    
+    # Reward for moving forward
+    move_reward = np.exp(-(x_goal - x) / MOVE_FORWARD_TEMP)
+    
+    # Penalty for not moving (stuck)
+    stuck_penalty = -5.0 if action[0] == 0 and action[1] == 0 else 0.0
+    
+    reward = goal_reward + fall_penalty + move_reward + stuck_penalty
+    individual_reward = {'goal_reached': goal_reward, 'fell_down': fall_penalty, 'moved_forward': move_reward, 'stuck': stuck_penalty}
+    
+    return reward, individual_reward

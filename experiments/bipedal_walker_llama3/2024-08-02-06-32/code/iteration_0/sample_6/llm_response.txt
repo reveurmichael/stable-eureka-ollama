@@ -1,0 +1,17 @@
+```python
+def compute_reward(self, pos, action, state):
+    # Ensure the biped reaches the end of the terrain (more important than being smooth)
+    distance_to_end = abs(pos[0] - TERRAIN_LENGTH * TERRAIN_STEP)
+    reaching_the_end = -1 + np.exp(-distance_to_end / 10.0)  # Temperature parameter: 10.0
+
+    # Penalize for not moving forward
+    progress_reward = 1 - np.exp(-state[2])  # Temperature parameter: 1.0
+
+    # Encourage stable movement
+    stability_reward = np.exp(state[3] * 2.0)  # Temperature parameter: 2.0
+
+    # Add a small bonus for reaching the end and penalize for not moving forward
+    total_reward = reaching_the_end + progress_reward + stability_reward - 1
+
+    individual_rewards = {'reaching_the_end': reaching_the_end, 'progress': progress_reward, 'stability': stability_reward}
+    return total_reward, individual_rewards

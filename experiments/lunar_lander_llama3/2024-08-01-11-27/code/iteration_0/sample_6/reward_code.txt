@@ -1,0 +1,24 @@
+def compute_reward(state, m_power, s_power, terminated):
+    # Progress towards the goal (target)
+    goal_distance = np.sqrt((state[0] - 0) ** 2 + (state[1] - self.helipad_y - LEG_DOWN / SCALE) ** 2)
+    reward_goal = -goal_distance
+
+    # Control and stability
+    control_reward = 1.0 - abs(state[2]) / FPS - abs(state[3]) / FPS
+    reward_control = np.clip(control_reward, 0, 1)
+
+    # Penalty for crashes (distance from the target)
+    crash_penalty = abs(state[0])
+    if terminated:
+        reward_crash = -crash_penalty
+    else:
+        reward_crash = 0
+
+    # Combine rewards
+    individual_reward = {
+        'goal': reward_goal,
+        'control': reward_control,
+        'crash': reward_crash
+    }
+    total_reward = sum(individual_reward.values())
+    return total_reward, individual_reward

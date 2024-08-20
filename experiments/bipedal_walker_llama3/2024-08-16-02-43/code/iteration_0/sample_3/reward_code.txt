@@ -1,0 +1,9 @@
+def compute_reward(self, pos, action, state):
+    distance_reached = (pos[0] - TERRAIN_LENGTH) / (TERRAIN_LENGTH * TERRAIN_STEP)
+    speed = abs(state[2]) + abs(state[3])
+    
+    reward = -1.0 + 0.5 * np.exp(-temperature_distance * distance_reached) + temperature_speed * np.exp(-temperature_speed * speed)
+    
+    individual_reward = {'distance': -1.0 + 0.5 * np.exp(-temperature_distance * distance_reached), 'speed': temperature_speed * np.exp(-temperature_temperature_speed * speed)}
+    
+    return reward, individual_reward

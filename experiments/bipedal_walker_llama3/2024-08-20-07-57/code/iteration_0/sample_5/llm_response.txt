@@ -1,0 +1,30 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    velocity_x = state[2]
+    velocity_y = state[3]
+
+    # Reward for moving forward
+    forward_reward = np.exp(velocity_x / SPEED_HIP) * 10.0
+
+    # Penalty for falling or getting stuck
+    fall_penalty = -100.0 if pos[1] < 0 else 0.0
+    stuck_penalty = -50.0 if velocity_x == 0 and velocity_y == 0 else 0.0
+
+    # Reward for reaching the end of the terrain
+    end_reward = np.exp((pos[0] - TERRAIN_LENGTH) / (TERRAIN_GRASS * TERRAIN_STEP)) * 100.0 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0.0
+
+    # Penalty for high hull angles
+    angle_penalty = -5.0 if np.abs(hull_angle) > 0.2 else 0.0
+
+    reward = forward_reward + fall_penalty + stuck_penalty + end_reward + angle_penalty
+
+    individual_reward = {
+        'forward': forward_reward,
+        'fall': fall_penalty,
+        'stuck': stuck_penalty,
+        'end': end_reward,
+        'angle': angle_penalty
+    }
+
+    return reward, individual_reward

@@ -1,0 +1,45 @@
+Based on the provided policy feedback, I'll analyze each existing reward component and propose an improved reward function.
+
+**Analysis**
+
+1. **movement**: The values are relatively consistent, with a slight increase over time. This suggests that the current movement reward is working well.
+2. **fall**: The values are all zeros, indicating that the agent has not fallen during training. This could be due to the fact that the fall penalty is only applied when the hull angle is negative, which might not be sufficient to encourage the agent to move forward.
+3. **fitness_score**: The values are decreasing over time, suggesting that the current reward function is not aligned with the fitness score.
+
+**Improved Reward Function Proposal**
+
+To improve the reward function, I'll focus on encouraging the agent to move forward while minimizing falling and maximizing the fitness score.
+
+Here's a modified version of the existing reward function:
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    vel_x = state[2]
+    terminal = (pos[0] < 0) or self.game_over
+
+    if terminal:
+        reward = -1.0
+        individual_reward = {"fall": -1.0}
+    else:
+        # Encourage forward movement and velocity
+        movement_reward = np.exp((pos[0] + VIEWPORT_W / SCALE / 5) / TERRAIN_LENGTH) * vel_x
+        # Punish falling or getting stuck
+        fall_penalty = max(-np.exp(hull_angle), 0)
+        # Reward fitness score progress
+        fitness_progress = -abs(fitness_score(state) - self.prev_fitness_score)
+        reward = movement_reward + fitness_progress - fall_penalty
+        individual_reward = {"movement": movement_reward, "fall": fall_penalty, "fitness": fitness_progress}
+        
+        self.prev_fitness_score = fitness_score(state)
+
+    return reward, individual_reward
+```
+**Changes**
+
+1. I've added a term to the movement reward that encourages velocity (`vel_x`) in addition to forward progress.
+2. I've introduced a new component, `fitness_progress`, which rewards the agent for making progress towards the optimal fitness score. This should help the agent learn to optimize its behavior.
+3. I've kept the fall penalty, but made it less harsh by only applying it when the hull angle is negative.
+
+**Rationale**
+
+The goal is to create a reward function that encourages the agent to move forward while minimizing falling and maximizing the fitness score. By rewarding movement and velocity, we can encourage the agent to maintain a consistent pace. The addition of `fitness_progress` should help the agent learn to optimize its behavior by making progress towards the optimal fitness score. Finally, keeping the fall penalty in place should still discourage the agent from falling or getting stuck.

@@ -1,0 +1,20 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    linear_velocity_x = state[2]
+    linear_velocity_y = state[3]
+
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    reward = np.exp(-0.5 * (distance_to_goal / MAX_DISTANCE_TO_GOAL) ** 2)
+
+    if not self.game_over:
+        reward += np.exp(-1.5 * linear_velocity_x)  # encourage forward motion
+    else:
+        reward -= 10  # penalty for falling or reaching the end
+
+    individual_reward = {'progress': -distance_to_goal, 'speed': -1 * linear_velocity_x}
+
+    return reward, individual_reward
+```
+
+Explanation: The reward function is designed to encourage the agent to move forward and reach the goal. It assigns a negative reward for being far from the goal, which decreases as the agent approaches the goal. Additionally, it provides a positive reward for moving forward (i.e., having a high linear velocity in the x-direction). If the game is over (i.e., the agent has fallen or reached the end), a large penalty is assigned to discourage such behavior. The individual_reward dictionary provides breakdowns of the progress and speed components that contribute to the overall reward.

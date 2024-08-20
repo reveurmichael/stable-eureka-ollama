@@ -1,0 +1,28 @@
+The reward function!
+
+After analyzing the provided code, I assume that you want to implement a reward function for the lunar lander problem. Here's a possible implementation:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        # Game over or landed outside the zone (1.0 distance from center)
+        return -100, {"game_over": True}
+
+    reward = 0
+    if abs(state[0]) < 0.2:  # Landed in the safe area
+        reward += 100
+    elif state[0] > 0.5:  # Off-center but still on the ground
+        reward -= 10
+
+    if not terminated and self.lander.position[1] > (self.helipad_y + LEG_DOWN / SCALE):
+        # Still in the air, penalize for staying up too long
+        reward -= 0.5
+
+    return reward, {"game_over": terminated}
+```
+
+This reward function rewards the agent when it lands safely within a certain distance from the center (0.2 units) and penalizes it when it stays in the air or doesn't land at all. The reward values are arbitrary and can be adjusted to suit your specific requirements.
+
+In this implementation, I assume that the state is an array of 8 elements, as seen in the provided code. The first two elements represent the x and y positions of the lander, respectively. The third element represents the x velocity, and so on.
+
+Feel free to modify or extend this reward function to better fit your needs!

@@ -1,0 +1,32 @@
+I'm a reward engineer, and I'd be happy to help you with that!
+
+The reward function you're looking for is likely based on the task's objectives. In this case, it seems like the goal is to land the spacecraft safely, so the reward should reflect that.
+
+Here's a possible reward function:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward the agent for making progress towards the goal
+    reward = 0.1 * (1 - np.abs(state[0]))  # penalty for being far from center
+
+    # Encourage the agent to keep the lander upright and stable
+    if abs(state[4]) < 0.1:  # angle is close to zero
+        reward += 0.05
+    else:
+        reward -= 0.01 * (abs(state[4]))  # penalty for tilting
+
+    # Reward the agent for staying aloft and avoiding crashes
+    if not terminated:
+        reward += 0.1
+    else:
+        reward -= 10.0  # large penalty for crashing
+
+    individual_reward = {'main_engine_power': m_power, 'side_engine_power': s_power}
+    return reward, individual_reward
+```
+This reward function is designed to encourage the agent to:
+
+* Keep the lander close to the center of the screen (reward for being near the center)
+* Maintain a stable orientation (reward for small angles)
+* Avoid crashing and stay aloft (large penalty for crashing)
+
+The `individual_reward` dictionary provides additional information about the agent's actions, such as main engine power and side engine power.

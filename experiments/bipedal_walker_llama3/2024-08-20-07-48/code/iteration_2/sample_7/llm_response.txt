@@ -1,0 +1,49 @@
+Based on the provided feedback, I'll analyze each existing reward component and then propose a new reward function.
+
+**Analysis**
+
+1. **distance_reward**: The values are quite consistent, with a maximum value of 1567.764812058209. This suggests that the distance to the goal is indeed being optimized.
+2. **fall**: All values are -32000.0, which indicates that this component is not contributing positively or negatively to the overall reward function. I'll discard this component.
+3. **fitness_score**: The mean value is -49.63421839378986, indicating that the fitness score is not improving during training. This suggests that the current reward function may not be aligned with the desired outcome. I'll try to change the reward function.
+
+**New Reward Function Proposal**
+
+Based on the analysis and considering the tips for analyzing feedback:
+
+1. Maximize positive reward components values during training.
+2. Minimize negative reward components values.
+3. Align the reward function with the desired outcome (fitness score).
+
+Here's a new reward function code proposal:
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = TERRAIN_LENGTH - pos[0]
+    
+    if self.game_over or pos[0] < 0:
+        return -100.0, {"terminal": True}
+    elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 100.0, {"success": True}
+    
+    # Reward for moving closer to the goal
+    distance_reward = min(distance_to_goal / TERRAIN_LENGTH, 1.0)
+    
+    # Penalty for falling (if it happens)
+    if state[-1]:
+        fall_penalty = -10.0
+    else:
+        fall_penalty = 0.0
+    
+    # Combine rewards and penalties
+    total_reward = distance_reward + fall_penalty
+    
+    individual_reward = {"distance_reward": distance_reward, "fall_penalty": fall_penalty}
+    
+    return total_reward, individual_reward
+```
+This new reward function:
+
+* Keeps the positive incentive for moving closer to the goal (distance_reward)
+* Introduces a penalty for falling (if it happens) to discourage it
+* Scales both rewards and penalties within a reasonable range
+
+The next training will take the best model weights, which should be more effective with this new reward function.

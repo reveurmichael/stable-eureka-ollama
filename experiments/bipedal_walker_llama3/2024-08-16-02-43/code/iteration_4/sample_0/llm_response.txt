@@ -1,0 +1,19 @@
+```python
+def compute_reward(self, pos, action, state):
+    forward_reward = (pos[0] - self.prev_pos[0]) / TERRAIN_STEP if not self.game_over else 0.0
+    if forward_reward > 0:
+        forward_reward *= np.exp(np.clip(action[0], -1, 1) / 2)
+    else:
+        forward_reward *= np.exp(-np.abs(action[0]) / 2)
+
+    stable_penalty = -10 * (state[6] + state[13])
+    if self.game_over:
+        terminal_bonus = 100
+    else:
+        terminal_bonus = 0
+
+    reward = forward_reward + stable_penalty + terminal_bonus
+    individual_reward = {'forward': forward_reward, 'stable': stable_penalty, 'terminal': terminal_bonus}
+    return reward, individual_reward
+```
+Explanation: This reward function encourages the biped to move forward by giving a positive reward for each step made in the right direction. The magnitude of the forward reward depends on the speed and direction of movement. A penalty is applied if the biped is not moving smoothly (i.e., its legs are not in contact with the ground). Additionally, a terminal bonus is given when the biped reaches the end of the terrain to encourage it to continue moving until the end.

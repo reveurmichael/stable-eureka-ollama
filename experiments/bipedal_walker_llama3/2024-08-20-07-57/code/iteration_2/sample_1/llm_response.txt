@@ -1,0 +1,43 @@
+Based on the provided policy feedback and analysis tips, I'll analyze each existing reward component and then write a new reward function code proposal.
+
+**Analyzing Reward Components**
+
+1. **distance**: The values are quite large (-300k to -310k), which could be due to the fact that the distance is calculated as absolute difference from the goal position (TERRAIN_LENGTH). This means that the agent will receive a high negative reward if it's far from the goal, which might not be ideal. The mean value is around -307k, so this component seems to dominate the overall reward.
+2. **falling**: All values are 0, indicating that the agent never fell during training. This component doesn't seem to have much impact on the policy.
+3. **fitness_score**: The values are negative and vary between -44 and -80. As mentioned in tip #4, we want to maximize the fitness score. Since it's not improving during training, let's focus on modifying the reward function.
+
+**New Reward Function Proposal**
+
+Considering the analysis, I propose a new reward function that focuses on maximizing the fitness score while keeping the agent away from the goal (to prevent premature termination). We'll also introduce a new component to encourage the agent to move towards the goal.
+
+```python
+def compute_reward(self, pos, action, state):
+    # Calculate distance to goal and normalize it
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH) / TERRAIN_LENGTH
+
+    # Calculate fitness score (we want to maximize this)
+    fitness_score = min(fitness_score_max, pos[1])  # Ensure the agent doesn't exceed the max height
+
+    # Define reward components
+    distance_reward = -distance_to_goal  # Punish for being far from the goal
+    fitness_reward = fitness_score  # Reward for maximizing the fitness score (up to a certain limit)
+
+    # Combine rewards
+    reward = distance_reward + fitness_reward
+
+    individual_reward = {'distance': distance_reward, 'fitness': fitness_reward}
+
+    return reward, individual_reward
+
+# Define constants
+TERRAIN_LENGTH = ...  # Length of the terrain
+fitness_score_max = ...  # Maximum allowed height for the agent
+```
+
+**Changes Made**
+
+1. Normalized the distance to goal by dividing it by `TERRAIN_LENGTH`. This should reduce the magnitude of the reward and make it more comparable.
+2. Introduced a new component, `fitness_reward`, which rewards the agent for maximizing its fitness score (up to a certain limit).
+3. Combined the rewards using addition.
+
+The new reward function aims to balance the exploration-exploitation trade-off by encouraging the agent to move towards the goal while still maximizing its fitness score. This should help the policy improve during training.

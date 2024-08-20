@@ -1,0 +1,17 @@
+def compute_reward(self, pos, action, state):
+    velocity = state[2]
+    position_diff = pos[0] - self.prev_pos[0]
+
+    if abs(velocity) > 0.5 and not self.game_over:
+        # Positive reward for moving forward
+        reward = np.exp(position_diff / TERRAIN_STEP)
+    elif self.game_over or pos[0] < 0:
+        # Penalty for falling or game over
+        reward = -np.exp(-1)
+    else:
+        # No reward for standing still
+        reward = 0
+
+    individual_reward = {'forward_velocity': position_diff, 'game_over_penalty': self.game_over}
+
+    return reward, individual_reward

@@ -1,0 +1,17 @@
+def compute_reward(self, pos, action, state):
+    reward = 0.0
+    individual_reward = {'reach_end': 0.0, 'avoid_falling': 0.0, 'move_forward': 0.0}
+
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward += 10.0
+        individual_reward['reach_end'] = 10.0
+
+    if pos[1] < -VIEWPORT_H / SCALE or pos[1] > VIEWPORT_H / SCALE:
+        reward -= 5.0
+        individual_reward['avoid_falling'] = -5.0
+
+    if action[0] != 0 or action[1] != 0 or action[2] != 0 or action[3] != 0:
+        reward += 0.5
+        individual_reward['move_forward'] = 0.5
+
+    return reward, individual_reward

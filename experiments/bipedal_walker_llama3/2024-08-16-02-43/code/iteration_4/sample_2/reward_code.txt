@@ -1,0 +1,4 @@
+def compute_reward(self, pos, action, state):
+    reward = -0.1 + (pos[0] / TERRAIN_LENGTH) * 10.0 - 0.01 * abs(action[0]) - 0.01 * abs(action[1])
+    individual_reward = {'progress': (pos[0] / TERRAIN_LENGTH) * 10.0, 'action_penalty': 0.02 * abs(action[0]) + 0.02 * abs(action[1]), 'other': -0.1}
+    return reward, individual_reward

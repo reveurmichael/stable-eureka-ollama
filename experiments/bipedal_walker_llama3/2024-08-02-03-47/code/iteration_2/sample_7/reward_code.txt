@@ -1,0 +1,23 @@
+def compute_reward(self, pos, action, state):
+    reward = 0.0
+    individual_rewards = {}
+
+    # Reward for reaching the end
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward += REWARD_END_REACHED
+        individual_rewards['end_reached'] = REWARD_END_REACHED
+
+    # Penalty for falling down or getting stuck
+    if self.game_over or pos[0] < 0:
+        reward -= PENALTY_FALLING_DOWN
+        individual_rewards['fell_down'] = -PENALTY_FALLING_DOWN
+
+    # Reward for moving forward (velocity)
+    if action[1] > 0.0:  # assume the last element in state is velocity
+        reward += REWARD_FORWARD_MOVE * math.exp(TEMPERATURE_VELOCITY) * np.tanh(action[1])
+        individual_rewards['forward_move'] = REWARD_FORWARD_MOVE * np.tanh(action[1])
+
+    # Normalize the reward using temperature parameter TEMPERATURE_REWARD
+    reward /= math.exp(TEMPERATURE_REWARD)
+
+    return reward, individual_rewards

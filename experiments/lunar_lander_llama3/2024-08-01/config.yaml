@@ -1,0 +1,58 @@
+eureka:
+    backend: 'ollama'  # 'ollama' or 'openai'
+    model: 'llama3'
+    temperature: .8  # if this value is too low, it is almost deterministic
+    iterations: 5
+    samples: 8
+    use_initial_reward_prompt: false  # if available, use the initial reward prompt
+    pretraining_with_best_model: false  # use best model weights for pretraining the next models
+
+environment:
+    name: 'lunar_lander'
+    max_episode_steps: 1000
+    class_name: 'LunarLander'
+    kwargs: null
+    benchmark: 'LunarLander-v2'
+
+experiment:
+    parent: 'experiments'
+    name: 'lunar_lander_llama3'
+    use_datetime: true
+
+rl:
+    algo: 'ppo'
+    algo_params:
+        policy: 'MlpPolicy'
+        learning_rate: 0.0003
+        n_steps: 2048
+        batch_size: 128
+        n_epochs: 10
+        gamma: 0.99
+        gae_lambda: 0.95
+        clip_range: 0.2
+        ent_coef: 0.0
+        vf_coef: 0.5
+        max_grad_norm: 0.5
+
+    architecture:
+        net_arch: {'pi': [128, 128], 'vf': [128, 128]}
+        activation_fn: 'ReLU'
+        share_features_extractor: false
+
+    training:
+        torch_compile: true
+        seed: 0
+        eval:
+            seed: 5
+            num_episodes: 5
+            num_evals: 10
+        total_timesteps: 1_000_000
+        device: 'cuda'
+        num_envs: 4
+        state_stack: 1
+        is_atari: false
+
+    evaluation:
+        seed: 10
+        num_episodes: 5
+        save_gif: true

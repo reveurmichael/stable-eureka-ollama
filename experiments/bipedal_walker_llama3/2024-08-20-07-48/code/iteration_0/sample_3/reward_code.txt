@@ -1,0 +1,7 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = TERRAIN_LENGTH - pos[0]
+    reward = np.exp(-distance_to_goal / self.distance_coefficient) if not self.game_over else -1.0
+    
+    individual_reward = {'forward_reward': reward, 'stable_reward': 0.0}
+    
+    return reward, individual_reward
