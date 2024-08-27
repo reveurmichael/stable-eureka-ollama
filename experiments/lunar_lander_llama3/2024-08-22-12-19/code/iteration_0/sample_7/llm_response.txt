@@ -1,0 +1,55 @@
+Here's an alternative reward function that takes into account more aspects of the lander's performance:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 100.0) - 1
+
+    # Stability reward: penalize tilting and angular velocity
+    angle_penalty = -np.abs(angle)
+    angle_penalty = np.tanh(angle_penalty / 0.5)
+
+    angular_velocity_penalty = -np.abs(angular_velocity)
+    angular_velocity_penalty = np.tanh(angular_velocity_penalty / 0.5)
+
+    # Velocity reward: penalize high velocities
+    velocity_penalty = -(np.abs(vx) + np.abs(vy))
+    velocity_penalty = np.tanh(velocity_penalty / 1.0)
+
+    # Fuel efficiency reward: penalize using the main engine and side engines
+    fuel_penalty = -0.5 if m_power else 0
+    fuel_penalty -= 0.2 if s_power else 0
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if abs(x) < 0.1 and abs(y) < 0.1 and left_leg and right_leg else 10
+
+    # Terminal penalty: large penalty if the episode is terminated (crash or out of bounds)
+    terminal_penalty = -500 if terminated else 0
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward + 
+              0.1 * angle_penalty + 
+              0.1 * angular_velocity_penalty + 
+              0.5 * velocity_penalty + 
+              0.2 * fuel_penalty + 
+              landing_reward + 
+              terminal_penalty)
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+        "terminal_penalty": terminal_penalty
+    }
+
+    return reward, individual_reward
+```
+
+This alternative reward function provides a more nuanced and detailed feedback to the agent. It takes into account not only the distance from the landing pad but also the stability of the lander, its velocity, fuel efficiency, and whether it has successfully landed. The `fuel_penalty` component is updated to take into account both main engine and side engines usage, while the `landing_reward` component provides a larger bonus for successful landings. Finally, the `terminal_penalty` component penalizes large penalties if the episode is terminated (crash or out of bounds).

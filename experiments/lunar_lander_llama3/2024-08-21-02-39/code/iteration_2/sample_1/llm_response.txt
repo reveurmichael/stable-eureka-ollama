@@ -1,0 +1,23 @@
+A reinforcement learning problem!
+
+The reward code is:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: Implement the reward function
+    pass
+```
+In this code, we have a `compute_reward` method that takes in several inputs:
+
+1. `state`: The current state of the environment.
+2. `m_power` and `s_power`: The magnitudes of the main engine and side engines, respectively.
+3. `terminated`: A boolean indicating whether the episode has terminated.
+
+The goal is to implement a reward function that encourages the agent to learn effective control policies for landing the lunar module safely on the helipad.
+
+Some possible considerations for designing the reward function include:
+
+* Rewarding the agent for staying close to the target (the helipad) and avoiding crashes.
+* Penalizing the agent for excessive fuel consumption or engine usage.
+* Providing a bonus for achieving a high speed or velocity at the end of the episode.
+
+The `compute_fitness_score` method is also provided, which might be useful in designing the reward function.

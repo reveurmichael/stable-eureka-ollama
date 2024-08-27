@@ -1,0 +1,15 @@
+Based on the provided code, the reward function appears to be implemented in the `compute_reward` method. Here's a breakdown of how it might work:
+
+1. The `compute_reward` method takes four inputs:
+   - `state`: A list of eight values representing the current state of the lander (position, velocity, angle, and contact with legs).
+   - `m_power`: The thrust power applied by the main engines.
+   - `s_power`: The thrust power applied by the side engines (orientation/side thrusters).
+   - `terminated`: A boolean indicating whether the episode has terminated or not.
+
+2. The method likely computes a reward value based on the provided state, actions (`m_power`, and `s_power`), and termination status.
+3. The exact formulation of the reward function is not specified in this code snippet; however, it might involve combinations of terms related to:
+   - Achieving specific goals (e.g., landing safely).
+   - Penalty for violating constraints or undesirable behaviors (e.g., crashing, falling too far from the target).
+   - Encouraging exploration and learning by providing a reward signal for taking actions that lead to more desirable states.
+
+The exact implementation of the `compute_reward` method would depend on the specific design goals and requirements of your reinforcement learning problem.

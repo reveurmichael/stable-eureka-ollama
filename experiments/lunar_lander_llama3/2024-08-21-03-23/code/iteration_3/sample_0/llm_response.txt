@@ -1,0 +1,13 @@
+The reward code is:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Implement your custom reward function here
+    # For example:
+    if terminated:
+        return -1.0, {'termination': True}
+    else:
+        return -state[2]**2 - state[3]**2, {}
+```
+
+This is a simple reward function that penalizes the agent for moving away from the center of the screen (negative reward decreases as the distance increases). If the game is over or the lander is not awake, it returns a termination reward.

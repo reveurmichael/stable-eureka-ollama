@@ -1,0 +1,64 @@
+Here's a variation of the initial reward proposal:
+
+```
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 100.0) - 1
+
+    # Stability reward: penalize tilting and angular velocity, but make it more forgiving at the end
+    angle_penalty = -np.abs(angle)
+    if abs(angle) > 20:
+        angle_penalty *= 2
+    else:
+        angle_penalty /= 2
+
+    angular_velocity_penalty = -np.abs(angular_velocity)
+    if np.abs(angular_velocity) > 5:
+        angular_velocity_penalty *= 2
+    else:
+        angular_velocity_penalty /= 2
+
+    # Velocity reward: penalize high velocities, but make it more forgiving at the end
+    velocity_penalty = -(np.abs(vx) + np.abs(vy))
+    if np.sqrt(vx**2 + vy**2) > 10:
+        velocity_penalty *= 2
+    else:
+        velocity_penalty /= 2
+
+    # Fuel efficiency reward: penalize using the main engine, but make it more forgiving at the end
+    fuel_penalty = -1 if action == 2 else 0
+    if terminated and not (left_leg and right_leg):
+        fuel_penalty *= 10
+
+    # Landing reward: bonus for successful landing, with a higher value for perfect landings
+    landing_reward = 100 if left_leg and right_leg and abs(x) < 0.1 and abs(y) < 0.1 else 20
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.2 * angle_penalty
+              + 0.2 * angular_velocity_penalty
+              + 0.4 * velocity_penalty
+              + 0.01 * fuel_penalty
+              + landing_reward)
+
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+This variation provides a more forgiving penalty for the main engine usage and velocity as the episode progresses. It also adds a higher bonus for perfect landings and reduces the penalty for the agent being terminated if it has successfully landed.

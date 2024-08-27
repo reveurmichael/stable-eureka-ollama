@@ -1,0 +1,68 @@
+Based on the analysis of the policy feedback and the existing reward function, I propose an improved reward function that addresses the issues and encourages more effective learning.
+
+**Analysis**
+
+1. The distance-based reward component has a large range (-28.0 to -39.7), indicating that it is the dominant factor in determining the overall reward.
+2. The height penalty and velocity penalty components have similar values, suggesting that they are not effectively differentiating between good and bad behaviors.
+3. The fuel efficiency reward component always penalizes using the main engine (fuel_penalty = -1), which may be too harsh.
+4. The landing reward component only provides a bonus when the lander successfully lands (left_leg and right_leg).
+
+**Improved Reward Function Proposal**
+
+I suggest modifying the existing reward function to:
+
+* Re-weight the distance-based reward to balance it with other components
+* Introduce a more nuanced height penalty that encourages stable flight heights
+* Modify the velocity penalty to discourage high velocities while still allowing for some movement
+* Relax the fuel efficiency penalty to encourage more exploration
+* Simplify the landing reward component
+
+Here's the proposed improved reward function code:
+```python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+    
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 10.0) - 1
+    
+    # Height penalty: encourage stable flight heights
+    height_penalty = -(y - self.helipad_y) ** 2
+    height_penalty = np.tanh(height_penalty / 5.0)
+    
+    # Velocity penalty: discourage high velocities while allowing some movement
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 1.5
+    velocity_penalty = np.exp(velocity_penalty / 10.0) - 1
+    
+    # Fuel efficiency reward: relax the fuel penalty to encourage exploration
+    fuel_reward = 1 if action == 2 else 0.5
+    
+    # Landing reward: simplify and reduce bonus for successful landing
+    landing_reward = 50 if left_leg and right_leg else 0
+    
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward * 0.3 + height_penalty * 0.2 + velocity_penalty * 0.3 + fuel_reward * 0.1 + landing_reward)
+    
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 50
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_reward": fuel_reward,
+        "landing_reward": landing_reward,
+    }
+    
+    return reward, individual_reward
+```
+This improved reward function should encourage the agent to learn more effective behaviors by:
+
+* Balancing the distance-based reward with other components
+* Encouraging stable flight heights and discouraging high velocities
+* Relaxing the fuel efficiency penalty to allow for exploration
+* Simplifying the landing reward component
+
+The next training iteration can take advantage of this improved reward function, which should lead to better policy learning.

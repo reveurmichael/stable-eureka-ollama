@@ -1,0 +1,27 @@
+A reinforcement learning problem!
+
+The reward function is:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: implement a meaningful reward function
+    return 0.0, {}
+```
+This code indicates that the reward function has not been implemented yet. The goal is to design a reward function that encourages the agent to achieve the desired behavior (e.g., landing safely, collecting points, etc.).
+
+Some possible ways to approach this problem include:
+
+1. Use a simple scalar reward (e.g., +1 for successful landing, -1 for crash)
+2. Design a more complex reward structure based on the state variables (e.g., position, velocity, angle, etc.)
+3. Implement a cumulative reward over time (e.g., +1 for each second the lander is airborne)
+
+The `individual_reward` dictionary is updated with the fitness score (`fitness_score`) and returned along with the `reward`. The `compute_fitness_score` method is not shown in the provided code, but it likely calculates some kind of overall performance metric.
+
+To improve this reward function, we could consider factors such as:
+
+* Distance to the target (the helipad)
+* Velocity and acceleration
+* Angle and orientation
+* Legs' ground contact status
+* Time spent airborne or on the ground
+
+The goal is to create a reward function that provides a meaningful signal to the agent, guiding it towards achieving the desired behavior.

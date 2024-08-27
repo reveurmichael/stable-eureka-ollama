@@ -1,0 +1,51 @@
+Here's an alternative reward proposal:
+
+```
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = 1 - np.sqrt(x**2 + y**2) / (VIEWPORT_W / SCALE / 2)
+
+    # Stability reward: incentivize stable tilting and low angular velocity
+    angle_bonus = np.tanh(angle) * 0.5
+    angular_velocity_bonus = np.exp(-angular_velocity**2 / 20.0) * 1.0
+
+    # Velocity reward: penalize high velocities and encourage stable descent
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) * 0.01
+    velocity_bonus = np.tanh(np.sqrt(vx**2 + vy**2)) * 0.5
+
+    # Fuel efficiency reward: incentivize using the side engines
+    fuel_bonus = action == 1 or action == 3 and 0.5 else -0.5
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if left_leg and right_leg and abs(x) < 0.1 and abs(y) < 0.1 else 10
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + angle_bonus
+              + angular_velocity_bonus
+              + velocity_penalty
+              + fuel_bonus
+              + landing_reward)
+
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_bonus": angle_bonus,
+        "angular_velocity_bonus": angular_velocity_bonus,
+        "velocity_penalty": velocity_penalty,
+        "fuel_bonus": fuel_bonus,
+        "landing_reward": landing_reward
+    }
+
+    return reward, individual_reward
+```
+
+In this variation, the `distance_reward` is incentivized by making it a function of the distance from the landing pad. The `angle_bonus` and `angular_velocity_bonus` are designed to encourage stable tilting and low angular velocity, respectively. The `velocity_penalty` penalizes high velocities and encourages stable descent. The `fuel_bonus` rewards the use of side engines and penalizes the use of the main engine. The `landing_reward` is a bonus for successful landing.
+
+This reward function aims to create an environment that incentivizes the agent to land safely while minimizing fuel consumption and velocity.

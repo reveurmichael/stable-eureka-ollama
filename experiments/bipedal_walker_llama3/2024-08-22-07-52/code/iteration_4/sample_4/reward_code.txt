@@ -1,0 +1,17 @@
+def compute_reward(self, pos, action, state):
+    # Distance-based obstacle penalty: encouraging avoidance
+    distance_to_obstacle = np.linalg.norm(state[2:])  # Assuming state[2:] contains obstacle positions
+    obstacle_penalty = -distance_to_obstacle / 50.0
+
+    # Fitness score reward: emphasizing the importance of maximizing fitness
+    fitness_reward = 0.9 * self.fitness_score + 0.1 * self.reward
+
+    # Total reward: a weighted sum with adjusted weights
+    reward = fitness_reward
+
+    individual_reward = {
+        "obstacle_penalty": obstacle_penalty,
+        "fitness_reward": fitness_reward
+    }
+
+    return reward, individual_reward

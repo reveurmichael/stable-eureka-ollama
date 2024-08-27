@@ -1,0 +1,30 @@
+A delightful challenge!
+
+Let's analyze each existing reward component:
+
+1. `moving_forward`: The values are quite diverse, ranging from 7.5 to 1570.0. This suggests that this component might be related to progress towards the goal.
+2. `penalty`: The values are all negative and quite similar, with a mean of approximately -9.95. This component seems to be related to some kind of penalty or cost.
+3. `fitness_score`: These values are highly negative, ranging from -53.74 to -100.94. As the goal is to maximize this score, it's likely that this component should have a positive weight in the reward function.
+
+Now, let's write a new reward function proposal:
+
+```python
+def compute_reward(self, pos, action, state):
+    progress = (pos[0] / TERRAIN_LENGTH) ** 2  # Normalize progress towards goal
+    penalty = -0.01 * (state[6] + state[13])  # Scale and normalize penalty term
+    fitness_score_bonus = 0.1 * (1 - np.abs(fitness_score))  # Incentivize improving fitness score
+
+    reward = progress + penalty + fitness_score_bonus
+    
+    individual_reward = {"progress": progress, "penalty": penalty, "fitness_score_bonus": fitness_score_bonus}
+    
+    return reward, individual_reward
+```
+
+Key changes:
+
+* We've normalized the `moving_forward` component to emphasize progress towards the goal.
+* The `penalty` term is now scaled and normalized to have a smaller impact on the overall reward.
+* We've added a bonus term for improving the fitness score, which should incentivize the agent to maximize this score.
+
+This new reward function proposal aims to balance the competing goals of moving forward, minimizing penalty, and maximizing the fitness score. The next training iteration will use these weights as a starting point, so let's hope it leads to improved performance!

@@ -1,0 +1,18 @@
+Based on the provided code, I would reflect that the current reward function is complex and involves multiple factors such as the lander's position, velocity, angle, angular velocity, and legs' ground contact. The reward function also seems to be dependent on the main engine power (m_power) and side engines' power (s_power), which are used to control the lander.
+
+The reward code provided is:
+
+```
+reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)
+```
+
+However, without seeing the implementation of `self.compute_reward`, it's difficult to provide more specific insights. Nevertheless, I can suggest that the reward function should be designed such that it encourages the agent to learn a policy that leads to successful landing (i.e., high fitness score) while avoiding crashes or other penalties.
+
+Some possible aspects to consider in designing the reward function include:
+
+1. Encouraging the lander to move towards the helipad and stay within a certain distance.
+2. Rewarding the lander for reducing its velocity and angular velocity as it approaches the landing site.
+3. Penalizing the lander for losing altitude or crashing into the ground.
+4. Providing additional rewards for maintaining good control over the lander's orientation and movement.
+
+Ultimately, the goal is to design a reward function that effectively guides the agent towards learning an optimal policy for successful landing while avoiding crashes.

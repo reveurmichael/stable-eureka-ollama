@@ -1,0 +1,3 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: implement your custom reward function here!
+    pass  # Replace this with your actual implementation

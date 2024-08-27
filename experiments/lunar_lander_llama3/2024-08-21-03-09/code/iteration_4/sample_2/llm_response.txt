@@ -1,0 +1,27 @@
+The reward code! Let's dive in.
+
+Based on the provided code, I'm assuming that you're trying to create a reward function for reinforcement learning tasks. The goal is to design an effective reward function that incentivizes the agent to achieve certain goals or behaviors.
+
+Here's the reward code:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: implement your reward function here
+    pass  # or maybe raise NotImplementedError?
+```
+As you can see, this is a placeholder for the actual reward function. The `compute_reward` method takes in several inputs:
+
+* `state`: The current state of the environment (a list of 8 values).
+* `m_power`: The main engine power.
+* `s_power`: The side engine power.
+* `terminated`: A boolean indicating whether the episode has terminated.
+
+Your task is to implement a reward function that takes these inputs and returns a scalar value representing the reward. This reward should encourage or discourage certain behaviors, such as:
+
+* Landing safely on the helipad
+* Achieving a certain speed or velocity
+* Using the main engine efficiently
+* Avoiding crashes or falling off the platform
+
+The `compute_fitness_score` method is also provided, which seems to be related to the overall fitness of the agent. You might want to consider incorporating this into your reward function as well.
+
+Remember to follow the problem statement and constraints when designing your reward function. Good luck!

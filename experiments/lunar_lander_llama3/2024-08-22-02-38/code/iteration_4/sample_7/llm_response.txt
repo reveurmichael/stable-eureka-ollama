@@ -1,0 +1,39 @@
+I'd be happy to help you with that. However, I need more information about how your reward function should behave in this scenario.
+
+From what I can gather from the provided code, it seems like you are trying to create a reward function for an reinforcement learning task where the goal is to control a lander object to safely touch down on a surface. 
+
+Here's a possible implementation of the reward function based on your problem:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define rewards and penalties
+    REWARD_TOUCHDOWN = 1000
+    PENALTY_CRASH = -500
+    PENALTY_ORIENTATION = -10
+    PENALTY_VERTICAL_SPEED = -5
+
+    # Calculate the reward based on the current state
+    reward = 0
+    if terminated:
+        if state[7] == 1 and state[6] == 1:  # Landed safely
+            reward += REWARD_TOUCHDOWN
+        else:
+            reward += PENALTY_CRASH
+    else:
+        orientation_penalty = -abs(state[4])
+        vertical_speed_penalty = -state[2]
+        if m_power > 0 and s_power > 0:
+            reward -= PENALTY_ORIENTATION + PENALTY_VERTICAL_SPEED
+        elif m_power == 0 and s_power == 0:
+            reward += 5
+
+    return reward, {'orientation': orientation_penalty, 'vertical_speed': vertical_speed_penalty}
+```
+
+In this code:
+
+- `REWARD_TOUCHDOWN` is the reward for successfully landing.
+- `PENALTY_CRASH` is the penalty for crashing.
+- `PENALTY_ORIENTATION` and `PENALTY_VERTICAL_SPEED` are penalties for not having a good orientation and vertical speed, respectively.
+
+The reward function calculates these values based on the current state of the lander. If the lander has landed safely (both legs in contact with the ground), it gets a high reward. If it crashes, it gets a penalty. If it's in the air and hasn't crashed yet, it gets penalties for not having a good orientation and vertical speed.

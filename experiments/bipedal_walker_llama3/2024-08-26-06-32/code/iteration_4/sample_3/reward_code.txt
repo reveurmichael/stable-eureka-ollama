@@ -1,0 +1,2 @@
+reward_value = self.compute_reward([0], action, state)  # Example calculation
+return reward_value

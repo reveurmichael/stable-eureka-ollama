@@ -1,0 +1,3 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: Implement your reward function here
+    pass

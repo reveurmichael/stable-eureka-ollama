@@ -1,0 +1,33 @@
+Based on the provided code, it appears that the reward function is implemented in the `compute_reward` method. The specific reward calculation depends on the state of the environment and the actions taken by the agent.
+
+Here's a possible breakdown of the reward calculation:
+
+1. If the game is over or if the agent has gone beyond the left or right edge of the screen, the reward might be negative to discourage further movement in that direction.
+2. The reward could also depend on the angle of the lander and its angular velocity. A higher reward might be given for maintaining a stable orientation.
+3. The ground contact status of the legs could influence the reward. For example, a positive reward might be given when all four legs are grounded, indicating stability.
+
+The `compute_reward` method would likely take into account these factors to calculate an appropriate reward value. Here's a possible implementation:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate the reward based on the state and actions taken
+    if terminated or abs(state[0]) >= 1.0:  # Game over or out of bounds
+        return -10.0, {'game_over': -10.0}
+
+    if all(leg.ground_contact for leg in self.legs):  # All legs grounded
+        return 5.0, {'grounded': 5.0}
+
+    angle_diff = abs(state[5])  # Angular velocity difference from stable orientation
+    reward_angle = max(-1.0 * angle_diff, 0.0)  # Negative reward for unstable orientation
+
+    if s_power > 0:  # Side engines engaged
+        reward_side = max(0.2 * s_power, 0.0)  # Reward for side engines usage
+    else:
+        reward_side = 0.0
+
+    total_reward = reward_angle + reward_side
+    return total_reward, {'game_over': -10.0 if terminated else 0.0,
+                          'grounded': 5.0 if all(leg.ground_contact for leg in self.legs) else 0.0,
+                          'angle_diff': reward_angle,
+                          'side_engines': reward_side}
+```
+This is just one possible implementation of the reward function, and you may need to adjust it based on your specific requirements and the behavior you want to encourage in your agent.

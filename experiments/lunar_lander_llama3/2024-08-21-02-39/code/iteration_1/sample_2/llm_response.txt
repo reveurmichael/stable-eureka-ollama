@@ -1,0 +1,26 @@
+A reinforcement learning problem!
+
+The reward function is implemented in the `compute_reward` method. Here's what I can see:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # ... some calculation ...
+    if not self.lander.awake:
+        return 0.0
+    if abs(state[0]) >= 1.0:  # x position out of bounds?
+        return -100.0
+    if self.game_over:  # game over?
+        return -200.0
+    # ... some more calculation ...
+    return individual_reward + penalty_term
+```
+
+In summary, the reward function seems to be designed to encourage the agent to:
+
+1. Keep the lander awake.
+2. Stay within a certain range of the x-axis (i.e., don't fall off the screen).
+3. Not crash or run out of fuel.
+
+The reward is `-100` if the lander falls off the screen, `-200` if the game is over, and 0 otherwise. The `individual_reward` seems to be a separate term that's added to the final reward.
+
+Please let me know if I'm missing anything or if you'd like me to elaborate on any of these points!

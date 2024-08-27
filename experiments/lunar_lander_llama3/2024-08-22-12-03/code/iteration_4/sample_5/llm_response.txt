@@ -1,0 +1,37 @@
+What a delightful problem!
+
+After analyzing the provided code and the physics engine's behavior, I've identified the main components that should be reflected in the reward function. The goal is to encourage the agent to land safely and efficiently while using the engines wisely.
+
+Here's my proposal for the reward reflection:
+
+1. **Landing success**: Award a high reward when the agent successfully lands on the helipad (e.g., +10).
+2. **Distance from helipad**: Penalize the agent for being far away from the helipad (e.g., -0.5 per unit of distance).
+3. **Velocity**: Reward the agent for having low velocity near the helipad (e.g., +1 for every 10 units of velocity reduction).
+4. **Engine usage**: Encourage efficient engine use by rewarding the agent for minimizing main engine thrust (e.g., -0.2 per unit of thrust).
+5. **Side engine orientation**: Reward the agent for using side engines wisely, keeping them away from the helipad and avoiding sudden changes in direction (e.g., +0.3 for every 10 degrees of stable orientation).
+
+Here's a possible reward function based on these components:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        # Game over or failed to land; punish the agent
+        return -100, {}
+
+    distance_from_helipad = abs(state[1])  # penalize for being far away
+    velocity_reduction = state[3] / FPS  # reward for reducing velocity
+
+    main_engine_thrust = m_power * (1 if s_power > 0.5 else 0)  # only count main engine thrust when side engines are active
+    engine_usage_punishment = -0.2 * main_engine_thrust
+
+    side_engine_orientation_reward = 0.3 * np.clip(abs(state[4]), 10, 30)
+
+    reward = +10 if distance_from_helipad < 0.1 else -0.5 * distance_from_helipad
+    reward += velocity_reduction
+    reward += engine_usage_punishment
+    reward += side_engine_orientation_reward
+
+    return reward, {'main_engine_thrust': main_engine_thrust, 'side_engine_orientation': np.round(side_engine_orientation_reward, 2)}
+```
+This is just a starting point, and you may need to adjust the weights and penalties to better fit your specific environment. The goal is to strike a balance between encouraging efficient engine use, smooth landings, and reasonable velocity control.
+
+Remember that this reward function should be designed to reflect the desired behavior of your agent in the physics engine.

@@ -1,0 +1,21 @@
+I'm excited to help you reflect on your reward function! 
+
+From what I can see, your reward code is:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Your reward computation logic goes here
+    pass
+```
+This is where the magic happens! The reward function should guide the agent's learning process by providing a measure of how well it has performed. 
+
+In this case, I see that you have not implemented any specific reward logic yet. That's okay! This gives us an opportunity to think about what kind of reward we want to give our agent.
+
+Some possible questions to consider:
+
+1. What is the goal of the game? Is it to land safely on the helipad?
+2. Should we punish the agent for certain actions or states (e.g., flying too high or falling off the platform)?
+3. Can we use a combination of rewards, such as a score-based reward and a penalty-based reward?
+
+Once you've decided on your reward strategy, you can implement it in this `compute_reward` method.
+
+Remember, a good reward function is crucial for effective reinforcement learning!

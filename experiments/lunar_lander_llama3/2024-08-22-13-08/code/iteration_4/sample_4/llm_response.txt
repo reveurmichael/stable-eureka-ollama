@@ -1,0 +1,45 @@
+A reinforcement learning problem!
+
+To create a good reward function, I'll reflect on the environment and the goal. It seems that the agent (the lander) needs to navigate to a target location (the helipad) while avoiding falling off or crashing.
+
+From the code, I can see that the state includes:
+
+* Lander's position (x, y)
+* Velocity (vx, vy)
+* Orientation (angle)
+* Angular velocity
+* Leg contact status (0/1 for each leg)
+
+The reward function should encourage the agent to stay close to the target location while keeping it upright and avoiding crashes. Here's a possible reward code:
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    # Define constants
+    TARGET_RADIUS = 5  # Radius around the helipad where the lander is considered successful
+    CRASH_PENALTY = -100  # Penalty for crashing or falling off
+    ORIENTATION_BONUS = 10  # Bonus for maintaining a stable orientation
+    VELOCITY_PENALTY = -1  # Penalty for high velocity (to encourage slow and steady descent)
+
+    reward = 0
+
+    # Check if the lander is close to the target location
+    distance_to_helipad = np.sqrt((state[0] - VIEWPORT_W / SCALE / 2) ** 2 + (state[1] - self.helipad_y - LEG_DOWN / SCALE) ** 2)
+    if distance_to_helipad <= TARGET_RADIUS:
+        reward += 10
+
+    # Check for crashes or falls
+    if terminated:
+        reward = CRASH_PENALTY
+
+    # Encourage stable orientation
+    if np.abs(state[4]) < 0.5:  # Assuming the lander is considered upright if its angle is within 30 degrees of horizontal
+        reward += ORIENTATION_BONUS
+
+    # Penalty for high velocity
+    if state[2] ** 2 + state[3] ** 2 > 100:  # Assuming a high velocity threshold (e.g., above 10 m/s)
+        reward += VELOCITY_PENALTY
+
+    return reward, {}
+```
+
+This reward function encourages the agent to stay close to the target location while maintaining a stable orientation and avoiding crashes. The individual reward dictionary is left empty for now, as the fitness score calculation seems to be handled separately.

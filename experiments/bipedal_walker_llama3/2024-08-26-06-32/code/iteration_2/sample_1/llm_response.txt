@@ -1,0 +1,9 @@
+Your reward reflects a smooth and consistent increase in the overall fitness score of the agent.
+The rate at which your reward increases is determined by the parameters `t_max`, `min_reward`, and `max_reward` specified in your reward code. These parameters control the maximum value of your reward that can be achieved, while the minimum value of your reward remains constant at zero.
+Your reward code specifies the following parameters:
+- t_max: 10
+- min_reward: 0.5
+- max_reward: 20
+
+These parameters determine how much time the agent spends working towards reaching its maximum reward, and how much time it spends working towards avoiding its minimum reward.
+The value assigned to `min_reward` is set to zero in order to avoid any potential negative consequences that may arise as a result of the lower than zero, and prevent the agent from reaching its maximum reward for the same reason as well.

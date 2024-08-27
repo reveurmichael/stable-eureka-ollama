@@ -1,0 +1,46 @@
+A reinforcement learning problem!
+
+It looks like you're trying to create a reward function that encourages the agent (lander) to navigate towards the helipad while avoiding crashes and using its engines efficiently.
+
+From the given code, I can see that the reward function takes in the current state of the lander, as well as some other parameters like `m_power` and `s_power`. The state seems to include position, velocity, angle, angular velocity, and contact with the legs.
+
+Based on this information, here's a possible implementation of the reward function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define constants for reward weights
+    POS_REWARD = 0.5
+    ANGLE_REWARD = 0.1
+    SPEED_REWARD = -0.2
+    CONTACT_PENALTY = -10.0
+
+    # Calculate the position-based reward (closer to helipad is better)
+    pos_reward = max(0, state[0]) * POS_REWARD
+
+    # Calculate the angle-based reward (closer to vertical is better)
+    angle_reward = abs(state[4]) * ANGLE_REWARD
+
+    # Calculate the speed-based reward (slower is better)
+    speed_reward = -abs(state[2] + state[3]) * SPEED_REWARD
+
+    # Apply a penalty for being in contact with the legs
+    if state[6] or state[7]:
+        contact_penalty = CONTACT_PENALTY
+    else:
+        contact_penalty = 0.0
+
+    # Calculate the total reward
+    individual_reward = pos_reward + angle_reward + speed_reward + contact_penalty
+
+    # If terminated, return a large negative reward to encourage restarting
+    if terminated:
+        individual_reward -= 100.0
+
+    return individual_reward, {'pos': pos_reward, 'angle': angle_reward, 'speed': speed_reward}
+```
+
+This reward function aims to balance the trade-off between moving towards the helipad, staying upright and stable, using engines efficiently, and avoiding crashes. You can adjust the weights (`POS_REWARD`, `ANGLE_REWARD`, etc.) to change the relative importance of each component.
+
+The individual rewards are also returned as a dictionary, allowing you to visualize or analyze the different components of the reward function.
+
+Please note that this is just one possible implementation, and you may need to modify it based on your specific problem requirements.

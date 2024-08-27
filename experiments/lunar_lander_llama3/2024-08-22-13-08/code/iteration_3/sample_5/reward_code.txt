@@ -1,0 +1,23 @@
+def compute_reward(state, m_power, s_power, terminated):
+    # Define constants for reward shaping
+    LANDING_BONUS = 10.0
+    VELOCITY_PENALTY = -1.0
+    ANGLE_PENALTY = -0.5
+
+    # Calculate the distance to the helipad
+    helipad_distance = np.linalg.norm(state[:2]) - (self.helipad_y + LEG_DOWN / SCALE)
+
+    # Reward for landing close to the helipad
+    if terminated and helipad_distance < 0.1:
+        return LANDING_BONUS, {'landing_bonus': LANDING_BONUS}
+
+    # Penalty for high velocity
+    vel_penalty = VELOCITY_PENALTY * np.linalg.norm(state[2:4])
+
+    # Penalty for large angle deviation from the vertical
+    angle_penalty = ANGLE_PENALTY * abs(state[4])
+
+    # Combine rewards and penalties
+    reward = -vel_penalty - angle_penalty
+
+    return reward, {'velocity_penalty': vel_penalty, 'angle_penalty': angle_penalty}

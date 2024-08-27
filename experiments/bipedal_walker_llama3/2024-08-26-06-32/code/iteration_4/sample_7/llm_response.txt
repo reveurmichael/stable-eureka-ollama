@@ -1,0 +1,12 @@
+The reward provided by the state function is:
+
+```
+reward = [SPEED_HIP for _ in range(self.legs[0].maxSpeedIndex])) + 0.1
+```
+
+
+ Reward calculation: 
+- The `SPEED_HIP` variable represents the maximum speed of the biped system.
+- The value `[self.legs[0].maxSpeedIndex]]` indicates that the maximum speed of the left leg is set to `[self.legs[0].maxSpeedIndex]]`.
+- The reward `reward = [SPEED_HIP for _ in range(self.legs[0].maxSpeedIndex])) + 0.1` represents the rewards provided by the state function for each leg of the biped system.
+The total reward received from the environment is `total_reward = reward[0] * reward[1]]`, where `reward[0]], reward[1]]` represent the rewards received for each leg, respectively.

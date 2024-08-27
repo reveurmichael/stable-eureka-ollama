@@ -1,0 +1,25 @@
+Based on the provided code, the reward function appears to be as follows:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate the reward
+    # The exact formula for calculating the reward is not specified in this code snippet.
+    # However, based on the context and the available information, we can make some assumptions about how the reward might be calculated.
+
+    # Assume that the reward function takes into account the state of the lander (position, velocity, angle, angular velocity)
+    # and the actions taken to get there (main engine power, side engine power).
+    # The reward could also depend on whether the episode has terminated or not.
+
+    if terminated:
+        # If the episode has terminated, give a large negative reward to discourage this state
+        return -1000.0, {'main_engine_power': m_power, 'side_engine_power': s_power}
+    else:
+        # If the episode has not terminated, give a positive reward for moving towards the goal (helipad)
+        x_diff = state[0]  # x position relative to the center of the viewport
+        y_diff = state[1]  # y position relative to the bottom of the viewport
+
+        reward = -abs(x_diff) - abs(y_diff) + m_power + s_power
+        return reward, {'main_engine_power': m_power, 'side_engine_power': s_power}
+```
+
+Please note that this is just an assumption based on the provided code and context. The actual reward function might be different depending on the specific requirements of your reinforcement learning task.

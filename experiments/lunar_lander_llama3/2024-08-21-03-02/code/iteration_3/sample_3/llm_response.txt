@@ -1,0 +1,42 @@
+A reward function!
+
+From the given code, I can see that the reward function is implemented in the `compute_reward` method. Here's what I can infer about the reward design:
+
+1. **Termination condition**: The reward is computed only when the episode is not terminated (i.e., `terminated == False`). This suggests that the reward is designed to encourage the agent to continue exploring the environment.
+2. **State-based reward**: The reward seems to be based on the current state of the environment, specifically:
+	* `state[0]` (x-position) is used as a threshold for termination (`abs(state[0]) >= 1.0`). This implies that the agent should aim to stay within a certain range of the x-axis.
+	* `self.lander.awake` is checked; if it's False, the episode is terminated. This suggests that the agent should keep the lander awake for as long as possible.
+3. **Action-dependent reward**: The reward computation also takes into account the action taken by the agent:
+	* `m_power` (main engine power) and `s_power` (side engine power) are used to compute the reward. This implies that the agent's actions have a direct impact on the reward.
+4. **Individual rewards**: The code suggests that there is an additional reward component, `fitness_score`, which is computed separately and updated in the `individual_reward` dictionary.
+
+Here's my best guess at the reward function:
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        return -1.0  # Termination penalty
+    else:
+        x_pos = state[0]
+        angle = state[4]
+        velocity_x = state[2]
+
+        # Reward for staying close to the target (x-axis)
+        reward_main_engine = np.clip(1.0 - abs(x_pos), 0, 1)
+
+        # Reward for maintaining orientation (angle)
+        reward_orientation = np.clip(np.cos(angle) * 10, 0, 10)
+
+        # Reward for velocity in the x-direction
+        reward_velocity_x = np.clip(velocity_x, 0, 5)
+
+        # Main engine power-based bonus
+        main_engine_bonus = m_power * 2
+
+        # Side engine power-based bonus (if used)
+        side_engine_bonus = s_power * 1.5 if abs(s_power) > 0.5 else 0
+
+        return reward_main_engine + reward_orientation + reward_velocity_x + main_engine_bonus + side_engine_bonus
+```
+
+Please note that this is just an educated guess, and the actual reward function might be different or more complex.

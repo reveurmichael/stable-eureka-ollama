@@ -1,0 +1,29 @@
+A reinforcement learning task!
+
+The reward function is defined in the `compute_reward` method. Based on the provided code, it seems to be a combination of several factors.
+
+Here's my interpretation of the reward function:
+```
+reward = ?  # todo: define the reward function
+individual_reward = individual_reward  # initialize with an empty dictionary
+if terminated:
+    if game_over:
+        reward = -1.0  # penalty for game over
+    else:
+        reward = -10.0  # penalty for not landing safely (abs(state[0]) >= 1.0)
+else:
+    if m_power > 0:  # main engine power?
+        reward += 10.0 * m_power  # bonus for using the main engine
+    if s_power > 0:  # side engine power?
+        reward += 5.0 * s_power  # bonus for using the side engines
+individual_reward.update({'reward': reward})
+return reward, individual_reward
+```
+The reward is composed of:
+
+1. A penalty term (-10.0) when the agent doesn't land safely (i.e., `abs(state[0]) >= 1.0`).
+2. A bonus term for using the main engine (10.0 \* `m_power`) and side engines (5.0 \* `s_power`) when they are applied.
+
+The individual reward dictionary is updated with the computed reward value, along with other possible keys (`fitness_score`, etc.).
+
+Please note that this is an educated guess, as I might have misinterpreted some parts of the code. If you intended something else, please let me know!

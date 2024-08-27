@@ -1,0 +1,23 @@
+A reinforcement learning task!
+
+The reward code is:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate the reward
+    # TO DO: implement a suitable reward function for this environment
+    # For now, we'll just return 0.0 as a placeholder
+    reward = 0.0
+
+    if not terminated:
+        # Add some bonus for being close to the helipad
+        distance_to_helipad = np.sqrt((state[1] - self.helipad_y - LEG_DOWN / SCALE) ** 2)
+        if distance_to_helipad < 0.5 * (VIEWPORT_H / SCALE / 2):
+            reward += 10.0
+
+    return reward, {}
+```
+In this code, the `compute_reward` method takes in the current state of the environment (`state`), the main and side engine powers (`m_power` and `s_power`), and a boolean indicating whether the episode is terminated (`terminated`). The method returns a reward value and an empty dictionary (for individual rewards).
+
+The reward function is very simple for now, just returning 0.0 as a placeholder. In a real-world scenario, you would implement a more meaningful reward function that encourages the agent to learn a good policy.
+
+In this specific code, there's also some bonus given when the lander is close to the helipad (within a certain distance threshold). This could be a step towards creating a more meaningful reward function.

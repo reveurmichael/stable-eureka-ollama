@@ -1,0 +1,63 @@
+Here's a variation of the initial reward proposal:
+
+```Python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.exp(-np.sqrt(x**2 + y**2) / 100.0)
+
+    # Stability reward: penalize tilting and angular velocity
+    angle_penalty = np.tanh(np.abs(angle) / 0.5)
+    angular_velocity_penalty = np.tanh(np.abs(angular_velocity) / 0.5)
+
+    # Velocity reward: penalize high velocities, but encourage slower movements near the landing pad
+    velocity_penalty = -(np.abs(vx) + np.abs(vy))
+    distance_factor = 1 - (np.sqrt(x**2 + y**2) / 100.0)
+    velocity_penalty *= np.clip(distance_factor, 0, 1)
+
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 0
+    if left_leg and right_leg:
+        landing_distance = np.sqrt(x**2 + y**2)
+        landing_reward = 100 * (1 - np.exp(-landing_distance / 10.0))
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.2 * angle_penalty
+              + 0.2 * angular_velocity_penalty
+              + 0.3 * velocity_penalty
+              + 0.01 * fuel_penalty
+              + landing_reward)
+
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+This variation introduces a few changes:
+
+1. The distance-based reward is now an exponential decay function, which means the agent will receive less negative reward as it gets closer to the landing pad.
+
+2. The velocity penalty is adjusted so that the agent receives less penalty for moving slowly near the landing pad.
+
+3. The fuel efficiency penalty remains the same, but the agent may need to adjust its strategy to avoid using the main engine frequently.
+
+4. The landing reward is now based on the distance from the center of the landing pad, with a bonus for successful landings that are closer to the center.
+
+5. The total reward is still a weighted sum of all components, but the weights have been adjusted slightly to emphasize the importance of stability and fuel efficiency.

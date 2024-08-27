@@ -1,0 +1,37 @@
+Let's analyze each existing reward component:
+
+1. **Moving Forward**: The values range from 7.5 to 1570.0, with a mean of 421.95 and a standard deviation of 443.48. This suggests that the moving forward component is primarily responsible for encouraging progress towards the goal.
+2. **Penalty**: The values are very close to each other, with a range of only 0.28 units (from 9.762410837113965 to 10.060602987110546). Given that this component is meant to penalize undesirable behavior, it's likely that these values are too similar and may not provide sufficient contrast for the agent to learn from.
+3. **Fitness Score**: The values are strongly negative, ranging from -100.94304679114379 to -53.73733099672178. This suggests that the fitness score is serving as a penalty component, aiming to minimize a value rather than maximize it.
+4. **Reward**: The values range from 9.762410780967912 to 10.060602900048252, with a mean of 9.94647327862549. This component appears to be a simple scaling factor for the agent's progress.
+
+Based on these analyses, I propose an improved reward function:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    
+    # Re-weighted moving forward component
+    moving_forward_weight = 1.0 if pos[0] > 0 and pos[0] < TERRAIN_GRASS * TERRAIN_STEP else 0.5
+    
+    # Simplify penalty term
+    penalty = -0.001 * (state[6] + state[13])
+    
+    # New reward component: fitness score bonus
+    fitness_score_bonus = np.exp(-(distance_to_goal ** 2) / 1000) * 0.1 if distance_to_goal < 10 else 0
+    
+    # Combine components
+    reward = moving_forward_weight - penalty + fitness_score_bonus
+    
+    individual_reward = {"progress": moving_forward_weight, "moving_forward": moving_forward_weight, "penalty": penalty, "fitness_score_bonus": fitness_score_bonus}
+    
+    return reward, individual_reward
+```
+
+Changes:
+
+* Simplified the penalty term to reduce its impact on the overall reward.
+* Introduced a new component that provides a bonus when the agent is close to the goal (less than 10 units away). This encourages the agent to continue moving forward once it's made progress.
+* Re-weighted the moving forward component to emphasize progress towards the goal, rather than just counting the distance moved.
+
+These changes aim to better align the reward function with the desired behavior of maximizing fitness scores and minimizing undesirable behaviors.

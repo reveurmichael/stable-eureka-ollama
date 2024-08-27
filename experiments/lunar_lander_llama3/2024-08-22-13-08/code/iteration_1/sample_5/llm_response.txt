@@ -1,0 +1,50 @@
+A reward function!
+
+In this case, I'll assume that the goal is to keep the lander alive and stable. Here's a possible reward reflection:
+
+The reward function is designed to encourage the agent to control the lander's movement and orientation while avoiding crashes.
+
+**Key components:**
+
+1. **Survival bonus**: The longer the lander stays alive, the higher the reward. This encourages the agent to make decisions that keep the lander stable.
+2. **Distance from target**: The closer the lander is to the helipad, the higher the reward. This incentivizes the agent to move the lander towards the target location.
+3. **Angle and velocity control**: A small penalty is applied for large deviations in angle and velocity, which encourages the agent to maintain a stable orientation and movement.
+4. **Ground contact bonus**: When all legs are grounded, a bonus is awarded, indicating that the lander is stable and safe.
+
+**Reward calculation:**
+
+The reward function takes into account the current state of the lander (position, angle, velocity, etc.) and calculates a score based on these components. The score is then normalized to fall within a specific range (e.g., -1 to 1).
+
+Here's a rough outline of the reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        # If the lander crashed or fell off the platform, penalize heavily
+        return -10.0, {'crash': -10.0}
+
+    # Calculate survival bonus (the longer the lander stays alive, the higher the reward)
+    survival_bonus = 1.0 + (self.lander.alive_time / MAX_ALIVE_TIME)
+
+    # Calculate distance from target (closer is better)
+    dist_to_target = np.linalg.norm(state[:2] - TARGET_POSITION) / TARGET_RADIUS
+    target_bonus = 1.0 - dist_to_target
+
+    # Calculate angle and velocity control (smaller deviations are better)
+    angle_deviation = np.abs(state[4] - TARGET_ANGLE)
+    vel_deviation = np.linalg.norm([state[2], state[3]]) / MAX_VEL
+    control_penalty = min(angle_deviation, 0.5) + min(vel_deviation, 0.5)
+
+    # Calculate ground contact bonus (all legs grounded? award a bonus!)
+    if all(self.lander.ground_contacts):
+        ground_contact_bonus = 1.0
+    else:
+        ground_contact_bonus = 0.0
+
+    # Combine the components and normalize the reward score
+    reward = survival_bonus * target_bonus - control_penalty + ground_contact_bonus
+    individual_reward = {'survival_bonus': survival_bonus, 'target_bonus': target_bonus,
+                           'control_penalty': control_penalty, 'ground_contact_bonus': ground_contact_bonus}
+
+    return reward, individual_reward
+```
+This is just one possible approach to designing a reward function for this task. The key idea is to incentivize the agent to make decisions that keep the lander stable and safe while moving towards the target location.

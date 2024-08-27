@@ -1,0 +1,33 @@
+A reinforcement learning problem!
+
+The reward function appears to be defined in the `compute_reward` method. Based on the provided code, it seems that the reward is a combination of the following components:
+
+1. **State-based reward**: This might depend on the state values (e.g., position, velocity, angle, angular velocity).
+2. **Action-based reward**:
+	* `m_power`: likely related to the main engine power.
+	* `s_power`: likely related to the side engine power.
+3. **Termination bonus**: If the episode is terminated, this might provide a bonus or penalty.
+
+The specific implementation of the reward function could be something like:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # State-based reward (e.g., -distance from target)
+    state_reward = 0.0
+    if ...:
+        state_reward -= abs(state[0])  # penalize distance from target
+
+    # Action-based reward (e.g., +main engine power or side engine power)
+    action_reward = m_power + s_power
+
+    # Termination bonus (e.g., -1 for termination, +1 for success)
+    if terminated:
+        termination_bonus = -1.0
+    else:
+        termination_bonus = 1.0
+
+    reward = state_reward + action_reward + termination_bonus
+    return reward, {"m_power": m_power, "s_power": s_power}
+```
+
+Please note that this is just an educated guess based on the provided code. The actual implementation of the reward function might be different.

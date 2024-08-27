@@ -1,0 +1,11 @@
+def compute_reward(self, pos, action, state):
+    # Re-weight the penalty term
+    penalty_weight = 0.5
+    
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+    
+    reward = 1 if moving_forward else 0.5 - penalty_weight * (state[6] + state[13])
+    
+    individual_reward = {"progress": 1 if moving_forward else 0.5, "penalty": -penalty_weight * (state[6] + state[13])}
+    
+    return reward, individual_reward

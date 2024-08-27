@@ -1,0 +1,49 @@
+Based on the analysis of the policy feedback, I propose an improved reward function. Here are my observations and suggestions:
+
+1. The "distance-based reward" is not scaled properly, as its values range from -24 to -39. Let's scale it by a larger factor (e.g., 1000) to make it more significant.
+2. The "height penalty" has a wide range of values (-150 to 0). Let's re-scale it to a smaller magnitude and adjust the temperature parameter to make it more sensitive to changes in height.
+3. The "velocity penalty" is not very effective, as its values are close to zero. Let's remove this component or re-design it to better penalize high velocities.
+4. The "fuel penalty" seems to be working well, so we can keep it unchanged.
+5. The "landing reward" has a clear pattern of increasing values when the lander lands successfully. Let's keep it as is.
+
+Based on these observations, I propose the following improved reward function:
+
+```python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2) * 1000.0
+    
+    # Height reward: keep the lander at a reasonable height
+    height_penalty = -(y - self.helipad_y) ** 2 / 10.0
+    height_penalty = np.tanh(height_penalty)
+    
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+    
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if left_leg and right_leg else 10
+    
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.5 * height_penalty
+              + 0.01 * fuel_penalty
+              + landing_reward)
+    
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+    
+    return reward, individual_reward
+```
+
+This improved reward function should better guide the policy to achieve successful landings while avoiding crashes and high velocities.

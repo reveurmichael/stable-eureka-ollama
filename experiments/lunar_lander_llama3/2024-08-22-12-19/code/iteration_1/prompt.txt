@@ -1,0 +1,284 @@
+You are a reward engineer writing effective reward functions for reinforcement learning tasks. Your goal is to create a reward function to help the agent learn the task described in text. Use relevant environment variables as inputs. Example signature:
+```python
+def compute_reward(self, ...):
+    ...
+    return reward, {}
+```
+Do not use type hints. Return type: float, Dict[str, float].
+Coding instructions: The reward function output should include:
+1. Total reward (float)
+2. Dictionary of individual reward components
+Format as a Python code string: "```python ... ```". Tips:
+1. Normalize rewards using transformations like np.exp. Introduce temperature parameters for each transformation.
+2. Ensure input types match expected types.
+3. Use only self. attributes from the environment class definition and input variables.
+4. If you create a self var inside the compute_reward function you must consider that it is not previously defined in the environment class:
+    e.g. if hasattr(self, 'var') is False: self.var = 0 else self.var += 1
+5. No new input variables.
+6. The python code must begin with: "```python ... ```"
+7. Pass self as the first argument.
+8. Do not compute fitness_score components.
+9. Only create the reward function, do not create more functions.
+10. Try to make everything smooth (when possible).
+Provide the function code only, followed by a brief explanation (max 50 words).
+Task description: This environment is a classic rocket trajectory optimization problem. It is optimal to fire the engine at full throttle or turn it off. This is the reason why this environment has discrete actions: engine on or off.
+The landing pad is always at coordinates (0,0). The coordinates are the first two numbers in the state vector. Landing outside of the landing pad is possible. Fuel is infinite, so an agent can learn to fly and then land on its first attempt.
+The goal is to land at the pad in the middle of the two flags, as fast as possible, with the least fuel spent. The lander starts at the top center of the viewport with a random initial force applied to its center of mass.
+Action Space: There are four discrete actions available:
+    0: do nothing
+    1: fire left orientation engine
+    2: fire main engine
+    3: fire right orientation engine
+Observation Space: The state is an 8-dimensional vector: the coordinates of the lander in x & y, its linear velocities in x & y, its angle, its angular velocity, and two booleans that represent whether each leg is in contact with the ground or not.
+The episode finishes if:
+    1) the lander crashes (the lander body gets in contact with the moon);
+    2) the lander gets outside of the viewport (`x` coordinate is greater than 1);
+    3) the lander is not awake.
+Environment code:
+def step(self, action):
+    assert self.lander is not None
+
+    # Update wind and apply to the lander
+    assert self.lander is not None, "You forgot to call reset()"
+    if self.enable_wind and not (
+            self.legs[0].ground_contact or self.legs[1].ground_contact
+    ):
+        # the function used for wind is tanh(sin(2 k x) + sin(pi k x)),
+        # which is proven to never be periodic, k = 0.01
+        wind_mag = (
+                math.tanh(
+                    math.sin(0.02 * self.wind_idx)
+                    + (math.sin(math.pi * 0.01 * self.wind_idx))
+                )
+                * self.wind_power
+        )
+        self.wind_idx += 1
+        self.lander.ApplyForceToCenter(
+            (wind_mag, 0.0),
+            True,
+        )
+
+        # the function used for torque is tanh(sin(2 k x) + sin(pi k x)),
+        # which is proven to never be periodic, k = 0.01
+        torque_mag = math.tanh(
+            math.sin(0.02 * self.torque_idx)
+            + (math.sin(math.pi * 0.01 * self.torque_idx))
+        ) * (self.turbulence_power)
+        self.torque_idx += 1
+        self.lander.ApplyTorque(
+            (torque_mag),
+            True,
+        )
+
+    if self.continuous:
+        action = np.clip(action, -1, +1).astype(np.float32)
+    else:
+        assert self.action_space.contains(
+            action
+        ), f"{action!r} ({type(action)}) invalid "
+
+    # Apply Engine Impulses
+
+    # Tip is a the (X and Y) components of the rotation of the lander.
+    tip = (math.sin(self.lander.angle), math.cos(self.lander.angle))
+
+    # Side is the (-Y and X) components of the rotation of the lander.
+    side = (-tip[1], tip[0])
+
+    # Generate two random numbers between -1/SCALE and 1/SCALE.
+    dispersion = [self.np_random.uniform(-1.0, +1.0) / SCALE for _ in range(2)]
+
+    m_power = 0.0
+    if (self.continuous and action[0] > 0.0) or (
+            not self.continuous and action == 2
+    ):
+        # Main engine
+        if self.continuous:
+            m_power = (np.clip(action[0], 0.0, 1.0) + 1.0) * 0.5  # 0.5..1.0
+            assert m_power >= 0.5 and m_power <= 1.0
+        else:
+            m_power = 1.0
+
+        # 4 is move a bit downwards, +-2 for randomness
+        # The components of the impulse to be applied by the main engine.
+        ox = (
+                tip[0] * (MAIN_ENGINE_Y_LOCATION / SCALE + 2 * dispersion[0])
+                + side[0] * dispersion[1]
+        )
+        oy = (
+                -tip[1] * (MAIN_ENGINE_Y_LOCATION / SCALE + 2 * dispersion[0])
+                - side[1] * dispersion[1]
+        )
+
+        impulse_pos = (self.lander.position[0] + ox, self.lander.position[1] + oy)
+        if self.render_mode is not None:
+            # particles are just a decoration, with no impact on the physics, so don't add them when not rendering
+            p = self._create_particle(
+                3.5,  # 3.5 is here to make particle speed adequate
+                impulse_pos[0],
+                impulse_pos[1],
+                m_power,
+            )
+            p.ApplyLinearImpulse(
+                (
+                    ox * MAIN_ENGINE_POWER * m_power,
+                    oy * MAIN_ENGINE_POWER * m_power,
+                ),
+                impulse_pos,
+                True,
+            )
+        self.lander.ApplyLinearImpulse(
+            (-ox * MAIN_ENGINE_POWER * m_power, -oy * MAIN_ENGINE_POWER * m_power),
+            impulse_pos,
+            True,
+        )
+
+    s_power = 0.0
+    if (self.continuous and np.abs(action[1]) > 0.5) or (
+            not self.continuous and action in [1, 3]
+    ):
+        # Orientation/Side engines
+        if self.continuous:
+            direction = np.sign(action[1])
+            s_power = np.clip(np.abs(action[1]), 0.5, 1.0)
+            assert s_power >= 0.5 and s_power <= 1.0
+        else:
+            # action = 1 is left, action = 3 is right
+            direction = action - 2
+            s_power = 1.0
+
+        # The components of the impulse to be applied by the side engines.
+        ox = tip[0] * dispersion[0] + side[0] * (
+                3 * dispersion[1] + direction * SIDE_ENGINE_AWAY / SCALE
+        )
+        oy = -tip[1] * dispersion[0] - side[1] * (
+                3 * dispersion[1] + direction * SIDE_ENGINE_AWAY / SCALE
+        )
+
+        # The constant 17 is a constant, that is presumably meant to be SIDE_ENGINE_HEIGHT.
+        # However, SIDE_ENGINE_HEIGHT is defined as 14
+        # This casuses the position of the thurst on the body of the lander to change, depending on the orientation of the lander.
+        # This in turn results in an orientation depentant torque being applied to the lander.
+        impulse_pos = (
+            self.lander.position[0] + ox - tip[0] * 17 / SCALE,
+            self.lander.position[1] + oy + tip[1] * SIDE_ENGINE_HEIGHT / SCALE,
+        )
+        if self.render_mode is not None:
+            # particles are just a decoration, with no impact on the physics, so don't add them when not rendering
+            p = self._create_particle(0.7, impulse_pos[0], impulse_pos[1], s_power)
+            p.ApplyLinearImpulse(
+                (
+                    ox * SIDE_ENGINE_POWER * s_power,
+                    oy * SIDE_ENGINE_POWER * s_power,
+                ),
+                impulse_pos,
+                True,
+            )
+        self.lander.ApplyLinearImpulse(
+            (-ox * SIDE_ENGINE_POWER * s_power, -oy * SIDE_ENGINE_POWER * s_power),
+            impulse_pos,
+            True,
+        )
+
+    self.world.Step(1.0 / FPS, 6 * 30, 2 * 30)
+
+    pos = self.lander.position
+    vel = self.lander.linearVelocity
+
+    state = [
+        (pos.x - VIEWPORT_W / SCALE / 2) / (VIEWPORT_W / SCALE / 2),
+        (pos.y - (self.helipad_y + LEG_DOWN / SCALE)) / (VIEWPORT_H / SCALE / 2),
+        vel.x * (VIEWPORT_W / SCALE / 2) / FPS,
+        vel.y * (VIEWPORT_H / SCALE / 2) / FPS,
+        self.lander.angle,
+        20.0 * self.lander.angularVelocity / FPS,
+        1.0 if self.legs[0].ground_contact else 0.0,
+        1.0 if self.legs[1].ground_contact else 0.0,
+    ]
+    assert len(state) == 8
+
+    terminated = False
+    if self.game_over or abs(state[0]) >= 1.0:
+        terminated = True
+    if not self.lander.awake:
+        terminated = True
+
+    reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)
+
+    if self.render_mode == "human":
+        self.render()
+
+    fitness_score = self.compute_fitness_score(state, m_power, s_power, terminated)
+    individual_reward.update({'fitness_score': fitness_score})
+
+    return np.array(state, dtype=np.float32), reward, terminated, False, individual_reward
+
+Reward reflection:
+We trained a RL policy using the provided reward function code and tracked (on evaluation on several points of the training stage) the values of individual reward components, along with global policy metrics such as fitness scores and episode lengths. Maximum, mean, and minimum are provided:
+   distance_reward: [-0.8216406099629022, -0.8280589180939731, -0.8280589180939731, -0.8280589180939731, -0.8280589180939731, -0.8423354672161999, -0.8224618459951939, -0.8257347053475759, -0.8224855788563408, -0.8645816150017118]. Max: -0.8216406099629022 - Mean: -0.8311475494755817 - Min: -0.8645816150017118 
+   height_penalty: [-77.5486646654302, -78.14869711516289, -78.14869711516289, -78.14869711516289, -78.14869711516289, -80.94869687190996, -77.34869689581893, -77.94869292956594, -77.34869684167734, -82.94869711406281]. Max: -77.34869684167734 - Mean: -78.66869337791168 - Min: -82.94869711406281 
+   velocity_penalty: [-62.65003522397567, -63.053922441156445, -63.053922441156445, -63.053922441156445, -63.053922441156445, -65.04217741761465, -62.66837183731333, -63.22576303354623, -62.61135861458879, -63.705934420425976]. Max: -62.61135861458879 - Mean: -63.211933031209036 - Min: -65.04217741761465 
+   fuel_penalty: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]. Max: 0.0 - Mean: 0.0 - Min: 0.0 
+   landing_reward: [28.0, 22.0, 22.0, 22.0, 22.0, 24.0, 24.0, 24.0, 24.0, 28.0]. Max: 28.0 - Mean: 24.0 - Min: 22.0 
+   fitness_score: [-123.32263018864928, -150.18294920194262, -150.18294920194262, -150.18294920194262, -150.18294920194262, -112.57454949088392, -134.24522949121186, -107.47654404559566, -136.14002034371578, -101.50855495476853]. Max: -101.50855495476853 - Mean: -131.59993253225954 - Min: -150.18294920194262 
+   reward: [-39.65639066398144, -85.9847599118948, -85.9847599118948, -85.9847599118948, -85.9847599118948, -105.55316337049007, -103.62638723552227, -104.02835658490658, -103.59790655076503, -61.30728796124458]. Max: -39.65639066398144 - Mean: -86.17085320144892 - Min: -105.55316337049007 
+   episode_length: [77.6, 78.2, 78.2, 78.2, 78.2, 81.0, 77.4, 78.0, 77.4, 83.0]. Max: 83.0 - Mean: 78.72 - Min: 77.4 
+
+Please analyze the policy feedback and provide an improved reward function to better solve the task. Tips for analyzing feedback:
+1. If a reward component's values are nearly identical, or it increases when it should decrease (minimize) and vice versa, consider the following options:
+    a. Change its scale or temperature parameter.
+    b. Re-write the component.
+    c. Discard the component.
+2. If a component's magnitude is significantly larger, re-scale it.
+3. You want to maximize the fitness score as it is the ground truth evaluator.
+4. You want to maximize positive reward components values during training and minimize negative reward components values.
+5. If the fitness score is not improving during training, try to change the reward function.
+Analyze each existing reward component first, then write the new reward function code proposal.Stable-Eureka best iteration  (you should modify it!): 
+    # Generated code by stable-eureka
+    def compute_reward(self, state, action, next_state, terminated):
+        # Unpack state variables
+        x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+    
+        # Distance-based reward: incentivize moving towards the landing pad
+        distance_reward = -np.sqrt(x**2 + y**2)
+        distance_reward = np.exp(distance_reward / 100.0) - 1
+    
+        # Height reward: keep the lander at a reasonable height
+        height_penalty = -(y - self.helipad_y) ** 2
+        height_penalty = np.tanh(height_penalty / 1.0)
+    
+        # Velocity penalty: discourage high velocities
+        velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2
+        velocity_penalty = np.tanh(velocity_penalty / 1.0)
+    
+        # Fuel efficiency reward: penalize using the main engine
+        fuel_penalty = -1 if action == 2 else 0
+    
+        # Landing reward: bonus for successful landing
+        landing_reward = 0
+        if left_leg and right_leg:
+            landing_reward = 100 if abs(x) < 0.1 and abs(y) < 0.1 else 10
+    
+        # Total reward: a weighted sum of all components
+        reward = (distance_reward
+                  + 0.2 * height_penalty
+                  + 0.5 * velocity_penalty
+                  + 0.01 * fuel_penalty
+                  + landing_reward)
+    
+        # Apply a penalty if the episode is terminated (crash or out of bounds)
+        if terminated and not (left_leg and right_leg):
+            reward -= 100
+    
+        individual_reward = {
+            "distance_reward": distance_reward,
+            "height_penalty": height_penalty,
+            "velocity_penalty": velocity_penalty,
+            "fuel_penalty": fuel_penalty,
+            "landing_reward": landing_reward,
+        }
+    
+        return reward, individual_reward
+
+The next training will take the best model weights so it reuses some of the relevant information from the previous training!
+Your reward code is: 

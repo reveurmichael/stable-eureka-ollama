@@ -1,0 +1,45 @@
+A reward engineering problem!
+
+Given the dynamics of the lunar lander simulation and the state observations provided, I would suggest the following reward function:
+
+**Reward Function:**
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    # Reward structure:
+    # - Penalties for being too far from the target (-10 per unit)
+    # - Penalties for not being awake and ready to land (-5 if not awake)
+    # - Bonus for a successful landing (+100 if landed safely)
+    # - Small bonus for using main engines (+2 for every 0.1 seconds of main engine usage)
+    # - Bonus for side engine usage (+5 for every 0.1 seconds of side engine usage)
+
+    reward = 0
+
+    if terminated:
+        # Game over, calculate a final reward
+        if state[0] >= 1.0:  # successfully landed
+            reward += 100
+        else:
+            reward -= 10 * abs(state[0])  # penalty for not landing
+
+        if not self.lander.awake:  # not awake and ready to land
+            reward -= 5
+
+    else:
+        # Ongoing reward calculation
+        reward -= 10 * abs(state[0])  # penalty for being too far from the target
+        if m_power > 0:  # using main engines
+            reward += 2 * (m_power / 0.1)  # bonus for main engine usage
+
+        if s_power > 0:  # using side engines
+            reward += 5 * (s_power / 0.1)  # bonus for side engine usage
+
+    return -reward, individual_reward
+```
+
+This reward function aims to balance the exploration-exploitation tradeoff by providing a mix of intrinsic and extrinsic rewards. The primary goal is to encourage the agent to land safely while minimizing penalties for being too far from the target.
+
+**Notes:**
+
+* The `individual_reward` dictionary should be updated with the calculated reward and fitness score.
+* In the final state, we only calculate a single reward value that reflects the success or failure of the landing.

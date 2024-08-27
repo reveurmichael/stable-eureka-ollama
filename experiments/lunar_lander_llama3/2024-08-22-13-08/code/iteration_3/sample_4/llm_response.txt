@@ -1,0 +1,37 @@
+A reinforcement learning task!
+
+From the given code, I can see that the reward function is not explicitly defined. However, I can infer that the reward is computed based on the state of the lander and the actions taken.
+
+Here's my interpretation of the reward code:
+
+The `compute_reward` method takes in the following inputs:
+
+1. `state`: A list of 8 values representing the position, velocity, angle, angular velocity, and leg contacts.
+2. `m_power` and `s_power`: The powers applied by the main engine and side engines, respectively.
+
+The reward is computed based on the state and the actions taken. Here's a possible implementation:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define a base reward that depends on the position of the lander
+    base_reward = -abs(state[0])  # penalize being far from the origin
+
+    # If the lander is terminated (game over or too far away), set the reward to a negative value
+    if terminated:
+        return -100.0, {}
+
+    # Apply rewards based on the main engine power and side engine power
+    if m_power > 0.5:  # positive reward for using the main engine
+        base_reward += 10.0
+    else:
+        base_reward -= 5.0  # penalty for not using the main engine
+
+    if s_power > 0.5:  # positive reward for using the side engines
+        base_reward += 5.0
+    else:
+        base_reward -= 2.5  # penalty for not using the side engines
+
+    return base_reward, {}
+```
+In this example, the reward is a function of the position of the lander (penalizing being far from the origin), as well as the powers applied by the main engine and side engines. The rewards are positive if the lander is moving towards the origin and using the main or side engines effectively, and negative otherwise.
+
+Note that this is just one possible implementation of the reward function, and you may need to adjust it based on your specific problem and goals.

@@ -1,0 +1,26 @@
+The reward code is not explicitly shown in this code snippet. However, the `compute_reward` method is defined elsewhere in the class. 
+
+Here's a possible implementation of the `compute_reward` method based on the provided code:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define reward function
+    reward = 0.0
+    
+    if not terminated: 
+        # Reward for being close to the landing site and having a certain velocity
+        reward += (1 - abs(state[0])) * 10 + (1 - abs(state[2])) * 5
+        
+        # Penalties for using too much main engine thrust or side engines
+        if m_power > 0.5:
+            reward -= 1
+        if s_power > 0.5:
+            reward -= 1
+            
+    else:
+        # Penalty for crashing or not being close to the landing site when terminated
+        if abs(state[0]) >= 1.0:
+            reward -= 10
+    
+    return reward, {'main_engine_power': m_power, 'side_engine_power': s_power}
+```
+This is a simple example of a reward function that encourages the agent to land softly and efficiently by minimizing the use of main engine thrust and side engines. The reward is updated based on the state of the environment (position, velocity, and presence/absence of ground contact) and whether the episode has terminated.

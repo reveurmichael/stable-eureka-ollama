@@ -1,0 +1,30 @@
+def compute_reward(self, state, action, next_state, terminated):
+    # ... (same as before)
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2) * 5.0  # scale up
+
+    # Height reward: keep the lander at a reasonable height
+    height_penalty = -(y - self.helipad_y) ** 2 * 0.5  # reduce tanh effect
+
+    # Velocity penalty: discourage high velocities
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2 * 1.5  # increase magnitude
+
+    # Total reward: a weighted sum of all components (normalized)
+    reward = (distance_reward / 100.0 +
+              height_penalty / 10.0 +
+              velocity_penalty / 50.0 +
+              fuel_penalty + landing_reward)
+
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward

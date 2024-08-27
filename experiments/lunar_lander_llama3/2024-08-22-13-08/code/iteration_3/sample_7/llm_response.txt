@@ -1,0 +1,17 @@
+Here's a possible reward function based on the given code:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate the reward based on the position and velocity
+    reward = -abs(state[0]) - abs(state[2])
+
+    # If the game is over or the lander has gone out of bounds, set a large penalty
+    if terminated:
+        reward -= 10.0
+
+    return reward, {'position': -abs(state[0]), 'velocity': -abs(state[2]), 'termination': -10.0 if terminated else 0.0}
+```
+
+In this code, the reward is based on the position and velocity of the lander. The closer the lander is to the center (x=0) and the slower it's moving, the better the reward. If the game is over or the lander has gone out of bounds, a large penalty is added to discourage such behavior.
+
+This reward function encourages the agent to reach the center of the viewport and move slowly while keeping away from the boundaries.

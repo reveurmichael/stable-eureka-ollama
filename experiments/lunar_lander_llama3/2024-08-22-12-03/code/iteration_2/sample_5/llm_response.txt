@@ -1,0 +1,17 @@
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # The lander has crashed
+    if terminated:
+        return -1.0, {}
+
+    # Calculate the reward based on the position and velocity of the lander
+    pos_x = (state[0] + 1) / 2  # Map the x-position to a value between 0 and 1
+    pos_y = (state[1] + 1) / 2  # Map the y-position to a value between 0 and 1
+
+    reward = -10.0 * (pos_x ** 2 + pos_y ** 2)  # Quadratic penalty for being far from the target
+    reward -= abs(state[3])  # Penalty for moving vertically
+    reward -= abs(state[4])  # Penalty for moving horizontally
+
+    return reward, {}
+```
+This reward function is designed to encourage the lander to move towards the center of the screen (x=0 and y=self.helipad_y+LEG_DOWN), while also penalizing vertical and horizontal movement. The reward is calculated as a weighted sum of these factors, with the quadratic penalty term dominating.

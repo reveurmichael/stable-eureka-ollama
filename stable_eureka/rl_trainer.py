@@ -196,18 +196,31 @@ class RLTrainer:
                                              logger=logger,
                                              name=self._name)
 
-        # if self._pretrained_model is None:
-        #     model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
-        # else:
-        #     model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
-        #                                                                     **self._params)
-
         if self._pretrained_model is None:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
         else:
             model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
-                                                                            **self._params, strict=False)
+                                                                            **self._params)
+          
+        # def remove_prefix(state_dict):
+        #     new_state_dict = {}
+        #     for key, value in state_dict.items():
+        #         if key.startswith('_orig_mod.'):
+        #             new_key = key[len('_orig_mod.'):]
+        #             new_state_dict[new_key] = value
+        #         else:
+        #             new_state_dict[key] = value
+        #     return new_state_dict
 
+        # ... 在 RLTrainer 类的 run 方法中 ...
+        # if self._pretrained_model is None:
+        #     model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
+        # else:
+        #     state_dict = torch.load(self._pretrained_model)
+        #     new_state_dict = remove_prefix(state_dict)  # 使用remove_prefix函数去除指定前缀
+        #     model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
+        #     model.load_state_dict(new_state_dict, strict=False)
+                
         if self._config['training'].get('torch_compile', False):
             torch.set_float32_matmul_precision('high')
             model.policy = torch.compile(model.policy)

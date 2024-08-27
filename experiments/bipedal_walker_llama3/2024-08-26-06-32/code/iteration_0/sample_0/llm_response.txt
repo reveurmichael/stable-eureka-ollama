@@ -1,0 +1,20 @@
+Here's an example of a simple penalty function using Python:
+```python
+import numpy as np
+
+def compute_repayment(distance颁奖_距离), angle_penalty(angle颁奖_角度)), obstacle_penalty(obstacle颁奖_角度)))
+
+rewards = compute_repayment(0.1), 5.0, 9.0)
+
+individual_rewards = compute_repayment(0.1), 5.0, [10.0 for _ in range(3)]])
+
+print("Original Reward:")
+print(rewards[0]])
+
+print("\nIndividual Reward:")
+for index, reward in enumerate(individual_rewards)):
+    print(f"{index+1}}. Reward: {reward}")
+```
+This code defines a simple penalty function that calculates the reward based on the distance颁奖_距离 and angle颁奖_角度 between the camera and the ground. The individual rewards are calculated by summing up 3 elements for each individual reward.
+You can modify this code to suit your specific needs, such as changing the distance颁奖_距离 and angle颁奖_角度 values, or adding more individual rewards elements.
+It's also essential to consider the implementation details of your penalty function, such as how you calculate the distance颁奖_distance and angle颁奖_angle values, or how you add individual reward elements to your penalty function.

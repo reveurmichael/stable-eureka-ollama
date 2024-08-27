@@ -1,0 +1,56 @@
+Here's a variation of the initial reward proposal:
+
+```
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.exp(-((x-0.5)**2 + (y-0.5)**2) / 100.0)
+    distance_reward *= np.exp(10*(abs(x)-1.0))
+
+    # Stability reward: penalize tilting and angular velocity
+    angle_penalty = -np.abs(angle)
+    angle_penalty = np.tanh(angle_penalty / 0.5)
+
+    angular_velocity_penalty = -np.abs(angular_velocity)
+    angular_velocity_penalty = np.tanh(angular_velocity_penalty / 0.5)
+
+    # Velocity reward: penalize high velocities and incentivize deceleration
+    velocity_reward = -(np.abs(vx) + np.abs(vy))
+    if abs(x) < 0.1 and abs(y) < 0.1:
+        velocity_reward += 10
+
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 0
+    if left_leg and right_leg:
+        landing_reward = 100 if abs(x) < 0.1 and abs(y) < 0.1 else 10
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.1 * angle_penalty
+              + 0.1 * angular_velocity_penalty
+              + 0.5 * velocity_reward
+              + 0.01 * fuel_penalty
+              + landing_reward)
+
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "velocity_reward": velocity_reward,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+This variation adds more weight to the distance-based reward and adjusts the penalty for high velocities to incentivize deceleration when the lander is near the landing pad.

@@ -1,0 +1,29 @@
+Let's analyze each existing reward component:
+
+1. `velocity`: The values are quite spread out (1.3 to 10.4), but there doesn't seem to be a clear pattern or correlation with the desired outcome (maximizing fitness score). Since we want to maximize positive reward components, I'll consider re-scaling this component.
+2. `distance_to_goal`: The values are much larger than the others (min: 11,666; max: 223,188), which is expected since it measures the distance to the goal. However, there doesn't seem to be a clear correlation with the fitness score. Since we want to minimize this component, I'll consider re-scaling it.
+3. `fitness_score`: The values are mostly negative (min: -103; max: -27), which is expected since we're trying to maximize the fitness score. However, there doesn't seem to be a clear correlation with the other reward components.
+
+Based on this analysis, I'll propose an improved reward function:
+
+```
+def compute_reward(self, pos, action, state):
+    hull_angle = (state[0] + math.pi) % (2 * math.pi) - math.pi
+    vel_x = state[3]
+    dist_to_goal = (pos[0] - TERRAIN_LENGTH) / TERRAIN_STEP
+    
+    reward = 10.0 * np.exp(1) * (np.cos(hull_angle)) + 5.0 * np.abs(vel_x) - 0.001 * np.exp(2) * dist_to_goal
+    individual_reward = {'hull_alignment': 10.0 * np.exp(1) * (np.cos(hull_angle)),
+                           'velocity': 5.0 * np.abs(vel_x),
+                           'distance_to_goal': -0.001 * np.exp(2) * dist_to_goal}
+    
+    return reward, individual_reward
+```
+
+Changes:
+
+* Scaled `velocity` component by a factor of 5 to make it more relevant.
+* Re-scaled `distance_to_goal` component by a factor of 1000 to make it less dominant and more comparable to the other components.
+* Kept the `hull_alignment` component mostly unchanged, as it seems to be correlated with the fitness score.
+
+This new reward function should better encourage the agent to align its hull, maintain positive velocity, and minimize distance to the goal.

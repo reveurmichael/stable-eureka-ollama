@@ -1,0 +1,44 @@
+Here's a variation of the initial reward proposal:
+
+```Python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 100.0) - 1
+
+    # Velocity reward: penalize high velocities and encourage stability
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) * (1 - np.abs(angle))
+    velocity_penalty = np.tanh(velocity_penalty / 1.0)
+
+    # Fuel efficiency reward: penalize using the main engine, especially when not near the landing pad
+    fuel_penalty = -m_power if abs(x) > 5 or abs(y) > 5 else 0
+
+    # Stability reward: incentivize stable hovering and penalize tilting
+    stability_reward = np.exp(-angle**2 / 0.1)
+    stability_reward -= np.abs(angular_velocity) * (1 - stability_reward)
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if left_leg and right_leg else 10
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.5 * velocity_penalty
+              + 0.2 * stability_reward
+              + 0.1 * fuel_penalty
+              + landing_reward)
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "stability_reward": stability_reward,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+This variation introduces a stability reward that incentivizes stable hovering and penalizes tilting. It also adjusts the fuel efficiency penalty to be more severe when the lander is far from the landing pad. The distance-based reward remains unchanged.

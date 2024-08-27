@@ -1,0 +1,8 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate reward based on the current state and actions taken
+    if self.lander.position[0] >= 1.0:
+        return 1.0, {'success': True}
+    elif abs(state[0]) > 0.5 or abs(state[1]) > 0.2:
+        return -1.0, {'crash': True}
+    else:
+        return 0.01, {}

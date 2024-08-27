@@ -1,0 +1,20 @@
+```python
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    x_velocity = state[2]
+
+    if self.game_over or pos[0] < 0:
+        return -1.0, {'game_over': -1.0}
+
+    # Reward for moving forward and staying upright
+    forward_reward = np.exp(x_velocity / 0.5) * (1 - np.abs(hull_angle) / np.pi)
+    individual_reward = {'forward_reward': forward_reward}
+
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        return 10.0, individual_reward
+
+    # Penalty for falling or getting stuck
+    fall_penalty = 1.0 if not all([leg.ground_contact for leg in self.legs]) else 0.0
+    individual_reward['fall_penalty'] = -1.0 * fall_penalty
+
+    return sum(individual_reward.values()), individual_reward

@@ -1,0 +1,45 @@
+Based on the provided feedback, I'll analyze each existing reward component and then propose a new reward function.
+
+**Analysis**
+
+1. **penalty**: The values are close to 9.9-10.06, which suggests that this component is not contributing much to the overall reward. Considering its magnitude is significantly larger than other components, it's likely causing the policy to focus too much on avoiding penalty rather than making progress.
+2. **fitness_score**: This is the ground truth evaluator and should be maximized during training.
+3. **reward**: The values are close to 9.9-10.06, similar to the penalty component. This suggests that this component may not be providing enough differentiation between good and bad actions.
+4. **episode_length**: Since episode length is fixed at 1600.0 for all episodes, it's not contributing much to the overall reward.
+
+**Proposal**
+
+To address the issues identified above, I'll modify the existing reward function to:
+
+1. Scale down the penalty component to make it less dominant in the overall reward.
+2. Introduce a new component that encourages making progress towards the goal (fitness score).
+3. Modify the existing moving_forward component to provide more differentiation between good and bad actions.
+
+Here's the proposed new reward function code:
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+
+    # Scaled-down penalty component
+    penalty = -0.001 * (state[6] + state[13])
+
+    # New progress component to encourage moving towards the goal
+    progress = np.exp(-(distance_to_goal ** 2) / 1000)
+
+    # Modified moving_forward component with more differentiation
+    moving_forward_reward = 1 if moving_forward else -0.5
+
+    reward = progress + moving_forward_reward + penalty
+
+    individual_reward = {
+        "progress": progress,
+        "moving_forward": moving_forward_reward,
+        "penalty": penalty
+    }
+
+    return reward, individual_reward
+```
+This new reward function aims to balance the importance of making progress towards the goal, avoiding penalty, and taking actions that move forward. The `progress` component now encourages moves closer to the goal, while the `moving_forward` component provides more differentiation between good and bad actions. The `penalty` component has been scaled down to make it less dominant in the overall reward.
+
+The next training will use this new reward function, which should help improve the policy's performance!

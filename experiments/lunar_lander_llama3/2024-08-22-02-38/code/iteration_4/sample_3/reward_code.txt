@@ -1,0 +1,23 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward structure: positive rewards for successful landing, negative rewards for crashing or losing altitude
+    if terminated:
+        if self.game_over:  # Game over (crashed)
+            return -100.0, {}
+        else:  # Not game over (still falling)
+            return -50.0, {}
+
+    # Reward for landing successfully (within a certain distance from the helipad)
+    distance_to_helipad = np.sqrt((state[1] - self.helipad_y) ** 2 + state[0] ** 2)
+    if distance_to_helipad < HELIPAD_LANDING_RADIUS:
+        return 100.0, {'landing': True}
+
+    # Reward for maintaining altitude and orientation
+    if abs(state[3]) < ALITUDE_TOLERANCE and abs(state[4]) < ORIENTATION_TOLERANCE:
+        return 10.0, {}
+
+    # Penalty for losing altitude or orientation
+    if abs(state[3]) > ALITUDE_PENALTY_THRESHOLD or abs(state[4]) > ORIENTATION_PENALTY_THRESHOLD:
+        return -20.0, {}
+
+    # Default reward (no landing or penalties)
+    return 5.0, {}

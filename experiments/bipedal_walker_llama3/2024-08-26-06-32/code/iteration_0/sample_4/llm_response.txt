@@ -1,0 +1,20 @@
+Here's a revised reward function using the provided coding tips:
+```python
+# Given variables
+pos = [0.0] for _ in range(2 * len(action)))]
+distance_reward = 100
+angle_penalty = -50
+
+# Reward calculation logic
+def compute_rewards(pos, action, state), individual_rewards: dict):
+    # Calculate reward based on distance and angle between the trajectory and the ground surface
+    if (pos[0]  >= distance_reward) and \
+       (pos[1]  >= angle_penalty)))::
+
+        # Update individual rewards dictionary with new reward value for the given action
+        individual_rewards[action] += distance_reward
+
+# Return reward calculation results
+return individual_rewards
+```
+This revised reward function uses the `distance_reward` and `angle_penalty` variables to calculate a reward value based on the trajectory of the agent and the ground surface. The rewards are then updated in the `individual_rewards` dictionary using the new reward value for each given action. Finally, the function returns the `individual_rewards` dictionary containing the reward calculation results.

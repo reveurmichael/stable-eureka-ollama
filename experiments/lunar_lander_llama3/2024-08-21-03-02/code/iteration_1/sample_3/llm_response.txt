@@ -1,0 +1,38 @@
+A reinforcement learning problem!
+
+The reward function in this code is:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward structure:
+    # - Penalty for being far from the landing pad
+    # - Reward for being close to the landing pad and moving down
+    # - Penalty for crashing or going out of bounds
+    # - Small reward for using main engines
+    # - Small penalty for using side engines
+
+    x = state[0]
+    y = state[1]
+
+    if terminated:
+        return 0.0, {}
+
+    if abs(x) >= 1.0:  # crashed or out of bounds
+        return -100.0, {"crash": True}
+
+    if y < -0.95:  # close to the landing pad and moving down
+        if m_power > 0:
+            return 10.0 + (2 * m_power), {"close_to_landing": True}
+        else:
+            return 5.0, {"close_to_landing": True}
+
+    return -1.0, {}
+```
+
+The reward function is designed to encourage the agent to:
+
+* Move closer to the landing pad and then land safely
+* Use main engines to slow down before landing
+* Avoid using side engines too much
+
+The reward structure consists of a penalty for being far from the landing pad (proportional to `abs(x)`), a small reward for being close to the landing pad and moving down (proportional to `y`), and a large penalty for crashing or going out of bounds (set to `-100.0`). Additionally, there is a small reward for using main engines (`m_power > 0`) and a small penalty for using side engines (`s_power > 0`).

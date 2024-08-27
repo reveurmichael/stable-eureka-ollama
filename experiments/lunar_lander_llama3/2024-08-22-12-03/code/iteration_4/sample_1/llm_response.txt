@@ -1,0 +1,46 @@
+A reinforcement learning problem!
+
+To create a good reward function for this environment, I'll reflect on the goals and constraints of the lander's movements. The goal is to navigate the lander to the helipad while avoiding crashes.
+
+Here's my proposed reward code:
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    # Reward structure:
+    # 1. Positivity: penalize for being far from the target
+    pos_diff = abs(state[0]) + abs(state[1])
+    reward_base = -pos_diff
+
+    # 2. Velocity: encourage stable velocities
+    vel_diff = state[3] * (VIEWPORT_W / SCALE / FPS) + state[4] * FPS
+    reward_vel = -vel_diff
+
+    # 3. Orientation: penalize for large angular velocity
+    orientation_reward = -20.0 * abs(state[5]) / FPS
+
+    # 4. Ground contact: reward for being in contact with the ground
+    leg_contact_rewards = 1.0 if state[6] + state[7] > 1.0 else 0.0
+    reward_legs = leg_contact_rewards
+
+    # Combine rewards
+    reward = reward_base + reward_vel + orientation_reward + reward_legs
+
+    individual_reward = {
+        'pos_diff': pos_diff,
+        'vel_diff': vel_diff,
+        'orientation_reward': orientation_reward,
+        'reward_legs': reward_legs,
+    }
+
+    if terminated:
+        reward -= 1.0  # Penalize for game over
+        individual_reward['game_over'] = True
+
+    return reward, individual_reward
+```
+
+This reward function aims to balance the lander's position, velocity, orientation, and ground contact. The base reward is negative, encouraging the lander to move towards the target. The velocity and orientation rewards are also negative, as we want stable velocities and a stable orientation. The ground contact reward is positive, as being in contact with the ground is desirable.
+
+When the game over condition is met (i.e., the lander crashes or goes too far from the helipad), the reward is penalized by subtracting 1.0 to discourage this behavior.
+
+The individual_reward dictionary provides additional insight into the specific components of the overall reward.

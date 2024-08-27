@@ -1,0 +1,18 @@
+Based on the provided code, I can infer that the reward function should be designed to encourage the agent to successfully land the lander. Here's a possible reward reflection:
+
+The next training will use the following reward function:
+
+`reward = - (distance_to_helipad + penalty_for_height + penalty_for_angle)`
+
+Where:
+- `distance_to_helipad` is the distance between the lander's position and the helipad, encouraging the agent to get closer to the landing site.
+- `penalty_for_height` is a term that increases as the lander gets higher off the ground, discouraging the agent from flying too high.
+- `penalty_for_angle` is a term that increases as the lander's orientation deviates from the vertical, discouraging the agent from tilting the lander excessively.
+
+Individual rewards can be calculated based on these components:
+
+`individual_reward['distance_to_helipad'] = distance_to_helipad`
+`individual_reward['height_penalty'] = penalty_for_height`
+`individual_reward['angle_penalty'] = penalty_for_angle`
+
+This reward function should encourage the agent to successfully land the lander by balancing distance, height, and orientation. The individual rewards provide a breakdown of how the overall reward is composed.

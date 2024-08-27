@@ -1,0 +1,1 @@
+distance_reward = -np.sqrt(x**2 + y**2) / 10

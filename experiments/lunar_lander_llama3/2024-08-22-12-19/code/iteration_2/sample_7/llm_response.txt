@@ -1,0 +1,63 @@
+Based on the provided policy feedback and tips for analyzing feedback, I'll analyze each existing reward component and then propose a new reward function.
+
+1. **Distance-based reward**: The values are mostly negative, which suggests that the lander should move away from the landing pad. This seems correct since the goal is to land safely. However, the magnitude of this component is significant compared to others. To balance it out, I'll re-scale it by reducing its weight or multiplying it with a smaller value.
+2. **Height reward**: The values are mostly negative, which suggests that the lander should stay at a reasonable height above the landing pad. This seems correct since the goal is to avoid crashing. However, the magnitude of this component is relatively small compared to others. To make it more prominent, I'll increase its weight or multiply it with a larger value.
+3. **Velocity penalty**: The values are mostly negative, which suggests that the lander should minimize its velocity. This seems correct since high velocities can lead to crashing. However, the magnitude of this component is relatively small compared to others. To make it more prominent, I'll increase its weight or multiply it with a larger value.
+4. **Fuel penalty**: The values are mostly negative, which suggests that the lander should minimize its fuel consumption. This seems correct since excessive fuel consumption can lead to crashing. However, the magnitude of this component is relatively small compared to others. To make it more prominent, I'll increase its weight or multiply it with a larger value.
+5. **Landing reward**: The values are mostly positive, which suggests that the lander should aim for successful landing. This seems correct since successful landing is the ultimate goal.
+
+Based on these observations and analysis, here's my proposed new reward function:
+
+```python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 10.0) - 1
+    
+    # Height reward: keep the lander at a reasonable height
+    height_reward = -(y - self.helipad_y) ** 2
+    height_reward = np.tanh(height_reward / 5.0)
+    
+    # Velocity penalty: discourage high velocities
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2
+    velocity_penalty = np.tanh(velocity_penalty / 3.0)
+    
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -5 if action == 2 else 0
+    
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if left_leg and right_leg else 0
+    
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward * 0.3
+              + height_reward * 1.5
+              + velocity_penalty * 2.0
+              + fuel_penalty * 0.05
+              + landing_reward)
+    
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 50
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_reward": height_reward,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+    
+    return reward, individual_reward
+```
+
+In this new reward function:
+
+* I've re-scaled the `distance_reward` to reduce its magnitude and make it more comparable with other components.
+* I've increased the weight of the `height_reward` to make it more prominent and encourage the lander to stay at a reasonable height.
+* I've increased the weights of the `velocity_penalty` and `fuel_penalty` to discourage high velocities and excessive fuel consumption, respectively.
+* I've kept the `landing_reward` as is, since successful landing is a critical goal.
+
+By adjusting these components' magnitudes and weights, I hope to improve the policy's performance and guide it towards more optimal behavior.

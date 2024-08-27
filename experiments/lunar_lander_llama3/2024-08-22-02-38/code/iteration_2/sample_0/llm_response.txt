@@ -1,0 +1,23 @@
+Based on the provided code, I can see that there are two types of rewards being calculated: `reward` and `fitness_score`. 
+
+`reward` seems to be a cumulative reward for the episode, as it's calculated using the state of the lander. It's not entirely clear what this reward is meant to represent, but it's likely related to the lander's position or velocity.
+
+`fitness_score`, on the other hand, appears to be an evaluation of the model's performance based on the final state of the episode. This score is also used as part of the individual reward.
+
+Here's a possible interpretation of your reward code:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate some kind of cumulative reward for the episode
+    reward = 0.0
+    if not terminated:
+        # Maybe the lander reached its target position or velocity?
+        if abs(state[0]) < 1.0: 
+            reward += 10.0  # Example reward, could be adjusted based on actual performance
+
+    return reward, {"cumulative_reward": reward}
+```
+
+In this example, the cumulative reward is increased by 10.0 as long as the lander remains within a certain region (in this case, `abs(state[0]) < 1.0`). This code would need to be adjusted based on actual performance metrics and goals for the training process.
+
+Note: The exact nature of the rewards depends on specific requirements and constraints of your project.

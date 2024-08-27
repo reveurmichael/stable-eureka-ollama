@@ -1,0 +1,41 @@
+A reinforcement learning problem!
+
+The goal is to create an effective reward function that drives the agent's behavior towards achieving a specific objective. In this case, I'll focus on reflecting the physics-related aspects of the reward.
+
+Based on the provided code, it seems that the reward function should depend on:
+
+1. The state (position, velocity, orientation, etc.) of the lander.
+2. The power applied by the main engines (`m_power`) and side engines (`s_power`).
+3. Whether the episode is terminated or not (`terminated`).
+
+Here's a possible reward code that takes these factors into account:
+
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate the distance from the lander to the helipad
+    helipad_distance = np.linalg.norm(state[:2]) - LEG_DOWN / SCALE
+
+    # Reward for being close to the helipad (positive)
+    helipad_reward = np.clip(helipad_distance, 0, VIEWPORT_H / SCALE) * 10.0
+
+    # Punish for using too much main engine power (negative)
+    main_engine_punishment = -np.abs(m_power) * 5.0
+
+    # Reward for using side engines to adjust orientation (positive)
+    side_engine_reward = np.clip(np.abs(s_power), 0, 1.0) * 2.0
+
+    # Termination penalty (negative)
+    termination_penalty = -100.0 if terminated else 0.0
+
+    individual_reward = helipad_reward + main_engine_punishment + side_engine_reward + termination_penalty
+    return individual_reward, {'helipad_distance': helipad_distance, 'main_engine_punishment': np.abs(m_power), 'side_engine_reward': s_power}
+```
+
+This reward function encourages the agent to:
+
+1. Move closer to the helipad (positive reward).
+2. Use the main engines efficiently by penalizing excessive power usage.
+3. Adjust its orientation using the side engines (positive reward).
+4. Avoid termination (negative penalty).
+
+Note that these weights are arbitrary and may need tuning based on experimental results.

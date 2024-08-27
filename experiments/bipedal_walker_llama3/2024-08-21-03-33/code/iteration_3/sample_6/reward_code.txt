@@ -1,0 +1,17 @@
+def compute_reward(self, pos, action, state):
+    # Encourage progress towards the goal
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    progress_reward = np.exp(-(distance_to_goal ** 2) / 1000)
+
+    # Reward moving forward
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+    moving_forward_reward = 1 if moving_forward else 0
+
+    # Penalize negative fitness score
+    fitness_penalty = -0.001 * state[6]
+
+    # Combine rewards
+    reward = progress_reward * moving_forward_reward + fitness_penalty
+    individual_reward = {"progress": progress_reward, "moving_forward": moving_forward_reward, "fitness_penalty": fitness_penalty}
+
+    return reward, individual_reward

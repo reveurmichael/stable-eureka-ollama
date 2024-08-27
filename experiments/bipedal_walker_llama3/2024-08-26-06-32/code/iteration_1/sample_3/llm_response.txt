@@ -1,0 +1,1 @@
+The reward reflected by the code "rewardcode": 0.5. This reflects that your reward for reaching a certain point has been set to 0.5.

@@ -1,0 +1,13 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+
+    reward = np.exp(-(distance_to_goal ** 2) / 1000) * (1 if moving_forward else 0.5) - 0.01 * (state[6] + state[13])
+    
+    individual_reward = {"progress": np.exp(-(distance_to_goal ** 2) / 1000), "moving_forward": 1 if moving_forward else 0, "penalty": -0.01 * (state[6] + state[13])}
+    
+    return reward, individual_reward
+```
+
+This code defines the `compute_reward` function for the reinforcement learning task. It calculates a total reward based on the distance to the goal and whether the biped is moving forward or not, while also incorporating penalties for getting stuck in certain positions. The function returns both the total reward and a dictionary of individual rewards with keys "progress", "moving_forward", and "penalty".

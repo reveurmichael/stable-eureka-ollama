@@ -1,0 +1,30 @@
+Based on the provided data and analysis tips, here's my proposal for an improved reward function:
+
+1. Analyzing the existing reward components:
+	* `moving_forward`: The values are not nearly identical, but they do seem to be increasing as expected (max at 1570.0). This component looks good.
+	* `penalty`: The values are quite consistent, with a mean of around -9.95. This could indicate that the penalty is too harsh or not well-designed. I'll discuss this further below.
+	* `fitness_score`: The values are highly negative, indicating that the agent is not making progress in terms of fitness. This component should be minimized.
+	* `reward`: The values are similar to those in `penalty`, which suggests that they might be redundant or too harsh. I'll propose a revised reward function below.
+2. Proposed revised reward function:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+
+    # Scale the penalty component to reduce its impact
+    scaled_penalty = state[6] + state[13]
+
+    # Compute the reward based on progress towards the goal and moving forward
+    reward = np.exp(-(distance_to_goal ** 2) / 1000) * (1 if moving_forward else 0.5) - 0.001 * scaled_penalty
+
+    individual_reward = {"progress": np.exp(-(distance_to_goal ** 2) / 1000), "moving_forward": 1 if moving_forward else 0, "penalty": -0.001 * scaled_penalty}
+
+    return reward, individual_reward
+```
+
+Changes made:
+	* Reduced the penalty term by a factor of 10 (from 0.01 to 0.001) to reduce its impact on the overall reward.
+	* Renamed the `reward` component to `individual_reward` to reflect that it now provides more detailed information about the agent's progress.
+
+This revised reward function aims to encourage the agent to move forward towards the goal while minimizing penalties for not making progress. The penalty term is now scaled down to reduce its impact on the overall reward, which should help the agent learn more effectively.

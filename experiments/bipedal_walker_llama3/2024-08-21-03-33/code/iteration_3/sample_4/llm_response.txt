@@ -1,0 +1,29 @@
+Based on the provided feedback, I'll analyze each existing reward component and propose an improved reward function.
+
+1. **distance_to_goal**: The values are very small (in the order of 10^-14), which suggests that this component is not contributing much to the overall reward. Since we want to maximize the fitness score, let's discard this component or re-write it.
+2. **moving_forward**: This component has a significant range of values (from 7.5 to 1570.0). The max and mean values are relatively high, indicating that this component is important for the reward function. However, the min value is low, suggesting that there might be some situations where we want to discourage movement.
+3. **penalty**: This component has a significant range of values as well (from 9.7624 to 10.0606). The mean and max values are relatively high, indicating that this component should be discouraged. Let's re-scale it to have more impact on the overall reward.
+
+Here's my proposal for an improved reward function:
+
+```python
+def compute_reward(self, pos, action, state):
+    # Re-weight the penalty term
+    penalty_weight = 0.5
+    
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+    
+    reward = 1 if moving_forward else 0.5 - penalty_weight * (state[6] + state[13])
+    
+    individual_reward = {"progress": 1 if moving_forward else 0.5, "penalty": -penalty_weight * (state[6] + state[13])}
+    
+    return reward, individual_reward
+```
+
+In this proposal:
+
+* I removed the **distance_to_goal** component as it's not contributing much to the overall reward.
+* I re-weighted the **penalty** term by multiplying it with a factor `penalty_weight`. This will give more emphasis to the penalty term in the overall reward calculation.
+* I kept the **moving_forward** component, but modified its value to be 0.5 when not moving forward, indicating some degree of disfavor.
+
+This revised reward function should better encourage the agent to move forward and avoid penalties while maintaining a balance between progress and penalty.

@@ -1,0 +1,15 @@
+It seems like you're trying to design a reward function for your reinforcement learning task. Your current code defines the `compute_reward` method, which seems to depend on the state of the lander and the actions taken by it.
+
+Here's what I can infer from the provided code:
+
+1. The reward is computed based on the state and actions (m_power and s_power).
+2. It seems like the goal is to keep the lander within a certain area (VIEWPORT_W/SCALE/2) and not to crash or fall off the edge.
+3. There might be some penalty for not being awake (laser contact).
+
+The reward reflection you're looking for:
+
+Your reward code is: `reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)`
+
+This code takes in the current state of the lander, the main and side engine powers, and a boolean indicating whether the episode has terminated. It returns a scalar reward value and an individual reward dictionary.
+
+Please let me know if you'd like me to help with designing or optimizing your reward function!

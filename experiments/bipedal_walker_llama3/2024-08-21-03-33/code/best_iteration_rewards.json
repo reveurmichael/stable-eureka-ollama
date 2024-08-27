@@ -1,0 +1,6 @@
+{
+    "0": [
+        "    # Generated code by stable-eureka\n    def compute_reward(self, pos, action, state):\n        distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)\n        moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)\n    \n        reward = np.exp(-(distance_to_goal ** 2) / 1000) * (1 if moving_forward else 0.5) - 0.01 * (state[6] + state[13])\n        \n        individual_reward = {\"progress\": np.exp(-(distance_to_goal ** 2) / 1000), \"moving_forward\": 1 if moving_forward else 0, \"penalty\": -0.01 * (state[6] + state[13])}\n        \n        return reward, individual_reward",
+        -68.15180598416924
+    ]
+}

@@ -1,0 +1,21 @@
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        # Game over or crash, penalize heavily
+        return -1000, {'game_over': True}
+
+    # Reward proximity to the helipad (higher is better)
+    pos_err = abs(state[0])  # x-position error
+    reward_pos = 1.0 - pos_err
+
+    # Reward vertical velocity (lower is better, i.e., slow descent)
+    vel_y_err = abs(state[3])  # y-velocity error
+    reward_vel_y = 1.0 - vel_y_err / FPS
+
+    # Reward stability (lower angular velocity is better)
+    ang_vel_err = abs(state[5])  # angular velocity error
+    reward_ang_vel = 1.0 - ang_vel_err / FPS
+
+    # Combine rewards with weights
+    reward = 0.3 * reward_pos + 0.4 * reward_vel_y + 0.3 * reward_ang_vel
+    individual_reward = {'proximity': reward_pos, 'vel_y': reward_vel_y, 'ang_vel': reward_ang_vel}
+    return reward, individual_reward

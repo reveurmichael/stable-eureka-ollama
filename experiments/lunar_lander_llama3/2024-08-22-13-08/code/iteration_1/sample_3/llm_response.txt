@@ -1,0 +1,40 @@
+A reinforcement learning problem!
+
+To create an effective reward function for this task, I need to consider the goals and objectives of the lander. It seems that the goal is to navigate the lander to the helipad while avoiding obstacles and maintaining a stable orientation.
+
+Here's my interpretation of the reward code:
+
+The reward function should encourage the agent to:
+
+1. Move towards the helipad (proximity bonus)
+2. Maintain a stable orientation (angle-related bonus)
+3. Avoid crashes or excessive velocities (penalty for high speed or low altitude)
+
+Based on this, I propose the following reward structure:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    proximity_bonus = -abs(state[0])  # closer to helipad is better
+    orientation_bonus = -abs(state[4])  # stable orientation is better
+
+    if terminated:  # penalty for game over or crash
+        reward = -100.0
+
+    else:
+        if state[2] > 10.0:  # high speed penalty
+            reward = -5.0
+        elif state[3] < -5.0:  # low altitude penalty
+            reward = -5.0
+        else:
+            reward = proximity_bonus + orientation_bonus
+
+    individual_reward = {}
+    if reward > 0:
+        individual_reward['success'] = True
+    else:
+        individual_reward['failure'] = True
+
+    return reward, individual_reward
+```
+This reward function provides a bonus for moving towards the helipad and maintaining a stable orientation. It also assigns penalties for high speeds or low altitudes, which can indicate crashes or instability. When the game is over, it returns a large negative reward to discourage the agent from continuing in that state.
+
+Please note that this is just one possible approach to designing a reward function for this task. The actual performance of the agent may vary depending on the specific parameters and exploration strategies used during training.

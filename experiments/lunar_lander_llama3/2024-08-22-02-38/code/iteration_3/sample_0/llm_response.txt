@@ -1,0 +1,32 @@
+Based on the provided code, I will design a reward function that takes into account the agent's performance and encourages it to achieve its goals. The reward function should be designed in a way that aligns with the desired behavior.
+
+The goal of the game is to land the lander safely by adjusting the engine power and orientation. A good reward function should encourage the agent to avoid falling too far or getting stuck, while also rewarding it for successfully landing on the helipad.
+
+Here's a possible reward function:
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    reward = 0
+
+    # Reward for being close to the helipad
+    if abs(state[0]) < 0.2 and abs(state[1]) < 0.2:
+        reward += 10
+
+    # Penalty for falling too far
+    if abs(state[0]) > 1.0:
+        reward -= 100
+
+    # Reward for not getting stuck
+    if state[6] == 0 and state[7] == 0:
+        reward += 5
+
+    # Penalty for getting stuck
+    if state[6] + state[7] > 1:
+        reward -= 20
+
+    return reward, {}
+```
+
+This reward function assigns a positive reward when the lander is close to the helipad, and a negative reward when it falls too far. It also provides a small bonus for not getting stuck and a penalty for getting stuck.
+
+The `individual_reward` dictionary will store this reward value along with any other relevant information (like fitness scores) that can be used to analyze the agent's performance.

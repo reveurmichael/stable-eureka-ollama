@@ -1,0 +1,26 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate a reward based on the state and engine powers
+    reward = 0.0
+
+    if not terminated:  # If the episode hasn't ended yet
+        # Penalize for being far from the helipad (distance-based reward)
+        distance_from_helipad = np.sqrt((state[1] - self.helipad_y - LEG_DOWN / SCALE) ** 2 + state[0] ** 2)
+        if distance_from_helipad > 0.5:  # If the lander is too far away
+            reward -= 10.0
+
+        # Reward for good orientation (orientation-based reward)
+        if np.abs(state[4]) < 0.1:  # If the lander is almost level
+            reward += 5.0
+
+        # Penalize for high speed (velocity-based penalty)
+        if np.sqrt(state[2] ** 2 + state[3] ** 2) > 10.0:
+            reward -= 5.0
+
+    if terminated:  # If the episode has ended
+        # Reward or penalize based on whether the lander crashed or landed successfully
+        if self.game_over:
+            reward -= 100.0  # Penalty for crashing
+        else:
+            reward += 100.0  # Reward for landing successfully
+
+    return reward, individual_reward

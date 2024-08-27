@@ -1,0 +1,11 @@
+def compute_reward(self, pos, action, state):
+    hull_angle = state[0]
+    x_velocity = state[2]
+
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    fall_penalty = 1.0 if pos[1] < 0 else 0.0
+    reward = -np.exp(-distance_to_goal) - fall_penalty + np.exp(x_velocity)
+
+    individual_reward = {'distance_to_goal': -np.exp(-distance_to_goal), 'fall_penalty': fall_penalty, 'x_velocity': np.exp(x_velocity)}
+
+    return reward, individual_reward

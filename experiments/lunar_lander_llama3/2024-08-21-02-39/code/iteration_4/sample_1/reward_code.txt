@@ -1,0 +1,20 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        # Penalty for crashing or falling off the screen
+        return -10.0
+
+    # Reward for successful touchdown
+    touchdown_distance = np.linalg.norm(state[:2])
+    if touchdown_distance < 0.1:  # adjust this threshold as needed
+        return 10.0
+
+    # Penalize engine power usage (higher is better)
+    engine_penalty = -0.5 * m_power
+
+    # Reward for stability (lower is better)
+    angular_velocity_reward = -0.2 * state[5]
+
+    # Combine the rewards
+    reward = touchdown_distance + engine_penalty + angular_velocity_reward
+
+    return reward, {'touchdown_distance': touchdown_distance}

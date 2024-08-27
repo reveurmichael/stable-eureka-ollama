@@ -1,0 +1,26 @@
+Based on the provided environment code, it seems that the reward function should depend on the state of the lander and the actions taken. Here's a possible implementation:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        return -100, {'terminated': True}
+    
+    # Reward for moving away from the center
+    reward = 0
+    if abs(state[0]) > 0.5:  # move towards the edge of the viewport
+        reward += 1
+    
+    # Reward for moving up
+    if state[1] >= 0.5:  # move above the helipad
+        reward += 1
+    
+    # Penalty for falling or crashing
+    if abs(state[0]) >= 1.0 or not self.lander.awake:
+        reward -= 100
+    
+    return reward, {'reward': reward}
+```
+
+In this implementation, the agent is rewarded for moving away from the center of the viewport and rising above the helipad. The agent is penalized if it falls or crashes. The reward value is then returned along with an individual_reward dictionary that can be used to provide additional information about the agent's performance.
+
+Note that this is just one possible implementation, and you may need to adjust the reward function based on your specific environment and goals.

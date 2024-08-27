@@ -1,0 +1,1 @@
+reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)

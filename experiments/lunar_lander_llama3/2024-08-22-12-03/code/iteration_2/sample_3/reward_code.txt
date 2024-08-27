@@ -1,0 +1,20 @@
+def compute_reward(state, m_power, s_power, terminated):
+    reward = 0
+
+    if not terminated:  # Episode is still ongoing
+        # Encourage main engine power for efficient landing
+        reward += m_power * 0.5
+
+        # Penalty for crash or going off-screen
+        if abs(state[0]) >= 1.0:
+            reward -= 10
+
+        # Incentive for side engines (orientation/steering)
+        reward += s_power * 0.2
+
+    else:  # Episode is terminated
+        # Landing bonus if we made it to the helipad safely
+        if state[0] < 1.0:
+            reward += 10
+
+    return reward, {}

@@ -1,0 +1,25 @@
+A reinforcement learning problem!
+
+The reward function seems to be defined in the `compute_reward` method. Based on the provided code, I'll attempt to reflect the reward structure.
+
+**High-level description:** The reward function appears to encourage the agent (lander) to navigate towards the helipad and avoid crashing or falling off the edge of the screen.
+
+**Components:**
+
+1. **Termination penalty**: If the game is over (`self.game_over`) or the lander has fallen off the screen (`abs(state[0]) >= 1.0`), a termination penalty is applied.
+2. **Proximity reward**: The closer the lander is to the helipad, the higher the reward. This could be calculated as a simple distance-based reward or a more complex function that considers the lander's orientation and position relative to the helipad.
+3. **Lander stability**: The reward might also depend on the lander's stability, measured by its angular velocity (`self.lander.angularVelocity`). A slower angular velocity could indicate better stability, leading to a higher reward.
+
+**Reward calculation:** The `compute_reward` method likely combines these components using some weighted sum or product. For example:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        return -100  # termination penalty
+
+    proximity_reward = calculate_proximity_reward(state)
+    stability_reward = calculate_stability_reward(state)
+
+    reward = (1 - abs(state[0])) * proximity_reward + stability_reward
+    return reward
+```
+This is a simplified example, and the actual implementation might be more complex. The key takeaway is that the reward function seems to encourage the agent to navigate towards the helipad while maintaining stability and avoiding termination.

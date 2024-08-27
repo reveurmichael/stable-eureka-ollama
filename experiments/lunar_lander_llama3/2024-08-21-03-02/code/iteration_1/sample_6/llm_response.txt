@@ -1,0 +1,24 @@
+Based on the provided code, I can infer that the reward function is not explicitly defined in this piece of code. However, it seems that there are several components to the reward calculation.
+
+The `compute_reward` method appears to take into account the state, `m_power`, `s_power`, and a termination flag (`terminated`). This suggests that the reward may depend on the lander's position, velocity, orientation, and whether the game is over or not.
+
+Here is a possible reward function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define constants
+    REWARD_FOR_REACHING_GOAL = 10.0
+    PENALTY_PER_STEP_TAKEN = -1.0
+    
+    if terminated:
+        # If the game is over, return a reward based on how well the lander performed
+        if abs(state[0]) >= 1.0:  # or some other condition for the goal
+            return REWARD_FOR_REACHING_GOAL, {'m_power': m_power, 's_power': s_power}
+        else:
+            return PENALTY_PER_STEP_TAKEN, {'m_power': m_power, 's_power': s_power}
+    else:
+        # If the game is not over, penalize the agent for taking steps
+        return -1.0, {'m_power': m_power, 's_power': s_power}
+```
+
+This reward function provides a positive reward when the lander reaches its goal and a negative penalty for each step taken. The `individual_reward` dictionary can be used to keep track of relevant parameters such as `m_power` and `s_power`.

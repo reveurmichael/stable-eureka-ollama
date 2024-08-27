@@ -1,0 +1,56 @@
+Here's a variation of the initial reward proposal:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 100.0) - 1
+
+    # Stability reward: penalize tilting and angular velocity
+    angle_penalty = -(np.abs(angle))
+    angular_velocity_penalty = -(np.abs(angular_velocity))
+
+    # Velocity reward: incentivize low velocities
+    velocity_bonus = (np.min([vx, vy])) / FPS
+
+    # Fuel efficiency reward: incentivize using side engines
+    fuel_bonus = -1 if m_power > 0 else s_power * 2
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if abs(x) < 0.1 and abs(y) < 0.1 else 10
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.5 * angle_penalty
+              + 0.2 * angular_velocity_penalty
+              + 0.3 * velocity_bonus
+              + 0.05 * fuel_bonus
+              + landing_reward)
+
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "velocity_bonus": velocity_bonus,
+        "fuel_bonus": fuel_bonus,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+In this variation, I've made the following changes:
+
+1. Reversed the sign of `angle_penalty` and `angular_velocity_penalty` to incentivize stability.
+2. Changed the velocity penalty to a bonus for low velocities.
+3. Added a fuel efficiency bonus that rewards using side engines (s_power) over main engines (m_power).
+4. Kept the landing reward structure the same, but with a smaller value for not successfully landing.
+
+These changes aim to encourage the agent to prioritize stability, use side engines efficiently, and land safely while avoiding crashes or going out of bounds.

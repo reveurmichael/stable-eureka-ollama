@@ -1,0 +1,17 @@
+The given reward code is:
+
+```
+reward = (distance_reward + angle_penalty) * (1 - action_penalty))
+individual_reward = { 
+        "distance_reward": distance_reward, 
+        "angle_penalty": angle_penalty, 
+        "action_penalty": action_penalty, 
+        "obstacle_penalty": obstacle_penalty, 
+     }
+```
+
+The `reward` variable is obtained by adding the `distance_reward` and `angle_penalty` variables together and then multiplying that result by `(1 - action_penalty))`). This step calculates the total reward by considering both the distance to the target location and its corresponding angle penalty. Finally, this value is multiplied by `(1 - action_penalty))`)`, which gives a final weight of the individual reward.
+
+The `individual_reward` variable contains a dictionary that represents the individual rewards. Each key-value pair in this dictionary corresponds to an individual reward for some specific action taken during the episode. The values associated with each key correspond to various types of individual rewards, such as monetary rewards for completing certain actions or non-monetary rewards (e.g., satisfaction, trustworthiness) for individuals who have interacted with the game environment in a positive manner.
+
+Overall, this reward code design allows for the computation and distribution of individual rewards during gameplay. The use of various types of individual rewards (monetary vs non-monetary), along with the ability to compute total individual rewards based on the values associated with each individual reward, provides a framework that can be utilized to design and implement efficient reward systems in video games or other interactive applications.

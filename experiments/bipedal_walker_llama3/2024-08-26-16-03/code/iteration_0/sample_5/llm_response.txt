@@ -1,0 +1,29 @@
+```python 
+def compute_reward(self, pos, action, state):
+    distance_reward = pos.x
+    distance_reward = np.exp(distance_reward / 400.0) - 1
+
+    # Incentivize smooth movement by penalizing high acceleration
+    velocity_penalty = -np.abs(state[2])  # x-velocity
+    velocity_penalty += -np.abs(state[3])  # y-velocity
+    velocity_penalty = np.tanh(velocity_penalty / 0.5)
+
+    # Encourage leg stability by rewarding small joint angles and speeds
+    angle_reward = np.sum([np.exp(-state[i] / 10.0) for i in [4, 6, 8]])  # legs' angles
+    speed_reward = np.sum([np.exp(-state[i] / 5.0) for i in [5, 7, 9]])  # legs' speeds
+
+    # Proximity to Lidar points: encouraging avoidance of obstacles
+    obstacle_penalty = -np.min([l.fraction for l in self.lidar])
+    obstacle_penalty = np.exp(obstacle_penalty)
+
+    reward = (distance_reward + 0.2 * velocity_penalty + 0.3 * angle_reward + 0.5 * speed_reward) - 0.1 * obstacle_penalty
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "velocity_penalty": velocity_penalty,
+        "angle_reward": angle_reward,
+        "speed_reward": speed_reward,
+        "obstacle_penalty": obstacle_penalty
+    }
+
+    return reward, individual_reward

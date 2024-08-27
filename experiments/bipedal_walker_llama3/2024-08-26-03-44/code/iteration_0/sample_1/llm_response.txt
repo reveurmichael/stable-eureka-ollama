@@ -1,0 +1,23 @@
+```python
+def compute_reward(self, pos, action, state):
+    distance_reward = np.exp(pos.x / 400.0) - 1
+    stability_reward = (1 - np.abs(state[0])) * (1 - np.abs(2.0 * state[1] / FPS))
+    speed_reward = np.sum(np.clip(action, -1, 1)) / len(action)
+    obstacle_avoidance_reward = -np.min([l.fraction for l in self.lidar])
+    terminated_penalty = -100 if pos[0] < 0 or self.game_over else 0
+
+    reward = (distance_reward
+              + 0.2 * stability_reward
+              + 0.3 * speed_reward
+              + 0.4 * obstacle_avoidance_reward
+              + terminated_penalty)
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "stability_reward": stability_reward,
+        "speed_reward": speed_reward,
+        "obstacle_avoidance_reward": obstacle_avoidance_reward,
+        "terminated_penalty": terminated_penalty,
+    }
+
+    return reward, individual_reward

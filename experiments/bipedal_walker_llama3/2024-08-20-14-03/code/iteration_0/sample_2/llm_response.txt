@@ -1,0 +1,26 @@
+```python
+def compute_reward(self, pos, action, state):
+    reward = 0.0
+    individual_rewards = {}
+
+    # Reward for reaching the end of the terrain
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        reward += REACHING_END_REWARD
+        individual_rewards['reaching_end'] = REACHING_END_REWARD
+
+    # Penalty for falling down or getting stuck
+    if self.game_over or pos[0] < 0:
+        reward -= FALLING_DOWN_PENALTY
+        individual_rewards['falling_down'] = -FALLING_DOWN_PENALTY
+
+    # Encourage forward movement
+    if action[0] > 0:  # Only consider the first element of the action vector
+        reward += FORWARD_MOTION_REWARD
+        individual_rewards['forward_motion'] = FORWARD_MOTION_REWARD
+
+    return reward, individual_rewards
+```
+
+Explanation:
+
+The reward function aims to encourage the agent to reach the end of the terrain while avoiding falling down or getting stuck. It rewards the agent for making progress towards the end and penalizes it for falling down or getting stuck. The forward motion is also encouraged by giving a small positive reward when the agent moves forward.

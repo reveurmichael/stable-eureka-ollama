@@ -1,0 +1,70 @@
+Based on the provided feedback, I'll analyze each existing reward component and propose an improved reward function.
+
+**Distance-based reward**: The magnitude of this component is quite large, which might lead to a strong preference for moving towards the landing pad. However, the negative sign suggests that the agent should move away from the pad. To avoid overpowering other components, I'll reduce its scale by dividing it by 10.
+```python
+distance_reward = -np.sqrt(x**2 + y**2) / 10
+```
+**Height reward**: This component seems to be working well in keeping the lander at a reasonable height.
+
+**Velocity penalty**: Similar to the distance-based reward, this component's magnitude is quite large. I'll reduce its scale by dividing it by 5.
+```python
+velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2 / 5
+```
+**Fuel efficiency reward**: This component seems to be doing a good job in penalizing the use of the main engine.
+
+**Landing reward**: The magnitude of this component is quite large, which might lead to an overemphasis on landing. I'll reduce its scale by dividing it by 10.
+```python
+landing_reward = 0
+if left_leg and right_leg:
+    landing_reward = 10 if abs(x) < 0.1 and abs(y) < 0.1 else 1
+```
+**Termination penalty**: This component is a strong penalty for crashing or going out of bounds. However, its magnitude is quite large. I'll reduce its scale by dividing it by 5.
+```python
+if terminated and not (left_leg and right_leg):
+    reward -= 20
+```
+With these adjustments, the new reward function will be:
+```python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad (reduced scale)
+    distance_reward = -np.sqrt(x**2 + y**2) / 10
+
+    # Height reward: keep the lander at a reasonable height
+    height_penalty = -(y - self.helipad_y) ** 2
+
+    # Velocity penalty: discourage high velocities (reduced scale)
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2 / 5
+
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+
+    # Landing reward: bonus for successful landing (reduced scale)
+    landing_reward = 0
+    if left_leg and right_leg:
+        landing_reward = 10 if abs(x) < 0.1 and abs(y) < 0.1 else 1
+
+    # Termination penalty: penalty for crashing or going out of bounds (reduced scale)
+    if terminated and not (left_leg and right_leg):
+        reward -= 20
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.2 * height_penalty
+              + 0.5 * velocity_penalty
+              + 0.01 * fuel_penalty
+              + landing_reward)
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+This new reward function should provide a better balance between the different components and lead to improved performance in the next training iteration.

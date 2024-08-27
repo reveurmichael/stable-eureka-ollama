@@ -1,0 +1,45 @@
+Your reward reflects the total number of steps taken by the agent to reach a certain goal state. This reward is based on various factors such as:
+1. **Step count**: The step count variable represents the number of consecutive steps taken by the agent, this value is updated after each action and used for computing the final reward.
+2. **Distance reached**: This distance variable represents the distance traveled by the agent to reach a certain goal state, this value is updated after each action and used for computing the final reward.
+3. **Velocity over time**: This velocity variable represents the velocity of the agent over time, this value is updated after each action and used for computing the final reward.
+4. **Health index**: This health index variable represents the overall health or well-being of the agent, this value is updated after each action and used for computing the final reward.
+
+To compute the final reward, you need to use the following formula:
+Final Reward = (Step Count) * Distance Reached
+
+where:
+
+- `Step Count`: The number of consecutive steps taken by the agent, this value is updated after each action
+- `Distance Reached`: The total distance traveled by the agent, this value is computed by adding up all the step counts and distances reached.
+
+Here's an example implementation in Python:
+```python
+class Agent:
+    def __init__(self):
+        self.current_step = 0
+        self.distance_reached = 0
+
+    def take_action(self, action):
+        if isinstance(action, str)):
+            self.current_step += 1
+        elif isinstance(action, float)) and action > 0:
+            self.distance_reached += action
+        else:
+            raise TypeError("Invalid action type: {}".format(action)))
+
+def compute_final_reward(step_count, distance_reached)):
+    return (step_count) * (distance_reached))
+
+if __name__ == "__main__":
+    agent = Agent()
+    
+    if agent.current_step < 5 and agent.distance_reached > 10:
+        print("Final Reward: {}".format(compute_final_reward(agent.current_step, agent.distance_reached)))) 
+```
+In this implementation, the `Agent` class represents an agent in a game environment. The `__init__` method initializes the object with its current state, including the current step count and distance reached.
+
+The `take_action` method takes an action string parameter representing a user-defined action (e.g., "move to", "attack", etc.). It checks if the action type is of the form "action_type" and if it's not, it raises a TypeError exception with the appropriate message (e.g., "Invalid action type: {}".format(action_type))))
+
+The `compute_final_reward` method takes an agent current step count and distance reached parameters. It first extracts the current step count and distance reached from the provided parameters. Then, it checks if the extracted step count is less than or equal to 5 and if the extracted distance reached is greater than or equal to 10. If any of these conditions are not satisfied, the `compute_final_reward` method raises a TypeError exception with the appropriate message (e.g., "Invalid step count: {}".format(step_count)))”。
+
+In the `main` function, an instance of the `Agent` class is created and its current step count and distance reached are extracted. Then, the `compute_final_reward` method is called passing in the extracted step count and distance reached as parameters. Finally, the resulting final reward message from the `compute_final_reward` method is printed to the console.

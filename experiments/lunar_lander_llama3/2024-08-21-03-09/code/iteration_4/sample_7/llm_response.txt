@@ -1,0 +1,44 @@
+A challenge!
+
+The reward code you're looking for is likely the implementation of the `compute_reward` method. Based on the provided code, I'll try to extract the reward function.
+
+The `compute_reward` method takes four inputs:
+
+1. `state`: a list of eight values representing the lander's position, velocity, orientation, and contact status.
+2. `m_power`: the main engine power (a scalar value).
+3. `s_power`: the side engine power (a scalar value).
+4. `terminated`: a boolean indicating whether the episode has terminated.
+
+The method returns two values:
+
+1. `reward`: the cumulative reward for the current step.
+2. `individual_reward`: a dictionary containing additional reward-related information, including the `fitness_score`.
+
+Based on the code, I'll attempt to reconstruct the reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    # Define constants
+    REWARD_MAIN_ENGINE = 1.0
+    REWARD_SIDE_ENGINE = -0.5
+    REWARD_TERMINATION = -10.0
+
+    # Calculate the main engine reward
+    main_engine_reward = REWARD_MAIN_ENGINE * m_power
+
+    # Calculate the side engine reward (only applicable if side engines are used)
+    if s_power > 0:
+        side_engine_reward = REWARD_SIDE_ENGINE * s_power
+    else:
+        side_engine_reward = 0.0
+
+    # Termination penalty (if the episode has terminated)
+    if terminated:
+        reward = -REWARD_TERMINATION
+    else:
+        reward = main_engine_reward + side_engine_reward
+
+    individual_reward = {'main_engine': main_engine_reward, 'side_engine': side_engine_reward}
+
+    return reward, individual_reward
+```
+Please note that this is an educated guess based on the provided code. The actual reward function might differ depending on specific requirements or implementation details.

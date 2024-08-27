@@ -1,0 +1,11 @@
+I can see that the provided code defines a reinforcement learning environment with a reward function. The reward code is:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Implement your custom reward function here
+    raise NotImplementedError
+```
+
+This indicates that the `compute_reward` method has not been implemented yet. A custom reward function can be defined by overriding this method in a subclass of this environment class.
+
+The goal is to create an effective reward function for the given reinforcement learning task. The reward function should encourage the agent to achieve the desired behavior, such as landing safely or collecting rewards.

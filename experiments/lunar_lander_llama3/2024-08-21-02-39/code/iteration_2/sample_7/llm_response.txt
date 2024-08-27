@@ -1,0 +1,24 @@
+A reinforcement learning problem!
+
+The reward function is:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    ...
+```
+It takes in the current state of the environment (`state`), the main engine power (`m_power`) and side engine power (`s_power`) as inputs, and returns a reward value and an individual reward dictionary. The `terminated` flag indicates whether the episode has ended.
+
+The implementation of this function is not provided, but it's likely to involve calculating a reward based on the agent's progress towards its goals (e.g., landing safely) and penalizing undesirable behaviors (e.g., falling too far or not moving).
+
+In the context of the Lunar Lander problem, the reward function might aim to encourage the agent to:
+
+1. Land safely: A positive reward for being close to the helipad without crashing.
+2. Move efficiently: A reward for applying reasonable main engine thrust and side engine corrections.
+3. Avoid excessive main engine use: A penalty for using too much main engine power, as this can lead to a crash or waste of energy.
+4. Maintain stable orientation: A small positive reward for keeping the lander's orientation close to vertical.
+
+The individual reward dictionary likely contains additional information about the agent's performance, such as:
+
+* `fitness_score`: A score reflecting the agent's overall fitness (e.g., based on its ability to land safely and efficiently).
+* Other relevant metrics, like the distance from the helipad or the number of engine corrections made.
+
+The exact implementation of the reward function depends on the specific design goals and constraints of the problem.

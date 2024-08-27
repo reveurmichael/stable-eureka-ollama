@@ -1,0 +1,31 @@
+Here's a simple and intuitive reward function that can be used for reinforcement learning tasks. 
+
+For this specific problem, we want to encourage the agent (lander) to stay close to the center of the lander and avoid falling. Here's how we can define our reward:
+
+1. **Penalty for height**: The higher the lander is from the ground, the worse it is. Let's assign a negative reward when the lander is above a certain height.
+2. **Reward for proximity to center**: When the lander is close to the center of the landing pad, it should be rewarded.
+3. **Penalty for falling**: If the lander falls or is about to fall (i.e., its vertical speed is negative and increasing), we should penalize it.
+
+Here's the reward function in Python:
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    # Define some constants
+    MAX_HEIGHT = 10.0  # The maximum height the lander can be before falling
+    CENTER_PROXIMITY_REWARD = 1.0
+    FALLING_PENALTY = -5.0
+
+    # Calculate the reward based on the state and terminated status
+    if terminated or abs(state[0]) >= 1.0:  # If the lander has fallen or is too far away
+        return FALLING_PENALTY, {'height': -state[0], 'velocity': -state[2]}
+    elif state[0] > MAX_HEIGHT:  # If the lander is above the maximum height
+        return -CENTER_PROXIMITY_REWARD, {'height': -state[0], 'velocity': -state[2]}
+    else:
+        proximity_reward = CENTER_PROXIMITY_REWARD * (1.0 - abs(state[0]))
+        if state[2] > 0:  # If the lander is still falling
+            return -CENTER_PROXIMITY_REWARD, {'height': -state[0], 'velocity': -state[2]}
+        else:
+            return proximity_reward, {'height': state[1], 'velocity': state[2]}
+```
+
+This reward function takes into account the lander's height, velocity, and position relative to the center of the landing pad.

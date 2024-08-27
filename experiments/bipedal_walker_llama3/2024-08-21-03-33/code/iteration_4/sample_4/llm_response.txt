@@ -1,0 +1,39 @@
+Based on the provided feedback and tips for analyzing policy feedback, I'll analyze each existing reward component first, then write a new reward function code proposal.
+
+**Analyzing the existing reward components:**
+
+1. `moving_forward`: The values range from 7.5 to 1570.0, which is an extremely wide range. This suggests that the reward for moving forward is not well-scaled.
+2. `penalty`: The values are quite similar, ranging from 9.76241 to 10.0606. This could indicate that the penalty term is not effective in guiding the policy.
+3. `fitness_score`: The values are negative and vary widely, indicating that the fitness score is not well-behaved.
+
+**New reward function proposal:**
+
+Based on the analysis above, I propose a new reward function that takes into account the characteristics of each component:
+
+```python
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    moving_forward = (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+
+    # Scaled rewards for moving forward and reaching the goal
+    progress_reward = np.exp(-(distance_to_goal ** 2) / 1000)
+    moving_forward_reward = 1 if moving_forward else 0.5
+
+    # Penalty term to discourage negative fitness scores
+    penalty = -0.01 * (state[6] + state[13])
+
+    # Combine the rewards and penalties
+    reward = progress_reward * moving_forward_reward + penalty
+
+    individual_reward = {"progress": progress_reward, "moving_forward": moving_forward_reward, "penalty": penalty}
+
+    return reward, individual_reward
+```
+
+**Changes made:**
+
+1. Scaled the `moving_forward` reward to be between 0 and 1.
+2. Combined the `progress` and `moving_forward` rewards using a weighted sum.
+3. Introduced a penalty term to discourage negative fitness scores.
+
+This new reward function aims to encourage the policy to move forward and make progress towards the goal, while also penalizing it for poor performance (as measured by the fitness score). The individual rewards can be used to analyze the contribution of each component to the overall reward.

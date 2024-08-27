@@ -1,0 +1,39 @@
+I'll help you write the effective reward function for this reinforcement learning task. The goal is to create a reward function that encourages the agent to successfully land on the helipad while minimizing the use of the main engines.
+
+Here's a possible reward function:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward structure:
+    # 1. Lander position: closer is better (inverse distance)
+    # 2. Main engine usage: less is better (negative reward)
+    # 3. Orientation: closer to the helipad is better (orientation similarity)
+    # 4. Velocity: lower is better (velocity magnitude)
+
+    # Compute rewards
+    pos_reward = -1 * np.square(state[0])  # inverse distance to the helipad
+    main_engine_reward = -m_power  # negative reward for main engine usage
+    orientation_reward = np.cos(state[3] - self.lander.angle)  # orientation similarity
+    vel_reward = -np.linalg.norm(state[2:])  # velocity magnitude
+
+    # Combine rewards
+    reward = pos_reward + main_engine_reward + orientation_reward + vel_reward
+
+    individual_reward = {
+        'pos_reward': pos_reward,
+        'main_engine_reward': main_engine_reward,
+        'orientation_reward': orientation_reward,
+        'vel_reward': vel_reward
+    }
+
+    return reward, individual_reward
+```
+This reward function aims to encourage the agent to:
+
+1. Land closer to the helipad (inverse distance)
+2. Minimize main engine usage (negative reward for main engine power)
+3. Maintain a good orientation relative to the helipad (orientation similarity)
+4. Reduce velocity magnitude (lower is better)
+
+The rewards are combined to create an overall reward signal that guides the agent's behavior. The individual_reward dictionary provides more detailed information about the contribution of each component to the total reward.
+
+Feel free to adjust or modify this reward function based on your specific requirements and experimentation results!

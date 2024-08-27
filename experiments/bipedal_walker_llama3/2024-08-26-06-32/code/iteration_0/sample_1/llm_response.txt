@@ -1,0 +1,22 @@
+Here's an example of a reward function in Python:
+```python
+import numpy as np
+
+# Function to calculate reward based on distance and action
+def compute_reward(position, actions, state), individual_rewards:
+
+    # Calculate total reward
+    total_reward = 0
+    for i in range(len(actions))):
+        if (actions[i].action] == position[0]) and \
+             (actions[i].action] == actions[1][i]]) and \
+             (actions[i].action] == actions[2][i]]) and \
+             (actions[i].action] == actions[3][i]])):
+
+            # Calculate reward for current action
+            reward = individual_rewards[i]
+            total_reward += reward
+
+    return total_reward, individual_rewards
+```
+In this example, the reward function calculates the cumulative reward for each action based on the position and action of the target entity. The `compute_reward` function loops through the actions and their associated positions and actions, computes the reward for each action using the provided individual rewards list, and adds up the total cumulative reward over time. Finally, the function returns both the total cumulative reward and the individual rewards for each action.

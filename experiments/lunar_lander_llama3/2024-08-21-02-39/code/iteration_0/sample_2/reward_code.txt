@@ -1,0 +1,25 @@
+def compute_reward(state, m_power, s_power, terminated):
+    # Define a set of terminal states (e.g., crash, successful landing)
+    TERMINAL_STATES = [
+        state[0] >= 1.0,  # off-screen x-position
+        abs(state[1]) >= VIEWPORT_H / SCALE / 2,  # off-screen y-position
+        self.lander.angle > 10.0 or self.lander.angle < -10.0  # excessive rotation
+    ]
+
+    if terminated:
+        # Punish the agent for not achieving a successful landing
+        reward = -1.0
+    else:
+        # Reward the agent for being close to the helipad and having reasonable velocity
+        distance_to_helipad = np.hypot(state[0], state[1] - self.helipad_y)
+        if distance_to_helipad < 10.0:  # within a certain radius of the helipad
+            reward = 1.0
+        else:
+            reward = -0.1
+
+    individual_reward = {
+        'distance_to_helipad': distance_to_helipad,
+        'reward': reward
+    }
+
+    return reward, individual_reward

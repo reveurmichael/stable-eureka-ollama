@@ -1,0 +1,50 @@
+Here's a variation of the initial reward proposal:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 100.0) - 1
+
+    # Angle stability reward: penalize tilting and angular velocity
+    angle_stability_penalty = -(np.abs(angle))
+    angle_stability_penalty = np.tanh(angle_stability_penalty / 0.5)
+
+    # Velocity stability reward: penalize high velocities
+    velocity_stability_penalty = -(np.abs(vx) + np.abs(vy))
+    velocity_stability_penalty = np.tanh(velocity_stability_penalty / 1.0)
+
+    # Fuel efficiency reward: incentivize using the side engines
+    fuel_efficiency_reward = (m_power + s_power)
+    fuel_efficiency_reward /= (1000 + m_power + s_power)  # normalize
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 0
+    if left_leg and right_leg:
+        landing_reward = 100 if abs(x) < 0.1 and abs(y) < 0.1 else 10
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.2 * angle_stability_penalty
+              + 0.3 * velocity_stability_penalty
+              + 0.5 * fuel_efficiency_reward
+              + landing_reward)
+
+    if terminated:
+        reward -= 50
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_stability_penalty": angle_stability_penalty,
+        "velocity_stability_penalty": velocity_stability_penalty,
+        "fuel_efficiency_reward": fuel_efficiency_reward,
+        "landing_reward": landing_reward
+    }
+
+    return reward, individual_reward
+```
+
+This variation emphasizes the use of side engines and stability during the landing process. The `fuel_efficiency_reward` now incentivizes the use of side engines by normalizing it with respect to the maximum possible power.

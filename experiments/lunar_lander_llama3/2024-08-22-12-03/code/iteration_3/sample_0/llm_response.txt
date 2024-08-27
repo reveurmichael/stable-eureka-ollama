@@ -1,0 +1,30 @@
+Here's a simple and effective reward function based on the given environment. The goal is to maximize the distance between the lander and the helipad while keeping it grounded.
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        return -10.0, {'alive': 1.0}  # Punish terminated episodes
+    else:
+        reward = 0.0
+
+        pos_x = state[0]
+        vel_x = state[2]
+
+        if abs(pos_x) < 0.5:  # Lander near the helipad
+            if vel_x > 1e-3:  # Lander is still moving away from helipad
+                reward += 0.01
+            else:
+                reward -= 1.0  # Punish for not moving away
+
+        if abs(state[1]) < 0.2:  # Lander near the ground
+            if state[5] > -10e-3:  # Lander is still rotating downwards
+                reward += 0.02
+            else:
+                reward -= 1.0  # Punish for not rotating downwards
+
+        return reward, {'distance': abs(state[0]), 'velocity': vel_x}
+```
+
+This reward function encourages the agent to move away from the helipad while keeping it grounded and rotating downwards. The `compute_fitness_score` function is not necessary as we are already calculating a fitness score in the individual_reward dictionary.
+
+Note that these values are arbitrary and can be adjusted based on the performance of your agent during training.

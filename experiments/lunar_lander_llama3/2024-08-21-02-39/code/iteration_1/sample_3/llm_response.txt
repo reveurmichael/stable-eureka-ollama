@@ -1,0 +1,25 @@
+A challenge!
+
+After analyzing the code, I'll provide my interpretation of the reward function. Please note that this may not be the exact original intention of the developers.
+
+The reward function seems to be composed of two parts:
+
+1. `compute_reward(state, m_power, s_power, terminated)`:
+	* This function takes in the current state, main engine power (`m_power`), side engine power (`s_power`), and a termination flag (`terminated`). It returns a reward value.
+2. The second part is not explicitly shown, but it seems to be related to `compute_fitness_score(state, m_power, s_power, terminated)`. This function also takes in the same inputs as the first part and returns a fitness score.
+
+The overall reward structure appears to be designed to encourage the agent to:
+
+* Move the lander towards the helipad (positive rewards for proximity)
+* Maintain a stable orientation (perhaps through side engine control)
+* Avoid termination conditions (e.g., game over, off-screen, or non-grounded legs)
+
+In more detail, the reward function might incorporate terms such as:
+
+* Proximity to the helipad: `reward += some_value * (1 - abs(state[0]))` (closer to 1 is better)
+* Orientation stability: `reward += some_value * (1 - abs(state[5]))` (smaller angular velocity is better)
+* Termination avoidance: `reward -= penalty_value if terminated else reward`
+
+These are just my interpretations based on the code. The actual reward function might be more complex or nuanced.
+
+Please let me know if I'm correct or if there's more to the story!

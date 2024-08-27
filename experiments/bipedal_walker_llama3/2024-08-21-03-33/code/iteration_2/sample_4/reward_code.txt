@@ -1,0 +1,11 @@
+def compute_reward(self, pos, action, state):
+    # Calculate progress towards the goal (fitness score)
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    progress = np.exp(-(distance_to_goal ** 2) / 1000)
+
+    # Use the reward component as a proxy for the fitness score
+    reward = progress * 10.0
+
+    individual_reward = {"progress": progress, "reward": reward}
+
+    return reward, individual_reward

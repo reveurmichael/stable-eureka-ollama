@@ -1,0 +1,10 @@
+Based on the provided code, the reward function appears to be as follows:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    pass
+```
+
+This means that no specific reward function has been implemented yet. The `compute_reward` method is a placeholder and needs to be defined according to the problem's requirements and objectives.
+
+The reward function should take into account the desired behavior of the agent (e.g., landing safely, completing tasks efficiently) and provide incentives or penalties accordingly.

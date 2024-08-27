@@ -1,0 +1,27 @@
+Based on the provided code, it appears that the reward function is not explicitly defined. The `compute_reward` method is called in the main loop of the simulation, but its implementation is not shown.
+
+However, based on the context and the variables passed to the `compute_reward` method (i.e., `state`, `m_power`, `s_power`, and `terminated`), it can be inferred that the reward function should take these inputs into account when calculating a reward value for the agent.
+
+Here is a possible implementation of the reward function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate the reward based on the current state and actions taken
+    reward = 0.0
+
+    if not terminated:
+        # Encourage the agent to move closer to the helipad
+        reward += -abs(state[1])  # negative reward for moving away from the helipad
+        # Encourage the agent to maintain a stable orientation
+        reward -= abs(state[4])  # negative reward for large orientation changes
+
+    if terminated:
+        # Assign a penalty for termination (e.g., crash or falling off the platform)
+        reward = -1.0
+
+    return reward, {"main": m_power, "side": s_power}
+```
+
+In this example, the reward function calculates a base reward based on the agent's position and orientation, with negative rewards encouraging movement closer to the helipad and stable orientation. If the simulation is terminated (e.g., due to a crash or falling off the platform), a penalty is assigned.
+
+The `individual_reward` dictionary returned by this function allows for separate tracking of main engine power (`m_power`) and side engines (`s_power`) contributions to the overall reward.

@@ -1,0 +1,19 @@
+A challenge!
+
+After carefully analyzing the code, I'm going to take a stab at guessing the reward function.
+
+The reward function seems to be designed to encourage the agent to successfully land on the helipad while penalizing actions that cause the lander to crash or become stuck in an undesirable state. Here's my attempt at reflecting the reward code:
+
+**Reward Function:**
+
+`reward = -distance_to_helipad + 0.1 * (angular_velocity ** 2) + 0.01 * (linear_velocity ** 2)`
+
+where `distance_to_helipad` is a measure of how far the lander is from the helipad, and `angular_velocity` and `linear_velocity` are measures of the lander's rotational and linear velocities, respectively.
+
+This reward function seems to incentivize the agent to:
+
+1. Move towards the helipad (`-distance_to_helipad`) to encourage successful landing.
+2. Maintain a stable orientation by penalizing high angular velocities (0.1 * `(angular_velocity ** 2)`).
+3. Minimize its linear velocity to reduce energy and prevent crashes (0.01 * `(linear_velocity ** 2)`).
+
+Please let me know if I'm correct or not!

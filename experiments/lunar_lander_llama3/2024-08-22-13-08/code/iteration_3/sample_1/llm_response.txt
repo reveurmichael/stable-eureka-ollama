@@ -1,0 +1,25 @@
+Here's a possible reward function based on the provided code:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        return -1.0, {}
+    else:
+        # Compute the reward
+        # For now, assume the reward is 0 for not-terminated episodes
+        reward = 0.0
+
+        # Add a penalty if the lander is too far from the helipad
+        distance_from_helipad = abs(state[1] - (self.helipad_y + LEG_DOWN / SCALE))
+        reward -= 0.05 * distance_from_helipad
+
+        # Add a bonus for being close to the helipad and having good velocity
+        if state[0] < 0.5:  # Adjust this threshold based on your game
+            reward += 0.1 + 0.01 * (state[3] ** 2)
+
+        return reward, {}
+```
+
+This reward function gives a penalty for being far from the helipad and a bonus for being close to the helipad and having good velocity. The `compute_fitness_score` method is not used in this implementation as it seems to be related to displaying information about the episode rather than affecting the agent's behavior.
+
+Remember that designing a good reward function can be challenging, and you may need to experiment with different formulations before achieving good results.

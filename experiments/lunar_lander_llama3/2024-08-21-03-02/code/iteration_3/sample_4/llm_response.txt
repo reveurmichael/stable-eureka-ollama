@@ -1,0 +1,43 @@
+A reinforcement learning problem!
+
+The reward function for this problem is not explicitly defined. However, based on the given code, I can try to infer what the reward might be.
+
+The `compute_reward` method seems to take in the current state of the lander (position, velocity, angle, angular velocity, and leg contact status), as well as the magnitudes of the main and side engine powers (`m_power` and `s_power`). The method also takes a boolean flag `terminated`, which might indicate whether the episode has ended or not.
+
+Based on this information, I would guess that the reward function is designed to encourage the agent to:
+
+1. Reach the helipad (i.e., the final state)
+2. Avoid falling off the edge of the screen
+3. Maintain a stable and controlled trajectory
+
+The `compute_reward` method likely returns a numerical value that reflects how well the lander is doing with respect to these goals.
+
+Here's a possible implementation of the reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    # Define constants for reward shaping
+    REWARD_REACH_HELIPAD = 10.0
+    REWARD_STABLE_TRAJECTORY = 5.0
+    PUNISH_FALLOFF_EDGE = -5.0
+
+    # Calculate the distance to the helipad
+    helipad_distance = np.sqrt((state[0] - VIEWPORT_W / SCALE / 2) ** 2 + (state[1] - self.helipad_y - LEG_DOWN / SCALE) ** 2)
+
+    # Reward reaching the helipad
+    if helipad_distance < 0.5:
+        reward = REWARD_REACH_HELIPAD
+
+    # Punish falling off the edge of the screen
+    elif abs(state[0]) >= 1.0:
+        reward = PUNISH_FALLOFF_EDGE
+
+    # Encourage a stable and controlled trajectory
+    else:
+        reward = REWARD_STABLE_TRAJECTORY - (m_power + s_power) ** 2  # penalize engine usage
+
+    if terminated:
+        reward -= 10.0  # punish episode termination
+
+    return reward, individual_reward
+```
+Of course, this is just a possible implementation, and the actual reward function may be different depending on the specific goals of the problem.

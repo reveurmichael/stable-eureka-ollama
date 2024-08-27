@@ -1,0 +1,27 @@
+Based on the provided code, the reward function is not explicitly defined. However, it appears that the `compute_reward` and `compute_fitness_score` methods are used to calculate rewards. 
+
+Here's a possible implementation of these methods based on common reinforcement learning objectives:
+
+```Python
+def compute_reward(self, state, m_power, s_power, terminated):
+    reward = 0
+
+    # Reward for being near the helipad (closer is better)
+    reward += -abs(state[1])  # y-position relative to the helipad
+
+    # Punish for falling off the platform
+    if abs(state[1]) > 1.0:
+        reward -= 10  # adjust this value as needed
+
+    # Reward for vertical velocity (going up is better)
+    if state[3] > 0:
+        reward += m_power * 5  # adjust this value as needed
+
+    # Punish for horizontal movement
+    reward -= abs(state[0]) * 2  # adjust this value as needed
+
+    individual_reward = {'main_engine': reward, 'side_engines': s_power}
+    return reward, individual_reward
+```
+
+This reward function is a simple example and may need to be adjusted based on the specifics of your environment and the desired behavior of your agents.

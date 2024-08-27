@@ -1,0 +1,45 @@
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.tanh(distance_reward / 10.0)  # reduce scaling to make it easier for the agent to learn
+
+    # Height reward: keep the lander at a reasonable height
+    height_penalty = -(y - self.helipad_y) ** 2
+    height_penalty = 1 - np.exp(-height_penalty / 5.0)  # invert and scale the penalty to encourage a target height
+
+    # Velocity penalty: discourage high velocities
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2
+    velocity_penalty = np.tanh(velocity_penalty / 1.0)
+
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if left_leg and right_leg:
+        if abs(x) < 0.1 and abs(y) < 0.1:  # adjust the landing zone to make it smaller
+            return 100
+        elif abs(x) < 0.5 or abs(y) < 0.5:  # provide a smaller bonus for almost landing
+            return 10
+    else:
+        landing_reward = 0
+
+    # Termination penalty: apply a large negative reward if the episode terminates due to crash or out of bounds
+    termination_penalty = -100 if terminated and not (left_leg and right_leg):  # adjust the magnitude of this penalty
+    else:
+        termination_penalty = 0
+
+    # Total reward: a weighted sum of all components
+    reward = distance_reward + 0.3 * height_penalty + 0.4 * velocity_penalty - 0.05 * fuel_penalty + landing_reward + termination_penalty
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward

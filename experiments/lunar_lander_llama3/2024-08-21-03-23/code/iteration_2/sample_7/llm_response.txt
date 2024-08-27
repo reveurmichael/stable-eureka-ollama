@@ -1,0 +1,20 @@
+A reinforcement learning problem!
+
+From the given code, I can infer that the reward function is implemented in the `compute_reward` method. Here's a possible representation of the reward function based on the given code:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:  # Game over or out of bounds?
+        return -1.0, {}  # Negative reward for termination
+
+    # Compute rewards for main engine (m_power) and side engines (s_power)
+    m_engine_reward = np.clip(m_power / MAIN_ENGINE_POWER, 0.0, 1.0)
+    s_engine_reward = np.clip(s_power, 0.5, 1.0)
+
+    # Combine main and side engine rewards
+    reward = m_engine_reward + s_engine_reward
+
+    return reward, {'main_engine': m_engine_reward, 'side_engines': s_engine_reward}
+```
+This reward function assigns a positive reward to the agent when it uses its main and side engines effectively (i.e., `m_power` and `s_power` are non-zero). The magnitude of the reward is proportional to the power applied. When the game is terminated or the agent is out of bounds, the reward is negative.
+
+The individual rewards for main and side engines are also returned as a dictionary to provide additional feedback to the agent.

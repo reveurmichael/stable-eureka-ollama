@@ -1,0 +1,44 @@
+Based on the given code snippet, it appears that you're trying to implement a reward function for reinforcement learning. The provided code seems to be part of an environment where an agent (lander) interacts with its surroundings and receives rewards based on its actions.
+
+Here's a possible implementation of your reward function:
+
+```Python
+import math
+
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        return -100.0, {}  # Penalty for episode termination
+
+    pos_x = (state[0] + 1) / 2
+    pos_y = (state[1] + 1) / 2
+
+    reward = 0.0
+
+    # Reward for being close to the target location
+    if abs(pos_x - 0.5) < 0.05 and abs(pos_y - 0.5) < 0.05:
+        reward += 100.0
+
+    # Penalty for not being in contact with all legs
+    if state[6] == 0 or state[7] == 0:
+        reward -= 10.0
+
+    # Reward for proper orientation (angle close to 0)
+    if math.fabs(state[4]) < 0.1:
+        reward += 5.0
+
+    # Bonus for high speeds in the x and y directions
+    reward += m_power * 2 + s_power * 1.5
+
+    return reward, {'m_power': m_power, 's_power': s_power}
+```
+
+In this implementation:
+
+- The function `compute_reward` takes the current state of the environment (`state`), the magnitudes of the main and side engines' thrusts (`m_power`, `s_power`), and a boolean indicating whether the episode has terminated (`terminated`) as inputs.
+- If the episode has terminated, it returns a penalty reward (`-100.0`) along with an empty dictionary for individual rewards.
+- The function then calculates a base reward based on the agent's position in the x-y plane. The closer the agent is to the target location (centered at `(0.5, 0.5)`, the higher the reward.
+- It also deducts a penalty if any leg of the lander is not in contact with the ground (`state[6]` or `state[7]` equal to 0).
+- The function then adds bonuses for proper orientation (angle close to 0), main engine thrust magnitude, and side engine thrust magnitude.
+- Finally, it returns the calculated reward along with a dictionary containing individual rewards for `m_power` and `s_power`.
+
+This is just one possible implementation of your reward function. You can adjust or modify this code based on your specific requirements and problem domain.

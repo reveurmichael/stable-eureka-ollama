@@ -1,0 +1,38 @@
+A reinforcement learning problem!
+
+After analyzing the provided code, I've identified the reward function as follows:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    # TO DO: implement a meaningful reward function based on the state and actions
+    pass
+```
+The `compute_reward` function takes in:
+
+1. `state`: The current state of the environment (an array of 8 values).
+2. `m_main_engine_power` and `s_side_engine_power`: The main engine power and side engine power, respectively.
+3. `terminated`: A boolean indicating whether the episode has terminated or not.
+
+The goal is to design a reward function that encourages the agent to successfully land the spacecraft while minimizing the number of episodes and maximizing the distance from the helipad. The reward should reflect the progress towards these goals.
+
+Here's a possible implementation:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        # Episode terminated, penalize for failure (e.g., crash or not landing on the pad)
+        return -10.0
+
+    # Reward for being close to the helipad
+    helipad_distance = abs(state[1])  # distance from the helipad
+    reward = -helipad_distance / (VIEWPORT_H / SCALE / 2)  # inverse of the distance
+
+    # Additional rewards for good performance (e.g., stable velocity, angle)
+    if state[3] < 0.5:  # stable velocity (< 0.5 units per frame)
+        reward += 1.0
+    if abs(state[4]) < 10.0:  # stable orientation (< 10 degrees)
+        reward += 2.0
+
+    return reward
+```
+This reward function penalizes the agent for terminating the episode (e.g., crash or not landing on the pad) and rewards it for being close to the helipad, having a stable velocity and orientation.
+
+Feel free to modify this implementation based on your specific requirements!

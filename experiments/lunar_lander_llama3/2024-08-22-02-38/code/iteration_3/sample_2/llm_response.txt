@@ -1,0 +1,15 @@
+A reinforcement learning problem!
+
+Based on the provided code, I'm going to assume that the reward function should reflect the goal of keeping the lander stable and moving towards the helipad while minimizing the use of fuel.
+
+Here's a possible reward reflection:
+
+`reward = -m_power + s_power - 0.1 * terminated`
+
+* `-m_power`: The negative fuel consumption (main engines) is penalized to encourage the agent to minimize its fuel usage.
+* `s_power`: The positive side engine power is rewarded to encourage the agent to use the side engines wisely and maintain orientation.
+* `-0.1 * terminated`: When the episode terminates, a small penalty is applied to discourage the agent from staying in a terminal state.
+
+This reward function provides a simple trade-off between fuel consumption, side engine usage, and episode termination. You can adjust the weights or add more terms as needed to better fit your specific problem requirements.
+
+Note that this is just one possible approach, and you may need to experiment with different reward functions to find what works best for your environment.

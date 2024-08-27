@@ -1,0 +1,41 @@
+As a reward engineer, I will design an effective reward function for this reinforcement learning task. The goal of the reward function is to encourage the agent to successfully land the spacecraft (lander) on the helipad while minimizing the use of fuel.
+
+Here's my proposal for the reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    # Define constants
+    LANDING_REWARD = 10.0
+    FUEL_PENALTY = -0.1
+    ORIENTATION_PENALTY = -0.05
+
+    # Check if the landing is successful (helipad contact)
+    helipad_contact = state[6] + state[7] > 0.5
+
+    # Calculate the reward based on the state and actions
+    if terminated:
+        if helipad_contact:  # Successful landing
+            return LANDING_REWARD, {}
+        else:  # Crash or failure to land
+            return -100.0, {'failure': True}
+    else:
+        # Encourage proper orientation (close to zero)
+        angle_error = abs(state[4])
+        if angle_error > 20.0:
+            return FUEL_PENALTY + ORIENTATION_PENALTY, {'orientation_error': angle_error}
+
+        # Reward for not using too much fuel
+        m_fuel_penalty = -m_power * 0.1
+
+        # Reward for proper orientation and minimal fuel usage
+        s_orientation_reward = np.cos(state[4]) * 10.0
+
+        return (s_orientation_reward + LANDING_REWARD) + m_fuel_penalty, {'orientation_error': angle_error}
+```
+Here's a brief explanation of the reward function:
+
+1. **Landing reward**: A high reward is given when the lander successfully lands on the helipad.
+2. **Fuel penalty**: A negative reward is given for using too much fuel (m_power). This encourages the agent to be fuel-efficient.
+3. **Orientation penalty**: A small negative reward is given for not being properly oriented (large angle error).
+4. **Proper orientation and minimal fuel usage**: A positive reward is given when the lander is close to zero orientation (properly aligned) and uses minimal fuel.
+
+The individual rewards are updated with additional information, such as orientation error and failure status, which can be used for debugging or visualization purposes.

@@ -1,0 +1,8 @@
+The reward reflected by your code is:
+
+```python
+reward = float(SUM([j.x] for j in self.joints)) / (SPEED_HIP * TERRAIN_STEP)))
+```
+
+
+The reward reflects that the agent successfully navigated through terrain and achieved its goal of reaching a target defined as `TERRAIN_STEP`.

@@ -1,0 +1,16 @@
+def compute_reward(state, m_power, s_power, terminated):
+    # Basic reward structure: positive for successful landing, negative for crashes or oscillations
+    r = 0
+
+    # Landing bonus (higher is better)
+    if state[0] <= 1.0 and state[1] >= -LEG_DOWN / SCALE:
+        r += 10.0  # Successful landing!
+
+    # Crash penalty (-1000 is very bad, -1 is relatively mild)
+    if terminated or abs(state[0]) >= 1.0:
+        r -= 1000.0  # Crash!
+
+    # Angular velocity penalty (high values are worse)
+    r -= 0.5 * state[5] ** 2  # Punish oscillations
+
+    return r, {'landing_bonus': r > 0}

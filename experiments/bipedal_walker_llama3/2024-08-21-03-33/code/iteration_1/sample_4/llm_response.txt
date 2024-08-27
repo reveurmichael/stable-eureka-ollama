@@ -1,0 +1,40 @@
+Based on the provided feedback, I'll analyze each existing reward component and propose a new reward function.
+
+**Analyzing existing reward components:**
+
+1. `moving_forward`: The values are quite large (up to 1570.0), which might dominate the other reward components. This component should be re-scaled.
+2. `penalty`: The values are relatively small, but they're consistently around -9.95. This suggests that the penalty is not being effectively used as a negative feedback signal. Consider re-scaling or rewriting this component.
+3. `fitness_score`: This is the ground truth evaluator, and we want to maximize it. However, the values are mostly negative (average is around -86). This might indicate that the policy is not yet good enough, and we should focus on improving its performance.
+4. `reward`: The values are similar to those in `fitness_score`, which suggests that this component is not providing strong feedback either.
+
+**Proposed new reward function:**
+
+Based on the analysis above, I suggest a new reward function that:
+
+1. Re-scales the `moving_forward` component to have more reasonable values.
+2. Reduces the magnitude of the penalty term to make it a stronger negative feedback signal.
+3. Includes a term to encourage improvement in the policy's performance (i.e., increase the fitness score).
+
+Here's the new reward function code proposal:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+
+    # Re-scaled moving_forward component
+    moving_forward_reward = np.clip(moving_forward, 0.1, 1)  # Clip to [0.1, 1]
+
+    # Reduced penalty term
+    penalty = -0.005 * (state[6] + state[13])  # Reduce magnitude by a factor of 10
+
+    # Encourage improvement in policy performance (fitness score)
+    fitness_improvement_reward = np.clip(np.exp(1 - np.abs(fitness_score)), 0, 1)  # Clip to [0, 1]
+
+    reward = moving_forward_reward + penalty + fitness_improvement_reward
+    individual_rewards = {"progress": moving_forward_reward, "moving_forward": moving_forward, "penalty": penalty, "fitness_improvement": fitness_improvement_reward}
+
+    return reward, individual_rewards
+```
+
+This new reward function aims to provide a more balanced feedback signal that encourages the policy to move forward (while keeping an eye on the distance to the goal), reduces the impact of the penalty term, and rewards improvement in the policy's performance (as measured by the fitness score).

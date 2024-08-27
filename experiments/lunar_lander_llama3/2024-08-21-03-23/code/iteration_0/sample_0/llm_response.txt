@@ -1,0 +1,43 @@
+As a reward engineer, I can see that the provided code is for a reinforcement learning task in the context of robotic control (lander game). The goal is to design an effective reward function.
+
+Based on the given code and problem description, here's a suggested reward function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Initialize reward
+    reward = 0.0
+
+    # If the lander has reached the helipad (target position), reward it
+    if abs(state[0]) < 0.5 and abs(state[1]) < 0.5:
+        reward += 100.0
+
+    # Punish for being too far away from the target
+    distance_to_target = np.sqrt((state[0] ** 2) + (state[1] ** 2))
+    if not terminated:
+        reward -= 0.05 * distance_to_target
+
+    # Reward for having a stable velocity (closer to zero)
+    if not terminated:
+        reward -= 0.005 * (abs(state[2]) + abs(state[3]))
+
+    # Reward for being in contact with the ground
+    if state[6] == 1 and state[7] == 1:
+        reward += 10.0
+
+    # If the lander has crashed or gone too far away, penalize it
+    if terminated:
+        reward -= 100.0
+
+    return reward, {'main_engine': m_power, 'side_engine': s_power}
+```
+
+In this reward function:
+
+1.  A high reward (100) is given when the lander reaches the target position.
+2.  A penalty (dependent on distance to target and velocity magnitude) is applied for not being at the target or having a large velocity.
+3.  Rewards are given for having both legs in contact with the ground.
+4.  When the episode terminates due to crash or going too far away, a significant penalty is applied.
+
+These reward components work together to encourage the agent to successfully land on the helipad while minimizing penalties for being far away from the target and not having stable velocity.
+
+Feel free to adjust these components based on your specific problem requirements.

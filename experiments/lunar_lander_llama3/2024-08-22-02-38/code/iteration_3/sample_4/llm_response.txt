@@ -1,0 +1,17 @@
+The reward function!
+
+From what I can see, the reward function seems to be designed to encourage the lander to reach the helipad and survive. Here's a breakdown of the rewards:
+
+* The `compute_reward` method takes in the current state, `m_power`, `s_power`, and `terminated` as inputs.
+* If the game is over or if the lander is too far away from the center of the viewport (i.e., `abs(state[0]) >= 1.0`), the reward is likely to be low or negative, indicating a penalty for not reaching the helipad or falling off the screen.
+* If the lander is awake and not terminated, the reward might be slightly positive, encouraging the agent to stay alive and active.
+
+The `compute_fitness_score` method seems to be used to compute an additional score that's updated with the individual rewards. This could be used for further analysis or visualization of the model's performance.
+
+Some possible improvements or reflections on the reward function:
+
+* Consider introducing a bonus reward when the lander reaches the helipad, encouraging the agent to successfully land.
+* You might want to adjust the penalty for falling off the screen or game over. Is it too harsh or not harsh enough?
+* How about introducing rewards for specific actions, like using the main engine or side engines? This could help the agent learn more nuanced strategies.
+
+Overall, the reward function seems straightforward and focused on encouraging the lander to reach the helipad and survive. However, you might want to consider refining it based on the specific needs of your environment and the desired behavior of the agent.

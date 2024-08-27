@@ -1,0 +1,32 @@
+Based on the provided feedback, I'll analyze each existing reward component and then propose a new reward function.
+
+**Analyzing the existing reward components:**
+
+1. **moving_forward**: The values are not identical, but they seem to be consistently high (mostly around 9-10). This could be because moving forward is a desirable behavior in the task.
+2. **penalty**: The values are also consistently high, indicating that the penalty term is trying to minimize something. Since the fitness score is supposed to be maximized, this component might not be aligned with the goal.
+3. **fitness_score**: This is the ground truth evaluator, and its values are mostly negative. In reinforcement learning, we want to maximize the reward, so this component seems out of place.
+4. **reward**: This component is similar to the penalty term, trying to minimize something (the sum of state[6] and state[13]). However, its values are not as high as the penalty component.
+
+**Proposed new reward function:**
+
+To align the reward function with the goal of maximizing the fitness score, we can discard the penalty and fitness_score components. We'll also re-scale the moving_forward component to make it more relevant to the task. Here's a proposal for the new reward function:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    moving_forward = not self.game_over and (pos[0] < 0 or pos[0] > TERRAIN_GRASS * TERRAIN_STEP)
+
+    reward = np.exp(-(distance_to_goal ** 2) / 1000) + 0.1 * moving_forward - 0.001 * state[6]
+    
+    individual_reward = {"progress": np.exp(-(distance_to_goal ** 2) / 1000), "moving_forward": 0.1, "penalty": -0.001 * state[6]}
+    
+    return reward, individual_reward
+```
+
+In this proposal:
+
+* The distance to the goal is still a key factor in the reward.
+* Moving forward is now rewarded with a moderate value (0.1).
+* A small penalty term (-0.001) is added to encourage progress towards the goal.
+
+This new reward function should better align with the task's goals and encourage the agent to move forward and reach the goal while minimizing penalties.

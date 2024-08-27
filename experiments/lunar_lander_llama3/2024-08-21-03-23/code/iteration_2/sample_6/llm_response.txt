@@ -1,0 +1,29 @@
+Based on the provided code, I assume that the reward function is implemented in the `compute_reward` method. Here's a possible implementation of the reward function:
+
+```Python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward for reaching the helipad
+    helipad_reward = -100 if abs(state[0]) < 1 and abs(state[1]) < 1 else 0
+    
+    # Punishment for falling
+    fall_punishment = -50 if self.game_over else 0
+    
+    # Punishment for not being awake (i.e., the lander is not moving)
+    idle_punishment = -10 if not self.lander.awake else 0
+    
+    # Reward for using main engines (m_power > 0)
+    main_engine_reward = m_power * 5
+    
+    # Reward for using side engines (s_power > 0)
+    side_engine_reward = s_power * 2
+    
+    total_reward = helipad_reward + fall_punishment + idle_punishment + main_engine_reward + side_engine_reward
+    
+    if terminated:
+        # Penalty for termination
+        total_reward -= 50
+    
+    return total_reward, {'main_engine': main_engine_reward, 'side_engine': side_engine_reward}
+```
+
+In this reward function, we award the agent for reaching the helipad, using main engines to move towards it, and using side engines to correct its orientation. We also penalize the agent for falling or being idle (i.e., not moving). The magnitude of these rewards can be adjusted based on the needs of your specific problem.

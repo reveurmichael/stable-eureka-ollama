@@ -1,0 +1,59 @@
+Based on the provided feedback, I will analyze each existing reward component and propose an improved reward function.
+
+**Analysis of Existing Reward Components**
+
+1. **Distance-based reward**: The values are not very informative, but it seems to incentivize movement to the right.
+2. **Stability reward (angle penalty)**: The values are mostly negative, indicating a minimization goal. This might be too harsh, as agents may struggle to maintain stability.
+3. **Stability reward (angular velocity penalty)**: Similar to the angle penalty, this component seems to penalize high angular velocities.
+4. **Smoothness reward (action penalty)**: The values are mostly negative, indicating a minimization goal. This might be too harsh, as agents may struggle to maintain smooth actions.
+5. **Proximity to Lidar points (obstacle penalty)**: The values are mostly negative, indicating a minimization goal. This component seems to encourage avoidance of obstacles.
+
+**Observations and Suggestions**
+
+* The fitness score is not improving during training, which suggests that the reward function might be too harsh or unbalanced.
+* The stability and smoothness rewards seem to be too strong, as they are penalizing most actions.
+* The distance-based reward is not providing much information about the desired behavior.
+
+**Improved Reward Function Proposal**
+
+Here's a revised reward function that addresses the observations and suggestions:
+```python
+def compute_reward(self, pos, action, state):
+    # Distance-based reward: incentivize movement to the right with moderate magnitude
+    distance_reward = np.tanh(pos.x / 100.0)  # Tanh activation for bounded rewards
+
+    # Simplified stability reward: reduce penalty for small angles and velocities
+    angle_stability_penalty = -np.abs(state[0]) ** 2
+    angular_velocity_stability_penalty = -np.abs(state[1]) ** 2
+    stability_reward = np.mean([angle_stability_penalty, angular_velocity_stability_penalty])
+
+    # Smoothness reward: moderate penalty for high-speed actions
+    action_smoothness_penalty = -np.sum(np.abs(action)) / len(action)
+    smoothness_reward = np.tanh(action_smoothness_penalty / 0.5)
+
+    # Proximity to Lidar points: encourage avoidance of obstacles with moderate magnitude
+    obstacle_avoidance_reward = -np.min([l.fraction for l in self.lidar])
+    obstacle_avoidance_reward = np.exp(obstacle_avoidance_reward)  # Exponential scaling for higher penalty
+
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward * 0.3
+              + stability_reward * 0.2
+              + smoothness_reward * 0.1
+              + obstacle_avoidance_reward * 0.4)
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "stability_reward": stability_reward,
+        "smoothness_reward": smoothness_reward,
+        "obstacle_avoidance_reward": obstacle_avoidance_reward,
+    }
+    
+    return reward, individual_reward
+```
+The proposed improved reward function:
+
+* Simplifies the stability and smoothness rewards to reduce penalty for small angles and velocities.
+* Increases the weight of the distance-based reward to encourage movement to the right.
+* Adjusts the weights of the other components to provide a more balanced reward.
+
+Please let me know if you have any questions or concerns about this proposal.

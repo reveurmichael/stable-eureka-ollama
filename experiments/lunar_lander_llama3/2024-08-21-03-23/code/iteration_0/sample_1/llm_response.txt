@@ -1,0 +1,34 @@
+A reinforcement learning problem!
+
+After analyzing the provided code, I will now implement a custom reward function that takes into account various aspects of the game.
+
+**Reward Function**
+
+The goal is to encourage the agent to successfully land the spacecraft on the helipad while avoiding crashes or excessive oscillations. Here's a possible reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    # Basic reward structure: positive for successful landing, negative for crashes or oscillations
+    r = 0
+
+    # Landing bonus (higher is better)
+    if state[0] <= 1.0 and state[1] >= -LEG_DOWN / SCALE:
+        r += 10.0  # Successful landing!
+
+    # Crash penalty (-1000 is very bad, -1 is relatively mild)
+    if terminated or abs(state[0]) >= 1.0:
+        r -= 1000.0  # Crash!
+
+    # Angular velocity penalty (high values are worse)
+    r -= 0.5 * state[5] ** 2  # Punish oscillations
+
+    return r, {'landing_bonus': r > 0}
+```
+This reward function provides a basic structure for encouraging successful landings while penalizing crashes and excessive oscillations.
+
+**Breakdown**
+
+1. **Landing bonus**: A positive reward is given when the spacecraft's x-position is within the helipad boundaries (`state[0] <= 1.0`) and its y-position is above the helipad height minus the leg down distance (`state[1] >= -LEG_DOWN / SCALE`). The higher the reward, the better.
+2. **Crash penalty**: A large negative reward is given when the game is over (`terminated` or `abs(state[0]) >= 1.0`) to discourage crashes and excessive oscillations.
+3. **Angular velocity penalty**: A moderate negative reward is given based on the angular velocity of the spacecraft (`state[5]`). Higher values indicate more severe oscillations, which are penalized.
+
+This reward function will guide the agent to successfully land the spacecraft while avoiding crashes and excessive oscillations.

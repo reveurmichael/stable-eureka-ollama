@@ -1,0 +1,166 @@
+You are a reward engineer writing effective reward functions for reinforcement learning tasks. Your goal is to create a reward function to help the agent learn the task described in text. Use relevant environment variables as inputs. Example signature:
+```python
+def compute_reward(self, ...):
+    ...
+    return reward, {}
+```
+Do not use type hints. Return type: float, Dict[str, float].
+Coding instructions: The reward function output should include:
+1. Total reward (float)
+2. Dictionary of individual reward components
+Format as a Python code string: "```python ... ```". Tips:
+1. Normalize rewards using transformations like np.exp. Introduce temperature parameters for each transformation.
+2. Ensure input types match expected types.
+3. Use only self. attributes from the environment class definition and input variables.
+4. If you create a self var inside the compute_reward function you must consider that it is not previously defined in the environment class:
+    e.g. if hasattr(self, 'var') is False: self.var = 0 else self.var += 1
+5. No new input variables.
+6. The python code must begin with: "```python ... ```"
+7. Pass self as the first argument.
+8. Do not compute fitness_score components.
+9. Only create the reward function, do not create more functions.
+10. Try to make everything smooth (when possible).
+Provide the function code only, followed by a brief explanation (max 50 words).
+Task description: The goal is to make a biped navigate a 2D environment:
+- The biped starts standing at the left end of the terrain with the hull horizontal, and both legs in the same position with a slight knee angle
+- The biped has to reach the right end of the terrain and avoid falling down, getting stuck while surpassing obstacles (e.g. gaps, steps, stairs)
+- We do not want the biped to get stuck in a certain position, he should keep moving forward, as far as possible
+- The biped should go as fast as possible, so it gets to the end in less steps. The fewer episode steps, the better if getting to the end
+- It is more important to reach the end than being super smooth, because the agent could decide not to move to avoid falling down, which is not the goal
+Environment code:
+def step(self, action: np.ndarray):
+    assert self.hull is not None
+
+    # self.hull.ApplyForceToCenter((0, 20), True) -- Uncomment this to receive a bit of stability help
+    control_speed = False  # Should be easier as well
+    if control_speed:
+        self.joints[0].motorSpeed = float(SPEED_HIP * np.clip(action[0], -1, 1))
+        self.joints[1].motorSpeed = float(SPEED_KNEE * np.clip(action[1], -1, 1))
+        self.joints[2].motorSpeed = float(SPEED_HIP * np.clip(action[2], -1, 1))
+        self.joints[3].motorSpeed = float(SPEED_KNEE * np.clip(action[3], -1, 1))
+    else:
+        self.joints[0].motorSpeed = float(SPEED_HIP * np.sign(action[0]))
+        self.joints[0].maxMotorTorque = float(
+            MOTORS_TORQUE * np.clip(np.abs(action[0]), 0, 1)
+        )
+        self.joints[1].motorSpeed = float(SPEED_KNEE * np.sign(action[1]))
+        self.joints[1].maxMotorTorque = float(
+            MOTORS_TORQUE * np.clip(np.abs(action[1]), 0, 1)
+        )
+        self.joints[2].motorSpeed = float(SPEED_HIP * np.sign(action[2]))
+        self.joints[2].maxMotorTorque = float(
+            MOTORS_TORQUE * np.clip(np.abs(action[2]), 0, 1)
+        )
+        self.joints[3].motorSpeed = float(SPEED_KNEE * np.sign(action[3]))
+        self.joints[3].maxMotorTorque = float(
+            MOTORS_TORQUE * np.clip(np.abs(action[3]), 0, 1)
+        )
+
+    self.world.Step(1.0 / FPS, 6 * 30, 2 * 30)
+
+    pos = self.hull.position
+    vel = self.hull.linearVelocity
+
+    for i in range(10):
+        self.lidar[i].fraction = 1.0
+        self.lidar[i].p1 = pos
+        self.lidar[i].p2 = (
+            pos[0] + math.sin(1.5 * i / 10.0) * LIDAR_RANGE,
+            pos[1] - math.cos(1.5 * i / 10.0) * LIDAR_RANGE,
+        )
+        self.world.RayCast(self.lidar[i], self.lidar[i].p1, self.lidar[i].p2)
+
+    state = [
+        self.hull.angle,  # Normal angles up to 0.5 here, but sure more is possible.
+        2.0 * self.hull.angularVelocity / FPS,
+        0.3 * vel.x * (VIEWPORT_W / SCALE) / FPS,  # Normalized to get -1..1 range
+        0.3 * vel.y * (VIEWPORT_H / SCALE) / FPS,
+        self.joints[0].angle,
+        # This will give 1.1 on high up, but it's still OK (and there should be spikes on hiting the ground, that's normal too)
+        self.joints[0].speed / SPEED_HIP,
+        self.joints[1].angle + 1.0,
+        self.joints[1].speed / SPEED_KNEE,
+        1.0 if self.legs[1].ground_contact else 0.0,
+        self.joints[2].angle,
+        self.joints[2].speed / SPEED_HIP,
+        self.joints[3].angle + 1.0,
+        self.joints[3].speed / SPEED_KNEE,
+        1.0 if self.legs[3].ground_contact else 0.0,
+    ]
+    state += [l.fraction for l in self.lidar]
+    assert len(state) == 24
+
+    self.scroll = pos.x - VIEWPORT_W / SCALE / 5
+
+    terminated = False
+    if self.game_over or pos[0] < 0:
+        terminated = True
+    # stable-eureka: this is the function you must implement!
+    reward, individual_reward = self.compute_reward(pos, action, state)
+
+    fitness_score = self.compute_fitness_score(pos, action, state)
+
+    if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
+        terminated = True
+
+    if self.render_mode == "human":
+        self.render()
+
+    info = individual_reward.update({'fitness_score': fitness_score})
+
+    return np.array(state, dtype=np.float32), reward, terminated, False, info
+
+Reward reflection:
+We trained a RL policy using the provided reward function code and tracked (on evaluation on several points of the training stage) the values of individual reward components, along with global policy metrics such as fitness scores and episode lengths. Maximum, mean, and minimum are provided:
+   distance_reward: [211.3477060496807, 378.13091055154626, 380.2071708083191, 373.7752251505961, 374.44338557720386, 372.41784453392125, 373.41091697216234, 379.36829644441605, 379.00760314464515, 390.95270442963755]. Max: 390.95270442963755 - Mean: 361.3061763662128 - Min: 211.3477060496807 
+   angle_penalty: [-0.1497866842895143, -0.1042916527467347, -0.10502879001107135, -0.1040830592985864, -0.08895260230562502, -0.09290860232198603, -0.09466288486660063, -0.1045907511836843, -0.21313424213172075, -0.10498473254300225]. Max: -0.08895260230562502 - Mean: -0.11624240016985257 - Min: -0.21313424213172075 
+   angular_velocity_penalty: [-0.0015391908911322272, -0.00023059432626288269, -0.00024700388294705724, -0.0002164316339384676, -0.00022830314444703028, -0.00024091338832814518, -0.0003298177874063954, -0.0003113788291004445, -0.0004109191635774522, -0.0007763473052132452]. Max: -0.0002164316339384676 - Mean: -0.0004530900352353348 - Min: -0.0015391908911322272 
+   action_penalty: [-6.3110138900578026, -16.208327139913926, -17.280860036984066, -19.59112583287061, -19.87068650498938, -19.19705331139265, -20.479558811336734, -25.222885845228916, -32.72207522913814, -23.808136910944782]. Max: -6.3110138900578026 - Mean: -20.069172351285697 - Min: -32.72207522913814 
+   obstacle_penalty: [-19.62825802490115, -35.245094957948794, -35.23082423806137, -35.23230592310321, -35.84448281228587, -35.665086552501265, -36.33334871381463, -36.81311304867321, -39.421372249721536, -35.309427322447675]. Max: -19.62825802490115 - Mean: -34.472331384345864 - Min: -39.421372249721536 
+   fitness_score: [-64.11223638858253, -36.30665192843222, -38.709126533851, -43.88412186902008, -44.51033809114212, -43.0013993849233, -45.87421182037147, -56.49926437634253, -73.29744844570368, -53.33022462262315]. Max: -36.30665192843222 - Mean: -49.95250234609921 - Min: -73.29744844570368 
+   reward: [26.243818359216675, 46.61446355795488, 46.98746835021302, 45.584429354872555, 45.215097814798355, 44.986989605240524, 44.58677676739171, 45.15677918912843, 42.61764182662591, 48.74730386864394]. Max: 48.74730386864394 - Mean: 43.6740768694086 - Min: 26.243818359216675 
+   episode_length: [855.0, 1600.0, 1600.0, 1600.0, 1600.0, 1600.0, 1600.0, 1600.0, 1600.0, 1600.0]. Max: 1600.0 - Mean: 1525.5 - Min: 855.0 
+
+Please analyze the policy feedback and provide an improved reward function to better solve the task. Tips for analyzing feedback:
+1. If a reward component's values are nearly identical, or it increases when it should decrease (minimize) and vice versa, consider the following options:
+    a. Change its scale or temperature parameter.
+    b. Re-write the component.
+    c. Discard the component.
+2. If a component's magnitude is significantly larger, re-scale it.
+3. You want to maximize the fitness score as it is the ground truth evaluator.
+4. You want to maximize positive reward components values during training and minimize negative reward components values.
+5. If the fitness score is not improving during training, try to change the reward function.
+Analyze each existing reward component first, then write the new reward function code proposal.Stable-Eureka best iteration  (you should modify it!): 
+    # Generated code by stable-eureka
+    def compute_reward(self, pos, action, state):
+        # Distance-based reward: incentivizing movement to the right (scaled)
+        distance_reward = pos.x / 200.0 * 10
+        
+        # Stability reward: penalizing large angle and angular velocity (reduced magnitude)
+        angle_penalty = -np.abs(state[0]) * 0.001
+        angular_velocity_penalty = -np.abs(state[1]) * 0.0005
+        
+        # Smoothness reward: penalizing high-speed actions (scaled)
+        action_penalty = -np.sum(np.abs(action)) / len(action) * 0.05
+        
+        # Proximity to Lidar points: encouraging avoidance of obstacles
+        obstacle_penalty = -np.min([l.fraction for l in self.lidar]) * 0.1
+        
+        # Total reward: a weighted sum with adjusted weights
+        reward = (distance_reward * 0.2
+                  + angle_penalty * 0.05
+                  + angular_velocity_penalty * 0.05
+                  + action_penalty * 0.05
+                  + obstacle_penalty * 0.8)
+        
+        individual_reward = {
+            "distance_reward": distance_reward,
+            "angle_penalty": angle_penalty,
+            "angular_velocity_penalty": angular_velocity_penalty,
+            "action_penalty": action_penalty,
+            "obstacle_penalty": obstacle_penalty
+        }
+        
+        return reward, individual_reward
+
+Your reward code is: 

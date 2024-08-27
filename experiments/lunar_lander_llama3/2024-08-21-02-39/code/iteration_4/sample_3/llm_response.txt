@@ -1,0 +1,24 @@
+A reinforcement learning problem!
+
+The reward function is defined in the `compute_reward` method. Here's what I can infer from the provided code:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Compute individual rewards for main and side engines
+    main_engine_reward = -0.1 * np.abs(m_power)  # penalty for using main engine
+    side_engine_reward = -0.05 * np.abs(s_power)  # penalty for using side engines
+
+    if terminated:
+        reward = -10.0  # strong penalty when the episode is terminated
+    else:
+        reward = main_engine_reward + side_engine_reward  # sum individual rewards
+
+    return reward, individual_reward
+```
+The reward function consists of two components:
+
+1. **Main engine reward**: a penalty term that decreases linearly with the magnitude of the main engine power (`m_power`). This encourages the agent to use the main engine sparingly.
+2. **Side engine reward**: another penalty term that decreases linearly with the magnitude of the side engine power (`s_power`). This also encourages the agent to use the side engines judiciously.
+
+When the episode is terminated (e.g., the lander crashes or falls off the helipad), a strong penalty of `-10.0` is applied. Otherwise, the individual rewards are summed to determine the overall reward for that step.
+
+The `individual_reward` dictionary updates with the `fitness_score`, which might be used to compute additional metrics or visualize the agent's performance.

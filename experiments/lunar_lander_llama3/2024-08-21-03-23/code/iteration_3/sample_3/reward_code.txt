@@ -1,0 +1,13 @@
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        return -1.0  # penalty for game over
+
+    position_error = abs(state[0])
+    velocity_penalty = state[2] ** 2 + state[3] ** 2
+    angle_deviation = abs(state[4]) / np.pi
+    leg_contact_bonus = 1.0 if all(self.legs[i].ground_contact for i in range(2)) else 0.0
+
+    reward = -position_error - velocity_penalty - angle_deviation + leg_contact_bonus
+    individual_reward = {'position': -position_error, 'velocity': -velocity_penalty, 'angle': -angle_deviation}
+
+    return reward, individual_reward

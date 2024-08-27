@@ -1,0 +1,37 @@
+A reinforcement learning task!
+
+The reward function is responsible for providing feedback to the agent about its actions and helping it learn the desired behavior. In this case, the goal is to design a reward function that guides the agent (the lander) to successfully land on the helipad while minimizing the fuel consumption.
+
+After analyzing the provided code, I've identified some key components that can be used to define the reward function:
+
+1. **Landing success**: The agent receives a high reward when it lands safely on the helipad.
+2. **Fuel efficiency**: The agent is penalized for using excessive fuel (m_power and s_power).
+3. **Height and distance**: The agent is rewarded for staying close to the desired height (VIEWPORT_H / SCALE) and distance from the helipad (VIEWPORT_W / SCALE).
+
+With these components in mind, here's a possible reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    reward = 0.0
+
+    # Landing success
+    if state[0] < -0.5:  # below the helipad height threshold
+        reward += 10.0  # high reward for successful landing
+
+    # Fuel efficiency
+    fuel_penalty = np.clip(-0.1 * (m_power + s_power), 0, 10)
+    reward -= fuel_penalty
+
+    # Height and distance
+    height_reward = -np.abs(state[0] - VIEWPORT_H / SCALE) * 0.05
+    distance_reward = -np.abs(state[1]) * 0.01
+    reward += height_reward + distance_reward
+
+    return reward, {'fuel_efficiency': fuel_penalty}
+```
+In this implementation:
+
+* A high reward is given when the agent successfully lands on the helipad (state[0] < -0.5).
+* The agent is penalized for using excessive fuel (m_power and s_power) with a penalty term proportional to the total fuel consumption.
+* The agent receives a negative reward based on its height and distance from the helipad, encouraging it to stay close to the desired values.
+
+Note that this is just one possible approach to designing the reward function. You may need to adjust or modify it depending on your specific requirements and experiment results.

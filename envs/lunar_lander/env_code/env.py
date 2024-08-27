@@ -651,7 +651,39 @@ class LunarLander(gym.Env, EzPickle):
         if not self.lander.awake:
             terminated = True
 
-        reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)
+        # # reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)
+        def ini_compute_reward(self, pos, action, state, *args):
+           # 检查 compute_reward 是否包含 terminated 参数
+            if len(args) == 0:
+            # 如果没有传入 terminated 参数，调用 compute_reward 时添加默认值
+                terminated = False
+                return self.compute_reward(pos, action, state, terminated)
+            else:
+            # 如果有传入参数，直接调用 compute_reward
+                return self.compute_reward(pos, action, state, *args)
+
+    #     def ini_compute_reward(self, pos, action, state, *args):
+    # # 检查 compute_reward 是否包含 terminated 参数
+    #         if len(args) == 0:
+    #             # 如果没有传入 terminated 参数，调用 compute_reward 时添加默认值
+    #             terminated = False
+    #             reward, individual_reward_dict = self.compute_reward(pos, action, state, terminated)
+    #         else:
+    #             # 如果有传入参数，直接调用 compute_reward
+    #             reward, individual_reward_dict = self.compute_reward(pos, action, state, *args)
+            
+    #         # 确保 individual_reward 是一个字典
+    #         if not isinstance(individual_reward_dict, dict):
+    #             individual_reward_dict = {}
+            
+    #         # 创建 individual_reward 变量并赋值
+    #         individual_reward = individual_reward_dict
+            
+    #         return reward, individual_reward
+
+        # # 在 step 方法中使用
+        # reward, individual_reward = self.compute_reward(pos, action, state, terminated)
+        # reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)
 
         if self.render_mode == "human":
             self.render()

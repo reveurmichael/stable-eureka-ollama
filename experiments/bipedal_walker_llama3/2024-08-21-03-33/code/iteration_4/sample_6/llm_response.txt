@@ -1,0 +1,39 @@
+After analyzing the feedback, I noticed that:
+
+1. The `penalty` component has very similar values, indicating that it's not providing significant feedback to the agent.
+2. The `fitness_score` component has a large range of negative values, but its mean value is quite low (-86.04). This could be an indication that the agent is not making progress in terms of fitness score.
+3. The `reward` component has very similar values as well, indicating that it's not providing significant feedback to the agent.
+
+Based on these observations, I propose a new reward function:
+
+```
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    moving_forward = (pos[0] > 0) and (pos[0] < TERRAIN_GRASS * TERRAIN_STEP)
+
+    # Scale the penalty term to be more significant
+    penalty = -0.1 * (state[6] + state[13])
+
+    # Adjust the progress reward to focus on moving forward
+    progress = np.exp(-(distance_to_goal ** 2) / 500) if moving_forward else 0
+
+    # Set a higher reward for reaching the goal
+    goal_reached = int(pos[0] >= TERRAIN_GRASS * TERRAIN_STEP)
+    goal_reward = 10.0 * goal_reached
+
+    # Combine the components
+    reward = progress + penalty + goal_reward
+
+    individual_reward = {"progress": progress, "moving_forward": moving_forward, "penalty": penalty, "goal_reached": goal_reached}
+
+    return reward, individual_reward
+```
+
+In this new reward function:
+
+* I scaled up the penalty term to make it more significant.
+* I adjusted the progress reward to focus on moving forward and decreased its magnitude to encourage more exploration.
+* I added a new component that rewards the agent for reaching the goal with a high value (10.0).
+* The individual_reward dictionary now includes separate entries for each component.
+
+This new reward function should provide better feedback to the agent, encouraging it to move forward and explore the environment while avoiding penalties and striving to reach the goal.

@@ -1,0 +1,45 @@
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+    
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.tanh(distance_reward / 50.0) * 10.0
+    
+    # Height reward: keep the lander at a reasonable height
+    height_penalty = -(y - self.helipad_y) ** 2
+    height_penalty = np.tanh(height_penalty / 1.5)
+    
+    # Velocity penalty: discourage high velocities
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2
+    velocity_penalty = np.tanh(velocity_penalty / 2.0) * -10.0
+    
+    # Fuel efficiency reward: penalize using the main engine (re-weighted)
+    fuel_penalty = -1 if action == 2 else 0
+    fuel_penalty *= -5.0
+    
+    # Landing reward: bonus for successful landing
+    landing_reward = 0
+    if left_leg and right_leg:
+        landing_reward = 50 if abs(x) < 0.1 and abs(y) < 0.1 else 10
+    
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward * 0.3
+              + height_penalty * 0.2
+              + velocity_penalty * 0.4
+              + fuel_penalty * 0.1
+              + landing_reward)
+    
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 50
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+    
+    return reward, individual_reward

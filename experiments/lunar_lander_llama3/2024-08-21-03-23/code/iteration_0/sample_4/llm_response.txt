@@ -1,0 +1,55 @@
+The challenge!
+
+After analyzing the provided code, I'll propose a reward function that aligns with the environment's goals and constraints. Here's my suggestion:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Define rewards for different states
+    REWARD_CONSTANTS = {
+        'height': 0.1,
+        'velocity': -0.05,
+        'orientation': -0.01,
+        'ground_contact': 0.5,
+        'game_over': -10.0
+    }
+
+    reward = 0.0
+
+    # Reward for height
+    if state[0] > 0:
+        reward += REWARD_CONSTANTS['height']
+
+    # Penalty for high velocity
+    if abs(state[2]) > 1.5:  # adjust the threshold as needed
+        reward -= REWARD_CONSTANTS['velocity'] * (abs(state[2]) - 1.5)
+
+    # Orientation penalty to encourage stable landings
+    if state[4] < -0.3 or state[4] > 0.3:
+        reward -= REWARD_CONSTANTS['orientation']
+
+    # Reward for being grounded (stable landing)
+    if state[6] == 1 and state[5] < 10:  # adjust the threshold as needed
+        reward += REWARD_CONSTANTS['ground_contact']
+    elif state[7] == 1 and state[4] > -0.3:  # adjust the threshold as needed
+        reward += REWARD_CONSTANTS['ground_contact']
+
+    # Terminal states are penalized heavily to encourage exploration
+    if terminated:
+        reward -= REWARD_CONSTANTS['game_over']
+
+    return reward, individual_reward
+```
+
+In this implementation:
+
+1. The `compute_reward` function takes in the current state, main engine power (`m_power`), side engine power (`s_power`), and a boolean indicating whether the episode is terminated.
+2. The reward function calculates a score based on the following components:
+	* Height: A positive reward for being above a certain height (e.g., 0.1 per unit of height).
+	* Velocity: A penalty for high velocity to encourage stable landings (-0.05 per unit of velocity above a certain threshold, e.g., 1.5).
+	* Orientation: A penalty for unstable orientations to encourage stable landings (-0.01 per unit of orientation deviation from the target value).
+	* Ground contact: A positive reward for being grounded (stable landing) and having a low angular velocity (e.g., 0.5 when both legs are on the ground and the angular velocity is below a certain threshold, e.g., 10).
+3. In terminal states (i.e., `terminated` is True), the episode is penalized heavily to encourage exploration and learning from failure (-10.0 in this implementation).
+
+The individual reward dictionary (`individual_reward`) is updated with the fitness score calculated by `compute_fitness_score`. This allows for separate evaluation of each agent's performance during training.
+
+Please note that these constants are just suggestions, and you may need to adjust them based on your specific environment and requirements.

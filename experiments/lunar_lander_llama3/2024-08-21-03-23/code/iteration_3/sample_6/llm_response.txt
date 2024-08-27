@@ -1,0 +1,17 @@
+A reinforcement learning problem!
+
+The reward function is:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: implement a suitable reward function
+    pass
+```
+In other words, the reward function is not implemented yet. It's up to you to design a suitable reward function that encourages the agent to achieve the desired behavior in this environment.
+
+Some possible strategies for designing the reward function:
+
+1. **Termination-based reward**: Award a high reward when the episode terminates (e.g., the lander reaches the helipad) and penalize the agent with a negative reward if it crashes or falls off the screen.
+2. **Proximity-based reward**: Reward the agent for getting closer to the helipad and penalize it for moving away from it.
+3. **Control-based reward**: Award the agent for maintaining control (e.g., keeping the lander's angle close to zero) and penalize it for losing control.
+
+Remember to balance the reward values to ensure that the agent learns effectively. A good starting point is to set the reward values such that they are positive when the agent makes progress towards the goal and negative when it doesn't.

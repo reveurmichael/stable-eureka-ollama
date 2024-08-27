@@ -1,0 +1,6 @@
+{
+    "reward": "    # Generated code by stable-eureka\n    def compute_reward(self, pos, action, state):\n        hull_angle = (state[0] + math.pi) % (2 * math.pi) - math.pi\n        vel_x = state[3]\n        dist_to_goal = (pos[0] - TERRAIN_LENGTH) / TERRAIN_STEP\n    \n        reward = 0.5 * np.exp(1) * (np.cos(hull_angle) + np.abs(vel_x)) - 0.2 * np.exp(0.5) * dist_to_goal\n        individual_reward = {'hull_alignment': 0.5 * np.exp(1) * (np.cos(hull_angle)),\n                              'velocity': 0.5 * np.exp(1) * np.abs(vel_x),\n                              'distance_to_goal': -0.2 * np.exp(0.5) * dist_to_goal}\n    \n        return reward, individual_reward",
+    "fitness": -26.974789408117463,
+    "iteration": 0,
+    "sample": 5
+}

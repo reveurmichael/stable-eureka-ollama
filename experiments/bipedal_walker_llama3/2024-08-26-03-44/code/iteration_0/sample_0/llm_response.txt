@@ -1,0 +1,12 @@
+```python ```
+reward = -1000 * np.exp(-(pos.x / (TERRAIN_LENGTH - TERRAIN_GRASS)) ** 2) + \
+        -np.sum(np.abs(action)) / len(action) + \
+        -10 * np.tanh(np.abs(state[0])) + \
+        -20 * np.tanh(np.abs(state[1])) + \
+        -5 * min([l.fraction for l in self.lidar])
+reward, individual_reward = reward, {"distance_reward": -1000 * np.exp(-(pos.x / (TERRAIN_LENGTH - TERRAIN_GRASS)) ** 2), 
+                                       "action_penalty": -np.sum(np.abs(action)) / len(action),
+                                       "angle_penalty": -10 * np.tanh(np.abs(state[0])),
+                                       "angular_velocity_penalty": -20 * np.tanh(np.abs(state[1])), 
+                                       "obstacle_penalty": -5 * min([l.fraction for l in self.lidar])}
+return reward, individual_reward

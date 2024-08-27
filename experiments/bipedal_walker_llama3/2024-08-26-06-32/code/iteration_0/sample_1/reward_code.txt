@@ -1,0 +1,18 @@
+import numpy as np
+
+# Function to calculate reward based on distance and action
+def compute_reward(position, actions, state), individual_rewards:
+
+    # Calculate total reward
+    total_reward = 0
+    for i in range(len(actions))):
+        if (actions[i].action] == position[0]) and \
+             (actions[i].action] == actions[1][i]]) and \
+             (actions[i].action] == actions[2][i]]) and \
+             (actions[i].action] == actions[3][i]])):
+
+            # Calculate reward for current action
+            reward = individual_rewards[i]
+            total_reward += reward
+
+    return total_reward, individual_rewards

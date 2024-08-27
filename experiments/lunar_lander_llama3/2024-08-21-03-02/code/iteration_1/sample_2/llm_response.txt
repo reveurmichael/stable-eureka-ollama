@@ -1,0 +1,27 @@
+A reinforcement learning problem!
+
+The reward function is implemented in the `compute_reward` method. Based on the provided code, I can see that the reward is calculated as follows:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: implement your own reward function here!
+    pass  # or return a default value, e.g., 0.0
+```
+In other words, the `compute_reward` method is currently just a placeholder and does not provide any actual reward calculation.
+
+To define an effective reward function, you should consider the goals of your agent (e.g., landing safely, collecting resources, completing tasks) and design a reward scheme that encourages or penalizes certain behaviors. For example:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    if not terminated:  # penalty for not reaching the goal
+        return -1.0
+
+    if abs(state[0]) >= 1.0:  # penalty for not landing safely
+        return -10.0
+
+    if state[-2]:  # reward for collecting resources (assuming `state[-2]` indicates resource collection)
+        return 5.0
+
+    # TO DO: add more conditions or modify these as needed!
+```
+Remember to balance your reward function to avoid over- or under-rewarding certain actions, and make sure it is consistent with the objectives of your agent.
+
+Note that this is just a starting point, and you may need to refine or adjust your reward function based on experimentation and analysis of your agent's performance.

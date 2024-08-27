@@ -1,0 +1,18 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward structure: -1 for crash, +0.1 for being close to helipad, +0.01 for every unit of x-distance from helipad,
+    #                   -0.001 for every unit of y-distance from helipad
+    reward = 0.0
+
+    if terminated:
+        # Game over or landed too far away, penalize heavily
+        reward -= 1.0
+    elif abs(state[0]) >= 1.0:  # x-distance from helipad
+        # Reward for being close to helipad
+        reward += 0.1 * (1.0 - abs(state[0]))
+    else:
+        # Reward for every unit of x-distance from helipad
+        reward += 0.01 * state[0]
+    if state[3] < 0:  # y-velocity is negative, implying the lander is moving up
+        # Penalize for upward motion (trying to lift off)
+        reward -= 0.001 * state[3]
+    return reward, individual_reward

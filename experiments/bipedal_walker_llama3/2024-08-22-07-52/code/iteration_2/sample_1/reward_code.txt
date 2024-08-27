@@ -1,0 +1,40 @@
+def compute_reward(self, pos, action, state):
+    # Distance-based reward: incentivizing movement to the right (scaled)
+    distance_reward = pos.x / 200.0
+    
+    # Stability reward: penalizing large angle and angular velocity (reduced magnitude)
+    angle_penalty = -np.abs(state[0]) * 0.01
+    angular_velocity_penalty = -np.abs(state[1]) * 0.005
+    
+    # Smoothness reward: penalizing high-speed actions (scaled)
+    action_penalty = -np.sum(np.abs(action)) / len(action) * 0.05
+    
+    # Obstacle penalty: increase the magnitude to discourage collisions
+    obstacle_penalty = -np.min([l.fraction for l in self.lidar]) * 2.0
+    
+    # Fitness score: incentivize achieving high fitness scores
+    fitness_reward = np.exp(self.fitness_score) / (1 + np.exp(self.fitness_score))
+    
+    # Episode length: penalize long episodes (assuming they're not optimal)
+    episode_length_penalty = -state['episode_length'] / 1600.0
+    
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward * 0.3
+              + angle_penalty * 0.2
+              + angular_velocity_penalty * 0.1
+              + action_penalty * 0.05
+              + obstacle_penalty * 0.5
+              + fitness_reward * 0.1
+              + episode_length_penalty * 0.05)
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "action_penalty": action_penalty,
+        "obstacle_penalty": obstacle_penalty,
+        "fitness_reward": fitness_reward,
+        "episode_length_penalty": episode_length_penalty
+    }
+    
+    return reward, individual_reward

@@ -1,0 +1,25 @@
+A reinforcement learning problem!
+
+After analyzing the code, I've identified the reward function as follows:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: Implement your reward function here
+    pass
+```
+The `compute_reward` method takes in:
+
+1. `state`: The current state of the lander (8D vector)
+2. `m_power`: The main engine power (scalar)
+3. `s_power`: The side engine power (scalar)
+4. `terminated`: A boolean indicating whether the episode is terminated
+
+The reward function should return a scalar value that reflects the agent's performance in this state. For example, you might want to encourage the agent to:
+
+* Reach the helipad safely
+* Maintain a certain altitude or velocity
+* Use main and side engines efficiently
+* Avoid crashes or termination conditions
+
+Note that `individual_reward` is also updated with the computed reward, as well as an additional key-value pair for the fitness score. This suggests that the individual agent's performance is being evaluated based on both the reward function and the fitness score.
+
+Now it's your turn to fill in the `compute_reward` method!

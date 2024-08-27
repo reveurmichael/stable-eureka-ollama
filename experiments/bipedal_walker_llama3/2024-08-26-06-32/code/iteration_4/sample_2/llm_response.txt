@@ -1,0 +1,226 @@
+Your reward reflects the progress made by the agent towards the goal. The reward function computes a scalar value that represents the progress of the agent in reaching the goal.
+The reward function takes into account several factors that influence the agent's progress towards the goal. Some key factors that affect the agent's progress towards the goal are:
+- Acceleration due to gravity (g): 9.81 m/s^2)
+- Kinetic energy (KE): 0.01 J/K)
+- Potential energy (PE): 30.0 J (meters) - Potential Energy = KE + PE)
+- Time spent in the current state (current_state_time_0: current_state_time_1, current_state_time_2: current_state_time_2) - Time spent in the current state (current_state_time_0: current_state_time_1, current_state_time_2: current_state_time_2) + Time spent in any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2)) - Energy required to move through the state (state_time_0: state_time_1, state_time_2: state_time_2) - Potential energy received when moving through the state (state_time_0: state_time_1, state_time_2: state_time_2) + Time spent in any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2)) - Acceleration required to reach any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2)) - Time spent in the current state (current_state_time_0: current_state_time_1, current_state_time_2: current_state_time_2) - Energy required to move from any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2)) - Potential energy received when moving from any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2) + Time spent in the current state (current_state_time_0: current_state_time_1, current_state_time_2: current_state_time_2)) - Energy required to move from any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2) - Potential energy received when moving from any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2)) - Time spent in the current state (current_state_time_0: current_state_time_1, current_state_time_2: current_state_time_2)) + Energy required to move from any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2) + Potential energy received when moving from any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2)) - Time spent in the current state (current_state_time_0: current_state_time_1, current_state_time_2: current_state_time_2)) + Acceleration required to move from any previous state (previous_state_time_0: previous_state_time_1, previous_state_time_2: previous_state_time_2))
+(34.768 32.923 1.0)  # (initial position)
+(-35.768 32.923 1.0)  # (initial position)
+(-35.768 32.923 1.0)  # (initial position)
+(-35.768 32.923 1.0)  # (initial position)
+(-35.768 32.923 1.0)  # (initial position)
+(-35.768 32.923 1.0)  # (initial position)
+(-35.768 32.923 1.0)  # (initial position)
+(-35.768 32.923 1.0)  # (initial position)
+(1.000e+04  1.000e+04))  # (world center)
+
+(32.923  1.000e+04))  # (world center)
+
+(-35.768  1.000e+04))  # (world center)
+
+(0.000e+04  0.000e+04))  # (world center)
+
+(32.923  1.000e+04, 32.923  1.000e+04, 32.923  1.000e+04, 32.923  1.000e+04, 32.923  1.000e+04]))  # (world center)
+```python
+# Step 1: Initialize the world center object with a specific latitude and longitude
+
+world_center = WorldLocation(
+    lat = 32.923,
+    lon = -35.768,
+    altitude=32.923,
+    altitude=1.0,
+    altitude=1.000e+04,
+    geodetic赤道坐标(x,y,z)),
+
+    # Step 2: Set the initial time for the simulation
+
+initial_time = TimeStep(
+    start = time.time(),
+    end = time.time() + 60*60*360  # in seconds, this is the number of seconds until the next step
+))
+
+# Step 3: Define the initial state object
+
+initial_state_object = StateObject(
+    name = "World",
+    dimensions = [4,4,4,4],  # in meters (x,y,z))
+)
+
+# Step 4: Create a function to initialize the simulation
+
+def init_simulation(initial_time=TimeStep(start=time(), end=time() + 60*60*360)), world_object = StateObject(name="World", dimensions=[4,4,4,4],  # in meters (x,y,z))), initial_state_object = StateObject(name="World", dimensions=[4,4,4,4],  # in meters (x,y,z))))))
+
+# Step 5: Define the main simulation loop
+
+def main_simulation(initial_time=TimeStep(start=time(), end=time() + 60*60*360)), world_object = StateObject(name="World", dimensions=[4,4,4,4],  # in meters (x,y,z))), initial_state_object = StateObject(name="World", dimensions=[4,4,4,4],  # in meters (x,y,z))))))
+
+# Step 6: Define the function to calculate the distance between two points
+
+def calculate_distance(point1, point2)):
+    return ((point1[0]]-point2[0])) ** 2)  # since x^2 + y^2 = 2xy, we can substitute x^2 and y^2 into the equation above to calculate the distance between two points
+
+# Step 7: Define a function to calculate the energy of an electron in an atom
+
+def calculate_energy(atom):
+    total_energy = calculate_energy(atom.atomic_number))
+    return total_energy)  # since energy is given by Coulomb's law, we can substitute atomic number into the equation above to calculate the energy of an electron in an atom
+
+# Step 8: Define a function to calculate the gravitational potential of a massive object
+
+def calculate_gravitational_potential(massive_object)):
+    gravitational_constant = 6.6743 * 10^(-7)  # constant used for calculating gravitational potential
+    total_energy = calculate_energy(massive_object.atomic_number)))
+    return gravitational_constant * (total_energy / mass))  # since energy is given by Coulomb's law, we can substitute atomic number into the equation above to calculate the gravitational potential of a massive object
+
+# Step 9: Define a function to calculate the specific internal heat of an ideal gas at constant temperature
+
+def calculate_specific_internal_heat(ideal_gas)):
+    specific_internal_heat = (ideal_gas.molar_mass) * (6.6743 * 10^(-7)) / (2 * 3.16e-08)))  # constant used for calculating specific internal heat
+    return specific_internal_heat)
+
+# Step 10: Define a function to calculate the total potential energy of an isolated system at constant temperature
+
+def calculate_total_potential_energy(isolated_system, constant_temperature))):
+    total_potential_energy = (isolated_system.molar_mass) * ((constant_temperature) * (5.2674 * 10^(-3)) / (2 * 3.16e-08))))  # constant used for calculating total potential energy
+    return total_potential_energy)
+
+# Step 11: Define a function to calculate the gravitational potential energy of an isolated system at constant temperature
+
+def calculate_gravitational_potential_energy(isolated_system, constant_temperature))):
+    gravitational_potential_energy = ((isolated_system.molar_mass) * (6.6743 * 10^(-7)) / (2 * 3.16e-08))))  # constant used for calculating gravitational potential energy
+    return gravitational_potential_energy)
+
+# Step 12: Define a function to calculate the specific internal heat of an ideal gas at constant temperature
+
+def calculate_specific_internal_heat(ideal_gas, constant_temperature))):
+    specific_internal_heat = ((ideal_gas.molar_mass) * (6.6743 * 10^(-7)) / (2 * 3.16e-08))))  # constant used for calculating specific internal heat
+    return specific_internal_heat)
+
+# Step 13: Define a function to calculate the total potential energy of an isolated system at constant temperature
+
+def calculate_total_potential_energy(isolated_system, constant_temperature))):
+    total_potential_energy = ((isolated_system.molar_mass) * (6.6743 * 10^(-7)) / (2 * 3.16e-08))))  # constant used for calculating total potential energy
+    return total_potential_energy)
+
+# Step 14: Define a function to calculate the gravitational potential energy of an isolated system at constant temperature
+
+def calculate_gravitational_potential_energy(isolated_system, constant_temperature))):
+    if isolated_system == None:
+        raise ValueError("Isolated system must not be None.")
+    else:
+        total_gravitational_potential_energy = ((isolated_system.molar_mass) * (6.6743 * 10^(-7)))))  # constant used for calculating total gravitational potential energy
+        return total_gravitational_potential_energy
+
+# Step 15: Define a function to calculate the specific internal heat of an isolated system at constant temperature
+
+def calculate_specific_internal_heat(isolated_system, constant_temperature))):
+    if isolated_system == None:
+        raise ValueError("Isolated system must not be None.")
+    else:
+        total_specific_internal_heat = ((isolated_system.molar_mass) * (6.6743 * 10^(-7)))))  # constant used for calculating total specific internal heat
+        return total_specific_internal_heat
+
+# Step 16: Define a function to calculate the total potential energy of an isolated system at constant temperature
+
+def calculate_total_potential_energy(isolated_system, constant_temperature))):
+    if isolated_system == None:
+        raise ValueError("Isolated system must not be None.")
+    else:
+        total_potential_energy = calculate_specific_internal_heat(isolated_system, constant_temperature)))  # constant used for calculating total potential energy
+        return total_potential_energy
+
+# Step 17: Define a function to calculate the average of two numbers
+
+def calculate_average(number1, number2)):
+    total = number1 + number2
+    average = total / (number1 + number2)))
+    return average
+
+# Step 18: Define a function to calculate the sum of a list of integers
+
+def calculate_sum(numbers):
+    total = sum(numbers)
+    return total)
+
+# Step 19: Define a function to calculate the product of two numbers using Python's built-in `math` module
+
+def calculate_product(number1, number2)):
+    return math.factorial(number2) / math.factorial(number1))
+
+# Step 20: Define a function to calculate the distance between two points (in this case, two coordinates)) using Python's built-in `geopy` library, which provides several functions for calculating distances between geographic locations
+
+def calculate_distance(coord1, coord2)):
+    from geopy.distance import euclidean
+    return euclidean(coord1, coord2))
+
+# Step 21: Define a function to calculate the time difference between two points (in this case, two coordinates)) using Python's built-in `datetime` module and its functions for calculating time differences
+
+def calculate_time_difference(coord1, coord2)):
+    from datetime import datetime
+    return datetime.fromtimestamp(calculate_distance(coord1, coord2)))))
+)
+
+# Step 22: Define a function to calculate the total kinetic energy of a system using Python's built-in `math` module and its functions for calculating kinetic energies
+
+def calculate_total_kinetic_energy(system):
+    from math import sqrt
+    mass = sum([item[0]] * item[1] for item in system] if system is not None else [])  # sum up all the mass points in the system
+    kinetic_energy = sqrt(mass / 2))  # calculate total kinetic energy using the given mass and the value of √(mass / 2))) calculated to find the total kinetic energy of a system
+
+calculate_total_kinetic_energy(system))
+)
+
+# Step 23: Define a function to calculate the potential energy of an isolated point (in this case, two coordinates)) using Python's built-in `geopy` library and its functions for calculating potential energies
+
+def calculate_potential_energy(coord1, coord2)):
+    from geopy.distance import euclidean
+    distance = euclidean(coord1, coord2))
+    potential_energy = 0.5 * distance**2  # calculate potential energy using the given two coordinates
+    return potential_energy
+)
+
+# Step 24: Define a function to calculate the total potential energy of a system using Python's built-in `math` module and its functions for calculating kinetic energies
+
+def calculate_total_potential_energy(system)):
+    from math import sqrt
+    mass = sum([item[0]] * item[1] for item in system] if system is not None else [])  # sum up all the mass points in the system
+    kinetic_energy = sqrt(mass / 2))  # calculate total kinetic energy using the given two coordinates
+    potential_energy = 0.5 * kinetic_energy**2  # calculate total potential energy using the given two coordinates
+    return total_potential_energy
+)
+
+# Step 25: Define a function to calculate the total internal force of an isolated point (in this case, two coordinates)) using Python's built-in `math` module and its functions for calculating internal forces
+
+def calculate_total_internal_force(system):
+    from math import sqrt
+    mass = sum([item[0]] * item[1] for item in system] if system is not None else [])  # sum up all the mass points in the system
+    internal_force = 0.5 * mass**2  # calculate total internal force using the given two coordinates
+    return internal_force
+)
+
+# Step 26: Define a function to calculate the potential energy of an isolated point (in this case, two coordinates)) using Python's built-in `math` module and its functions for calculating internal forces
+
+def calculate_total_internal_force(system):
+    from math import sqrt
+    mass = sum([item[0]] * item[1] for item in system] if system is not None else [])  # sum up all the mass points in the system
+    internal_force = 0.5 * mass**2  # calculate total internal force using the given two coordinates
+    return internal_force
+)
+
+# Step 27: Define a function to calculate the potential energy of an isolated point (in this case, two coordinates)) using Python's built-in `math` module and its functions for calculating internal forces
+
+def calculate_total_internal_force(system):
+    from math import sqrt
+    mass = sum([item[0]] * item[1] for item in system] if system is not None else [])  # sum up all the mass points in the system
+    internal_force = 0.5 * mass**2  # calculate total internal force using the given two coordinates
+    return internal_force
+)
+
+# Step 28: Define a function to calculate the potential energy of an isolated point (in this case, two coordinates)) using Python's built-in `math` module and its functions for calculating internal forces
+
+def calculate_total_internal_force(system):
+    from math import sqrt
+    mass = sum([item[0]] * item[1] for item in system] if system is not None else [])  # sum up all the mass points in the system
+    internal_force = 0.5 * mass**2  # calculate total internal force using the given two coordinates
+    return internal_force
+)

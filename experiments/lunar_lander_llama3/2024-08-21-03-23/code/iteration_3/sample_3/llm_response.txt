@@ -1,0 +1,32 @@
+A reinforcement learning problem!
+
+The reward function is not explicitly defined in the provided code. However, I can infer some parts of the reward function from the code.
+
+It seems that there are two main types of rewards: `reward` and `individual_reward`. The `reward` is likely a global reward, while `individual_reward` might be used for tracking individual agent's performance or providing additional feedback.
+
+From the code, I can identify some components of the reward function:
+
+1. **Lander position**: The reward might depend on the lander's position, with negative rewards for being too far away from the helipad (i.e., `abs(state[0]) >= 1.0`).
+2. **Velocity**: The reward could penalize high velocities or encourage low velocities.
+3. **Angle and angular velocity**: The reward might be affected by the lander's orientation (`state[4]`) and its rate of change (`state[5]`).
+4. **Leg contact**: The reward could depend on whether all legs are in contact with the ground (i.e., `self.legs[0].ground_contact` and `self.legs[1].ground_contact`).
+
+The `compute_reward` method takes several arguments: `state`, `m_power`, `s_power`, and `terminated`. The reward function would likely combine these factors to produce a numerical value that reflects the agent's performance.
+
+Here's a possible, simplified reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        return -1.0  # penalty for game over
+
+    position_error = abs(state[0])
+    velocity_penalty = state[2] ** 2 + state[3] ** 2
+    angle_deviation = abs(state[4]) / np.pi
+    leg_contact_bonus = 1.0 if all(self.legs[i].ground_contact for i in range(2)) else 0.0
+
+    reward = -position_error - velocity_penalty - angle_deviation + leg_contact_bonus
+    individual_reward = {'position': -position_error, 'velocity': -velocity_penalty, 'angle': -angle_deviation}
+
+    return reward, individual_reward
+```
+This is just a rough estimate of the reward function based on the provided code. The actual reward function might be more complex and nuanced, depending on the specific requirements of the problem.

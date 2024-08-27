@@ -1,0 +1,27 @@
+def compute_reward(self, pos, action, state):
+    # Distance-based reward: incentivizing movement to the right (scaled)
+    distance_reward = pos.x / 2000.0 * 0.01
+    
+    # Stability penalty: penalizing large angle and angular velocity
+    stability_penalty = -np.abs(state[0]) * 0.001 - np.abs(state[1]) * 0.0005
+    
+    # Smoothness reward: penalizing high-speed actions (scaled)
+    action_penalty = -np.sum(np.abs(action)) / len(action) * 0.01
+    
+    # Proximity to Lidar points: encouraging avoidance of obstacles
+    obstacle_penalty = -np.min([l.fraction for l in self.lidar]) * 10
+    
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward * 0.1
+              + stability_penalty * 0.2
+              + action_penalty * 0.1
+              + obstacle_penalty * 0.6)
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "stability_penalty": stability_penalty,
+        "action_penalty": action_penalty,
+        "obstacle_penalty": obstacle_penalty
+    }
+    
+    return reward, individual_reward

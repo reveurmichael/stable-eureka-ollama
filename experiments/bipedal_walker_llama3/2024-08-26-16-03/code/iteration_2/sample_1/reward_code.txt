@@ -1,0 +1,29 @@
+def compute_reward(self, pos, action, state):
+    # Distance-based reward: incentivize movement to the right with moderate magnitude
+    distance_reward = np.tanh(pos.x / 50.0)  # Tanh activation for bounded rewards
+    
+    # Stability reward: directly reward stability and smoothness
+    stability_smoothness_reward = -np.sum([state[0]**2, state[1]**2]) / len(state)
+    stability_smoothness_reward = np.tanh(stability_smoothness_reward / 1.5)  # Tanh activation for bounded rewards
+    
+    # Smoothness reward: moderate penalty for high-speed actions
+    action_smoothness_penalty = -np.sum(np.abs(action)) / len(action)
+    smoothness_reward = np.exp(action_smoothness_penalty / -0.2)  # Exponential scaling with lower exponent
+    
+    # Obstacle avoidance reward: encourage avoidance of obstacles with moderate magnitude
+    obstacle_avoidance_reward = -np.min([l.fraction for l in self.lidar]) * 0.3
+    
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward * 0.2
+              + stability_smoothness_reward * 0.4
+              + smoothness_reward * 0.1
+              + obstacle_avoidance_reward)
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "stability_smoothness_reward": stability_smoothness_reward,
+        "smoothness_reward": smoothness_reward,
+        "obstacle_avoidance_reward": obstacle_avoidance_reward,
+    }
+    
+    return reward, individual_reward

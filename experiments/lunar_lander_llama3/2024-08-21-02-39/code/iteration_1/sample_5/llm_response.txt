@@ -1,0 +1,11 @@
+Based on the provided code, it appears that the reward function is not explicitly defined. Instead, the `compute_reward` method is called with the current state, main engine power (`m_power`), side engine power (`s_power`), and termination status (`terminated`) as inputs.
+
+The `compute_reward` method seems to be responsible for calculating the reward value based on the given inputs. Without further information about this method or any specific reward design principles used, it is challenging to provide a precise reflection of the reward function.
+
+However, we can infer that the reward might depend on factors such as:
+
+1. The main engine power (`m_power`) and side engine power (`s_power`), which could influence the lander's movement and orientation.
+2. The state variables (position, velocity, angle, angular velocity) in the current state, which might affect the reward calculation.
+3. Termination status (`terminated`), which could impact the reward if the episode is terminated.
+
+The actual implementation of the `compute_reward` method would provide a more accurate understanding of the reward function's design and its underlying principles.

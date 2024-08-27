@@ -1,0 +1,55 @@
+Here's a variation of the initial reward proposal:
+
+```Python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 100.0) - 1
+
+    # Stability reward: penalize tilting and angular velocity
+    angle_penalty = -np.abs(angle)
+    angle_penalty = np.tanh(angle_penalty / 0.5)
+
+    angular_velocity_penalty = -np.abs(angular_velocity)
+    angular_velocity_penalty = np.tanh(angular_velocity_penalty / 0.5)
+
+    # Velocity reward: penalize high velocities
+    velocity_penalty = -(np.abs(vx) + np.abs(vy))
+    velocity_penalty = np.tanh(velocity_penalty / 1.0)
+
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 0
+    if left_leg and right_leg:
+        landing_reward = 100 if abs(x) < 0.1 and abs(y) < 0.1 else 10
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.3 * angle_penalty
+              + 0.2 * angular_velocity_penalty
+              + 0.4 * velocity_penalty
+              + 0.01 * fuel_penalty
+              + landing_reward)
+
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 200
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+In this variation, the weights for the different components of the reward function are adjusted. The distance-based reward is now more important (0.5), and the fuel efficiency penalty is less severe (-1 if action == 2 else 0).

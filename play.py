@@ -5,13 +5,13 @@ import yaml
 
 if __name__ == '__main__':
 
-    exp_path = Path('/home/rsanchezmo/Projects/stable-eureka/experiments/lunar_lander_gpt4o/2024-06-09/')
+    exp_path = Path('/home/utseus22/stable-eureka-zhuxinning/experiments/bipedal_walker_llama3/2024-08-22-07-52/')
 
-    # model_path = exp_path / 'code' / f'iteration_4' / f'sample_3' / 'model.zip'
-    model_path = exp_path / 'code' / 'benchmark' / 'model.zip'
+    model_path = exp_path / 'code' / f'iteration_1' / f'sample_4' / 'model.zip'
+    # model_path = exp_path / 'code' / 'benchmark' / 'model.zip'
 
     config = yaml.safe_load(open(exp_path / 'config.yaml', 'r'))
-    env_name = f'LunarLander-v2'
+    env_name = f'BipedalWalker'
 
     env = make_env(env_class=env_name,
                    env_kwargs=config['environment'].get('kwargs', None),

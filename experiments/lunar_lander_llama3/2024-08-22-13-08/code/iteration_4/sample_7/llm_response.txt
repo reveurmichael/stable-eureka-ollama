@@ -1,0 +1,37 @@
+Based on the provided environment and the goal to create impact on the physics, I assume that the main objective is to control the lander's movement and orientation to successfully land on the helipad. 
+
+Here is a possible reward function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward for successful landing
+    if not terminated:
+        reward = -5 * np.abs(state[0])  # penalty for distance from center
+
+    # Additional reward for decreasing altitude (closer to the helipad)
+    elif state[1] < 0.3: 
+        reward = 100
+    else:
+        reward = -10
+
+    if terminated and not self.game_over:
+        reward -= 100  # punishment for game over without landing successfully
+
+    individual_reward = {
+        'distance': np.abs(state[0]),
+        'altitude': state[1],
+        'orientation': np.abs(state[4]), 
+        'angular_velocity': np.abs(state[5]), 
+        'fitness_score': self.fitness_score
+    }
+    return reward, individual_reward
+```
+
+This reward function aims to:
+
+- Reward the agent for successfully landing on the helipad.
+- Penalize the agent for being far from the center of the viewport.
+- Encourage the agent to decrease its altitude (get closer to the helipad).
+- Punish the agent for game over without successfully landing.
+
+The individual reward dictionary provides more detailed information about the agent's performance.

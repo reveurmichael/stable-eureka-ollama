@@ -1,0 +1,3 @@
+I'd be happy to help! The reward function in this code is defined within the `compute_reward` method. It seems that this reward function takes the current state of the lander, the main engine power (`m_power`) and side engine power (`s_power`), as well as a termination flag (`terminated`). 
+
+The exact logic of this reward function is not shown in the provided code snippet, but it can be inferred from the `compute_reward` method name.

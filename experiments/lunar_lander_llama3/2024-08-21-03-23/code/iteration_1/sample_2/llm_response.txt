@@ -1,0 +1,20 @@
+A reinforcement learning problem!
+
+The reward function is not explicitly defined in this code. However, based on the context and the `compute_reward` method signature, it's likely that the reward is a combination of the following:
+
+1. The state of the lander (e.g., its position, velocity, angle, and angular velocity)
+2. The thrust power applied by the main engines (`m_power`)
+3. The thrust power applied by the side engines (`s_power`)
+4. Whether the episode has terminated or not (`terminated`)
+
+The reward function might be designed to encourage the agent to successfully land on the helipad while minimizing the use of fuel and achieving a stable orientation.
+
+Here's a possible reward reflection:
+
+* `m_power` and `s_power`: positive rewards for applying moderate thrust powers, negative rewards for extreme or uncontrolled thrust
+* `state[0]` (position): negative rewards for being far away from the helipad, positive rewards for being close to it
+* `state[2]` (velocity): negative rewards for high velocities, positive rewards for low velocities
+* `state[4]` (angle): negative rewards for large deviations from a stable orientation, positive rewards for a stable orientation
+* `terminated`: a very negative reward when the episode has terminated due to failure or timeout
+
+The individual reward is updated with additional information, such as the fitness score, which could be used to evaluate the overall performance of the agent.

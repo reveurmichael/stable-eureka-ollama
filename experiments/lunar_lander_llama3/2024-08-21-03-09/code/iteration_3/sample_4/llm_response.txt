@@ -1,0 +1,11 @@
+A reinforcement learning problem!
+
+The reward function is:
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: implement the reward function
+    pass
+```
+This code suggests that the reward function should take in the current state of the lander (as represented by `state`), the main engine power (`m_power`) and side engine power (`s_power`), and a boolean indicating whether the episode is terminated or not. The function should return a numerical reward value.
+
+However, the actual implementation of the reward function is left up to the engineer!

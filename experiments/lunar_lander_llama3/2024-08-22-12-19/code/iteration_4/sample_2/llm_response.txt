@@ -1,0 +1,50 @@
+Based on the analysis of the policy feedback, I propose the following improved reward function:
+
+```Python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+    
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    
+    # Height reward: keep the lander at a reasonable height
+    height_penalty = -(y - self.helipad_y) ** 2
+    height_penalty = np.tanh(height_penalty / 1.0)
+    
+    # Velocity penalty: discourage high velocities
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2
+    velocity_penalty = np.tanh(velocity_penalty / 1.0)
+    
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+    
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if abs(x) < 0.1 and abs(y) < 0.1 else 10
+    
+    # Termination penalty: penalize for crash or out of bounds
+    termination_penalty = -50 if terminated and not (left_leg and right_leg) else 0
+    
+    # Total reward: a weighted sum of all components
+    reward = distance_reward + 0.3 * height_penalty + 0.6 * velocity_penalty + fuel_penalty + landing_reward + termination_penalty
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+        "termination_penalty": termination_penalty
+    }
+    
+    return reward, individual_reward
+```
+
+I made the following changes:
+
+1. Reduced the magnitude of the distance-based reward component by a factor of 10 to make it more comparable with other components.
+2. Increased the weight of the height penalty from 0.2 to 0.3 to emphasize the importance of keeping the lander at a reasonable height.
+3. Increased the weight of the velocity penalty from 0.5 to 0.6 to discourage high velocities.
+4. Introduced a termination penalty component to penalize for crash or out of bounds, which is not present in the original reward function.
+
+These changes are aimed at improving the overall performance of the policy by providing more balanced rewards and penalties.

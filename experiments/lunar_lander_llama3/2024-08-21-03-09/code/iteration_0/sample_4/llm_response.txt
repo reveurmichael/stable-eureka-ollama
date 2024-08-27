@@ -1,0 +1,25 @@
+Based on the provided code, it seems that you are designing a reinforcement learning environment for a lunar lander task. Here's your reward function:
+
+```Python
+def compute_reward(self, state, m_power, s_power, terminated):
+    if terminated:
+        # Game over, so we penalize the agent heavily
+        return -100.0, {'m': 0.0, 's': 0.0}
+    
+    # The reward function is designed to encourage the agent to land the 
+    # lunar module close to the center of the landing pad.
+    x = state[0]
+    y = state[1]
+    dist_to_center = abs(x)
+    if dist_to_center > 0.5:
+        # If we're not in the central area, reduce our reward
+        return -10.0 + m_power * (1 - dist_to_center) + s_power * (1 - dist_to_center), {'m': m_power, 's': s_power}
+    else:
+        # We're close to the center, so increase our reward
+        return 10.0 + m_power * (1 - dist_to_center) + s_power * (1 - dist_to_center), {'m': m_power, 's': s_power}
+
+```
+
+In this code, we first check if the game is over. If it is, we penalize the agent heavily to encourage it to avoid termination in the future.
+
+If the game is not over, we calculate a distance from the center of the landing pad based on the x-coordinate of the lunar module's position (since y-coordinates are fixed). We then use this distance to determine our reward. If we're outside the central area (x > 0.5), we reduce our reward. If we're inside, we increase it. The magnitude of the reward is also affected by the magnitudes of the main and side engines' thrusts (m_power and s_power).

@@ -1,0 +1,41 @@
+The reward code!
+
+The `compute_reward` function in the given code snippet seems to be a combination of rewards for various aspects of the game, such as:
+
+1. Moving towards or away from the target (helipad).
+2. Maintaining airspeed and avoiding crashes.
+3. Lander's orientation and angular velocity.
+
+Here is a rough outline of how I would reflect this reward code:
+
+- **Rewarding progress**: A positive reward for moving closer to the helipad, with a larger reward for reaching the target (helipad).
+- **Penalizing crashes**: A negative reward for crashing or falling off the platform.
+- **Encouraging airspeed and stability**: A positive reward for maintaining a certain airspeed threshold, and penalizing when it drops below this threshold.
+- **Reinforcing orientation and rotation**: A small penalty for having large angular velocity or not being upright.
+
+Here is a possible implementation of the `compute_reward` function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    reward = 0
+
+    # Reward for moving towards the target
+    if abs(state[0]) < 1.0:  # within the viewing area
+        reward += (state[0] + 1) / (VIEWPORT_W / SCALE / 2)  # closer to the center, larger reward
+    elif state[0] > 1.0:
+        reward -= 1.0  # crashed or fell off, large penalty
+
+    # Reward for airspeed and stability
+    if state[3] > MIN_AIR_SPEED:  # above minimum air speed threshold
+        reward += (state[3] - MIN_AIR_SPEED) / FPS  # larger reward for higher speeds
+    else:
+        reward -= 1.0  # penalty for low airspeed
+
+    # Small penalties for orientation and rotation
+    if abs(state[4]) > ORIENTATION_THRESHOLD:
+        reward -= 0.05  # small penalty for large angular velocity or non-upright orientation
+
+    return reward, {"progress": state[0], "airspeed": state[3]}
+```
+
+This is just one possible way to implement the reward function based on the given code and problem constraints. The actual reward design will depend on specific game requirements and agent's abilities.

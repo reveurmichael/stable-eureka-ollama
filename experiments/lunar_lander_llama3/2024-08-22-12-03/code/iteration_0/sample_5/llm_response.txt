@@ -1,0 +1,55 @@
+Here's a variation of the initial reward proposal:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad
+    distance_reward = -np.sqrt(x**2 + y**2)
+    distance_reward = np.exp(distance_reward / 100.0) - 1
+
+    # Stability reward: penalize tilting and angular velocity
+    angle_penalty = -(angle ** 2 + angular_velocity ** 2)
+    angle_penalty = np.tanh(angle_penalty / 5)
+
+    # Velocity reward: incentivize slow and controlled movements
+    velocity_reward = (vx**2 + vy**2) ** 0.5
+    velocity_reward = -np.exp(velocity_reward / 10.0) + 1
+
+    # Main engine power reward: penalize using the main engine when not needed
+    m_engine_penalty = -m_power if abs(x) < 0.1 and abs(y) < 0.1 else 0
+
+    # Side engines reward: incentivize using side engines for stability
+    s_engine_reward = s_power * (np.abs(angle) + np.abs(angular_velocity))
+
+    # Landing reward: bonus for successful landing
+    landing_reward = 100 if left_leg and right_leg and abs(x) < 0.1 and abs(y) < 0.1 else 10
+
+    # Total reward: a weighted sum of all components
+    reward = (distance_reward
+              + 0.3 * angle_penalty
+              + 0.2 * velocity_reward
+              + 0.1 * m_engine_penalty
+              + s_engine_reward
+              + landing_reward)
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "velocity_reward": velocity_reward,
+        "m_engine_penalty": m_engine_penalty,
+        "s_engine_reward": s_engine_reward,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+In this variation, I've introduced a few new components to the reward function:
+
+1. The main engine power reward (m_engine_penalty) penalizes using the main engine when not needed, i.e., when the lander is close to the landing pad.
+2. The side engines reward (s_engine_reward) incentivizes using the side engines for stability by rewarding small tilting and angular velocity values.
+3. I've also tweaked the weightings of the components to prioritize distance-based rewards over stability and velocity penalties.
+
+This variation should encourage the lander to move towards the landing pad in a stable and controlled manner, using side engines whenever possible.

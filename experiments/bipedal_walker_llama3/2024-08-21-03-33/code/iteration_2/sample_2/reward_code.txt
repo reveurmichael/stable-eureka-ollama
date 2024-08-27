@@ -1,0 +1,9 @@
+def compute_reward(self, pos, action, state):
+    distance_to_goal = abs(pos[0] - TERRAIN_LENGTH)
+    fitness_score_reward = 10 * (1 + np.tanh((fitness_score() - min_fitness) / 5))  # maximize fitness score
+    moving_forward_reward = (moving_forward() / 10)  # scale down movement reward
+    penalty_term = -0.01 * (state[6] + state[13])  # keep the same penalty term
+
+    individual_rewards = {"fitness_score": fitness_score_reward, "movement": moving_forward_reward, "penalty": penalty_term}
+
+    return np.sum(individual_rewards.values()), individual_rewards

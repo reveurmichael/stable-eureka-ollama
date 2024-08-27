@@ -1,0 +1,24 @@
+def compute_reward(self, pos, action, state):
+    # Distance-based reward: incentivizing movement to the right (scaled)
+    distance_reward = pos.x / 200.0
+    
+    # Fitness score-based reward: maximizing fitness as much as possible
+    fitness_reward = self.fitness_score * 10.0
+    
+    # Obstacle penalty: scaled and weighted to balance with other components
+    obstacle_penalty = -np.min([l.fraction for l in self.lidar]) * 2.5
+    
+    # Smoothness reward: penalizing high-speed actions (scaled)
+    action_penalty = -np.sum(np.abs(action)) / len(action) * 0.1
+    
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward + 0.3 * fitness_reward + 0.4 * obstacle_penalty - 0.2 * action_penalty)
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "fitness_reward": fitness_reward,
+        "obstacle_penalty": obstacle_penalty,
+        "action_penalty": action_penalty
+    }
+    
+    return reward, individual_reward

@@ -1,0 +1,42 @@
+Based on the provided code, I'll reflect on the current reward function and suggest improvements. The goal is to create an impact on the physics, not just render them.
+
+The reward function seems to be based on the state variables (position, velocity, angle, angular velocity), as well as the game over status and legs' ground contact. 
+
+However, without more information about the desired behavior of the lander in this environment, it's difficult to provide a specific reward function that would encourage good performance.
+
+One possible approach could be to use a combination of rewards for different aspects of the task:
+
+- Positional reward: Reward for being close to the target position (e.g., the helipad).
+- Velocity-based reward: Encourage low velocity, especially near the ground.
+- Angle and angular velocity reward: Incentivize smooth landing and stable orientation.
+
+Here's a simple example of how this could be implemented:
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    reward = 0.0
+
+    # Positional reward
+    distance_to_target = np.linalg.norm(np.array([state[0], state[1]]) - target_position)
+    reward += -distance_to_target / max_distance
+
+    # Velocity-based reward
+    if state[2] < low_velocity_threshold:
+        reward += velocity_reward
+
+    # Angle and angular velocity reward
+    reward += -np.abs(state[4]) / angle_threshold
+    if np.abs(state[5]) < low_angular_velocity_threshold:
+        reward += angular_velocity_reward
+
+    # Terminal rewards
+    if terminated:
+        if state[0] >= 1.0:  # Landed successfully
+            reward = terminal_success_reward
+        else:  # Game over, but didn't land
+            reward = terminal_failure_reward
+
+    return reward, {'pos': distance_to_target, 'vel': state[2], 'angle': state[4]}
+```
+
+Please note that these rewards are just examples and may need to be adjusted based on the specific requirements of your environment.

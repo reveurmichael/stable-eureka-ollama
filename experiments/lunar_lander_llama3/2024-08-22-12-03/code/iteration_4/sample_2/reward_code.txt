@@ -1,0 +1,21 @@
+def compute_reward(state, m_power, s_power, terminated):
+    reward = 0.0
+
+    # Landing successfully
+    if state[0] < 1.0 and state[1] < 1.0:  # position and velocity within bounds
+        reward += 10.0
+
+    # Velocity and position control
+    vel_diff = abs(state[2]) - 5.0  # adjust this value based on desired velocity range
+    pos_diff = abs(state[1]) - 0.5  # adjust this value based on desired position range
+    reward += -vel_diff - pos_diff
+
+    # Angle control
+    angle_diff = abs(state[4] - self.desired_angle)  # adjust this value based on desired angle range
+    reward += -angle_diff
+
+    # Avoidance of obstacles (penalty for collision or straying too far)
+    if terminated:
+        reward -= 10.0  # significant penalty for game over
+
+    return reward, {}

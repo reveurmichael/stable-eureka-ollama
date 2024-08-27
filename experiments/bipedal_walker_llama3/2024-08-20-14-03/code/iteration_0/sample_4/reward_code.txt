@@ -1,0 +1,9 @@
+def compute_reward(self, pos, action, state):
+    hull_angle_diff = abs(pos[0] - self.prev_pos[0]) if self.prev_pos else 0
+    vel_x = state[2]
+    reward = 1.0 + vel_x * 0.5 + np.exp(hull_angle_diff / 10) * 0.3
+
+    individual_reward = {"forward_reward": 1.0 + vel_x, "angle_reward": np.exp(hull_angle_diff / 10), "velocity_reward": 0.5}
+
+    self.prev_pos = pos
+    return reward, individual_reward

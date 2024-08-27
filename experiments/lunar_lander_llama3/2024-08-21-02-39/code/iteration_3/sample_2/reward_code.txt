@@ -1,0 +1,19 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Reward structure: +1 for reaching the helipad, -1 for falling off the platform
+    reward = 0.0
+
+    # Check if the lander has reached the helipad (y-coordinate)
+    if state[1] >= 0.5:
+        reward += 10.0  # bonus for landing safely on the helipad
+
+    # Penalty for falling off the platform
+    if abs(state[0]) >= 1.0 or terminated:  # out of bounds or game over
+        reward -= 20.0  # penalty for not landing safely
+
+    # Additional reward for using main engines (m_power) and side engines (s_power)
+    if m_power > 0:
+        reward += 5.0 * m_power  # bonus for using main engines effectively
+    if s_power > 0:
+        reward += 2.0 * s_power  # bonus for using side engines effectively
+
+    return reward, individual_reward

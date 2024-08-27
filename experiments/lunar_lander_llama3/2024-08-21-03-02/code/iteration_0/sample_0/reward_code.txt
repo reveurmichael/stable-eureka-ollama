@@ -1,0 +1,26 @@
+def compute_reward(self, state, m_power, s_power, terminated):
+    """
+    Compute the reward for the given state and engine powers.
+    """
+    if terminated:
+        # Episode has terminated, so we want to encourage safe landing
+        if state[0] >= 1.0:  # landed successfully
+            return 10.0, {"success": 10.0}
+        else:  # failed to land or crashed
+            return -5.0, {"crash": -5.0}
+
+    # Lander is still in the air, so reward progress towards the helipad
+    distance_to_helipad = abs(state[0])
+    velocity_z = state[2]
+    if distance_to_helipad < 0.1:  # close to landing, give bonus for slow descent
+        return 5.0 + (1 - velocity_z) * 2.0, {"approaching": 5.0}
+    else:
+        # encourage the agent to move closer to the helipad
+        return -0.05 - distance_to_helipad * 0.01, {"moving_towards_helipad": -0.05}
+
+    if m_power > 0.1:  # main engine is firing, give penalty for excessive thrust
+        return reward - 2.0, {"excessive_thrust": -2.0}
+    if s_power > 0.5:  # side engines are firing, give bonus for stable orientation
+        return reward + 1.0, {"stable_orientation": 1.0}
+
+    return reward, {}

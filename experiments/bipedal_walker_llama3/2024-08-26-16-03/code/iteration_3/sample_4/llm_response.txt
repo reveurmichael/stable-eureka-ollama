@@ -1,0 +1,53 @@
+Analyzing the existing reward components:
+
+1. **Obstacle avoidance reward**: The values are all zeros, indicating that the agent is not avoiding obstacles effectively. This suggests that either the obstacles are not well-defined or the penalty for collision is too low.
+2. **fitness_score**: The maximum value is -13.025602, which is a significant negative value. This indicates that the fitness score is trying to minimize a certain aspect of the agent's behavior, but it's not providing a clear direction for improvement.
+3. **reward**: The maximum value is 21.62597051379271, which is a positive value. However, the mean value (-27.60818639603561) suggests that the reward function is overall biased towards negative values.
+
+Based on these observations, I propose the following improvements:
+
+1. **Obstacle avoidance reward**: Increase the penalty for collision with obstacles. This could be achieved by increasing the magnitude of the obstacle_avoidance_reward or introducing a new component that encourages the agent to stay at a safe distance from obstacles.
+2. **fitness_score**: Since the fitness score is trying to minimize, I suggest inverting its values so that it rewards good behavior. This would help guide the agent towards improving performance.
+3. **reward**: To better balance the reward function, I propose introducing a new component that encourages the agent to achieve its goals (e.g., reaching the target). This could be done by adding a term that increases when the agent is close to the goal.
+
+Here's a revised reward function code proposal:
+
+```python
+def compute_reward(self, pos, action, state):
+    # Distance-based reward: incentivize movement to the right with moderate magnitude
+    distance_reward = np.tanh(pos.x / 100.0)
+    
+    # Simplified stability reward: reduce penalty for small angles and velocities (scaled)
+    angle_stability_penalty = -np.abs(state[0]) ** 2 * 0.1  # Reduced penalty
+    angular_velocity_stability_penalty = -np.abs(state[1]) ** 2 * 0.05  # Reduced penalty
+    stability_reward = np.mean([angle_stability_penalty, angular_velocity_stability_penalty])
+    
+    # Smoothness reward: moderate penalty for high-speed actions (scaled)
+    action_smoothness_penalty = -np.sum(np.abs(action)) / len(action) * 0.2  # Scaled penalty
+    smoothness_reward = np.tanh(action_smoothness_penalty)
+    
+    # Goal achievement reward: increase when close to the goal
+    goal_achievement_reward = np.tanh((pos.x - self.goal_pos.x) ** 2 + (pos.y - self.goal_pos.y) ** 2)
+    
+    # Obstacle avoidance reward: encourage avoidance of obstacles with moderate magnitude (bounded)
+    obstacle_avoidance_reward = -np.clip(np.min([l.fraction for l in self.lidar]), -1, 0)  # Bounded penalty
+    
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward * 0.2
+              + stability_reward * 0.15
+              + smoothness_reward * 0.05
+              + goal_achievement_reward * 0.3
+              + obstacle_avoidance_reward * 0.4)
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "stability_reward": stability_reward,
+        "smoothness_reward": smoothness_reward,
+        "goal_achievement_reward": goal_achievement_reward,
+        "obstacle_avoidance_reward": obstacle_avoidance_reward,
+    }
+    
+    return reward, individual_reward
+```
+
+This revised reward function aims to better balance the agent's behavior by introducing a new component that encourages goal achievement and increasing the penalty for collision with obstacles. The weights are adjusted to prioritize these components over the others.

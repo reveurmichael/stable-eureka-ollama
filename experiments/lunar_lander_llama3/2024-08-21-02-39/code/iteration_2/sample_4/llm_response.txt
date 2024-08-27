@@ -1,0 +1,25 @@
+What a delightful challenge!
+
+After analyzing the provided code, I've identified the `compute_reward` method, which seems to be the key part of your reward function. Here it is:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # TO DO: implement your custom reward function here!
+    pass  # Replace this with your actual implementation
+```
+The `compute_reward` method takes in four inputs:
+
+1. `state`: A list of eight values representing the current state of the lander.
+2. `m_power`: The magnitude of the main engines' thrust.
+3. `s_power`: The power of the side engines' thrust.
+4. `terminated`: A boolean indicating whether the episode has terminated (i.e., game over or the lander is not awake).
+
+Your task is to implement a custom reward function that takes these inputs and returns a scalar value representing the reward for the current state.
+
+Some possible ideas for your reward function include:
+
+* Encouraging the main engines to maintain a stable velocity by rewarding consistent speed.
+* Punishing the side engines for excessive orientation changes or sudden accelerations.
+* Favoring low altitudes and horizontal velocities over high altitudes and vertical velocities (i.e., "stay close to the ground").
+* Incorporating additional constraints, such as keeping the lander's angle within a certain range.
+
+Remember to adjust your reward function based on your specific reinforcement learning goals and problem formulation. Happy coding!

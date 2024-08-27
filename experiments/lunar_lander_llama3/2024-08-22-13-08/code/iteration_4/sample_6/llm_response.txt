@@ -1,0 +1,27 @@
+Based on the provided code, I'd say that your current reward function is not well-designed. Here's why:
+
+1. **Lack of clear goals**: The reward function doesn't seem to have a clear goal or objective. It just assigns a reward based on some conditions (e.g., `abs(state[0]) >= 1.0`). This can lead to suboptimal behavior.
+
+2. **No correlation with the actual task**: The current reward function doesn't seem to be directly related to the actual task of landing the lander safely. For instance, it seems to prioritize reaching the edge of the viewport over achieving the main goal of staying within a certain distance from the helipad.
+
+3. **No exploration encouragement**: There's no mechanism to encourage exploration or trying out different actions in order to learn more about the environment and improve performance. This can lead to slow learning or even getting stuck in local optima.
+
+4. **Lack of punishment for poor performance**: The current reward function doesn't seem to penalize the agent for performing poorly (e.g., crashing). This can encourage reckless behavior and undermine the overall performance.
+
+To address these issues, I'd suggest designing a more nuanced reward function that takes into account the actual task at hand. For example:
+
+* Reward the agent for staying within a certain distance from the helipad or achieving a safe landing.
+* Encourage exploration by providing bonuses for trying out new actions or exploring unvisited areas of the environment.
+* Penalize the agent for poor performance, such as crashing or flying too close to the edge of the viewport.
+
+Here's an updated version of your reward function that incorporates some of these ideas:
+
+```
+reward = -abs(pos.x)  # penalize for going off-screen
+-20.0 * abs(vel.y)  # penalize for falling too fast
++10.0 * (1.0 if self.lander.awake else 0.0)  # reward for staying awake and engaged
++5.0 * np.min([self.legs[0].ground_contact, self.legs[1].ground_contact])  # encourage stable lander
+-2.0 * abs(state[4])  # penalize for large angular velocity
+```
+
+This is just a starting point, and you may need to adjust the weights and terms to better fit your specific problem.

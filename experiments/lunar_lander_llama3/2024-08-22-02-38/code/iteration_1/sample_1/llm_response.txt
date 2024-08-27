@@ -1,0 +1,35 @@
+A reinforcement learning problem!
+
+The goal is to create an effective reward function that guides the agent (lander) to achieve a desired outcome. The reward function should reflect the desirability of different states and actions.
+
+Based on the provided code, I'll make some observations and suggestions:
+
+1. **Termination criteria**: The game is terminated when either:
+	* The lander goes out of bounds (`abs(state[0]) >= 1.0`), or
+	* The lander is not awake anymore (`self.lander.awake == False`)
+2. **Reward calculation**: The reward function seems to be designed to encourage the agent to maintain a stable position and velocity while in contact with the ground.
+3. **Action-specific rewards**: There are two types of actions: main engine (m_power) and side engines (s_power). These should be rewarded differently, e.g., for successfully landing or maintaining control.
+
+Here's a possible reward function:
+```python
+def compute_reward(state, m_power, s_power, terminated):
+    if terminated:
+        # Penalty for not achieving the goal or going out of bounds
+        return -1.0, {}
+
+    # Reward for stable position and velocity while grounded
+    pos_reward = 0.5 * (abs(state[0]) + abs(state[1]))
+    vel_reward = 0.2 * (abs(state[2]) + abs(state[3]))
+
+    # Action-specific rewards:
+    if m_power > 0:  # Main engine power-on
+        return 0.8, {'main_engine': 0.8}
+    elif s_power > 0:  # Side engines on
+        return 0.4, {'side_engines': 0.4}
+
+    # Default reward (stable state)
+    return 0.1, {}
+```
+This is just a starting point, and you may need to adjust the weights and rewards based on your specific problem requirements.
+
+Remember that the reward function should be carefully designed to guide the agent towards the desired behavior while avoiding unwanted actions or states.

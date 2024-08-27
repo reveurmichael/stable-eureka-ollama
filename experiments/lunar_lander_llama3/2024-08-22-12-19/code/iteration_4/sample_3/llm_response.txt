@@ -1,0 +1,59 @@
+Based on the provided feedback, I'll analyze each existing reward component and propose improvements.
+
+**1. Distance-based reward:** The values are not identical (range: -24.0 to 28.0), but it seems to increase when it should decrease (minimize). This might be due to the exponential scaling (`np.exp`). To improve this, I'll consider changing its scale or temperature parameter.
+
+**2. Height reward:** The values are highly negative (range: -0.1 to -1.0), indicating that the lander is not staying at a reasonable height. This component seems to be effective in discouraging high altitudes.
+
+**3. Velocity penalty:** The values are mostly negative, with a range of (-101.5, -39.7). This suggests that velocities are indeed being discouraged. However, the magnitude is significant, so I'll consider re-scaling this component.
+
+**4. Fuel efficiency reward:** The values are binary (0 or -1), indicating that using the main engine is heavily penalized. This seems to be an effective way to encourage fuel efficiency.
+
+**5. Landing reward:** The values are mostly 0, with a few high values when the lander successfully lands. This component seems to be effective in encouraging successful landings.
+
+Based on these observations, I'll propose a new reward function:
+
+```python
+def compute_reward(self, state, action, next_state, terminated):
+    # Unpack state variables
+    x, y, vx, vy, angle, angular_velocity, left_leg, right_leg = state
+
+    # Distance-based reward: incentivize moving towards the landing pad (reduced scale)
+    distance_reward = -np.sqrt(x**2 + y**2) / 5.0
+
+    # Height reward: keep the lander at a reasonable height
+    height_penalty = -(y - self.helipad_y) ** 2
+
+    # Velocity penalty: discourage high velocities (reduced magnitude)
+    velocity_penalty = -(np.abs(vx) + np.abs(vy)) ** 2 / 10.0
+
+    # Fuel efficiency reward: penalize using the main engine
+    fuel_penalty = -1 if action == 2 else 0
+
+    # Landing reward: bonus for successful landing (increased magnitude)
+    landing_reward = 100 if left_leg and right_leg and abs(x) < 0.1 and abs(y) < 0.1 else 10
+
+    # Total reward: a weighted sum of all components
+    reward = distance_reward + 0.2 * height_penalty - 0.5 * velocity_penalty - 0.01 * fuel_penalty + landing_reward
+
+    # Apply a penalty if the episode is terminated (crash or out of bounds)
+    if terminated and not (left_leg and right_leg):
+        reward -= 100
+
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "height_penalty": height_penalty,
+        "velocity_penalty": velocity_penalty,
+        "fuel_penalty": fuel_penalty,
+        "landing_reward": landing_reward,
+    }
+
+    return reward, individual_reward
+```
+
+The main changes are:
+
+1. Reduced the scale of the distance-based reward to focus more on proximity to the landing pad.
+2. Re-scaled the velocity penalty to make it less severe.
+3. Increased the magnitude of the landing reward to emphasize successful landings.
+
+These changes should help improve the overall performance of the agent and encourage more effective exploration and exploitation strategies.

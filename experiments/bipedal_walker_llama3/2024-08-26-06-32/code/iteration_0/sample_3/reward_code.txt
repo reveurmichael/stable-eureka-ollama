@@ -1,0 +1,7 @@
+def compute_reward(pos, action), ...:
+    if pos < 0 or pos > VIEWPORT_WIDTH or (action == 'move' and pos < VIEWPORT_WIDTH) or ((action == 'move' and pos > VIEWPORT_WIDTH)) and action != 'move'):
+        return 10
+
+    else:
+        reward = compute_reward(pos, action), ... 
+        return reward

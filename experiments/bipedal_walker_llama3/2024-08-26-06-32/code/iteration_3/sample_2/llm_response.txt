@@ -1,0 +1,12 @@
+Your reward value is updated with the following information:
+```python
+ reward = 0.5
+ terminated = False
+ info = {
+    "reward": reward,
+    "terminated": terminated,
+    "info": info
+ }
+ ```
+ The reward reflects a moderate success rate, where the agent successfully navigates and avoids obstacles over time.
+ The terminated value indicates that the agent has encountered an obstacle or setback during navigation that prevented it from reaching its intended destination safely. The terminated value can be used to determine whether the agent should continue navigating in order to reach its intended destination safely or if it should stop navigating temporarily in order to prevent encountering another obstacle or setback during navigation that prevents the agent from reaching its intended destination safely.

@@ -1,0 +1,48 @@
+Based on the provided feedback, I'll analyze each component of the existing reward function and suggest improvements.
+
+1. **Distance-based reward**: The values are increasing when they should be decreasing (minimizing). This suggests that the reward is not well-designed to encourage movement towards the goal.
+2. **Stability reward**: The magnitude of this component is relatively small compared to others. Scaling it up might help.
+3. **Smoothness reward**: The values are decreasing when they should be increasing (maximizing). This implies that the penalty for high-speed actions is too strong and needs to be re-weighted or re-designed.
+4. **Proximity to Lidar points**: The magnitude of this component is quite large, which could dominate the other components. Scaling it down might help.
+
+Considering these observations, I'll propose an improved reward function:
+```python
+def compute_reward(self, pos, action, state):
+    # Distance-based reward: incentivizing movement towards goal (modified)
+    distance_reward = np.exp(-pos.x / 400.0)  # Invert the original formula
+    
+    # Stability reward: scaling up to emphasize importance
+    angle_penalty = -np.abs(state[0]) * 10
+    angular_velocity_penalty = -np.abs(state[1]) * 5
+    
+    # Smoothness reward: re-weighting and adjusting scaling
+    action_reward = np.sum(np.abs(action)) / len(action) * 2
+    
+    # Proximity to Lidar points: scaling down for reduced impact
+    obstacle_penalty = -np.min([l.fraction for l in self.lidar]) * 0.5
+    
+    # Total reward: a weighted sum with adjusted weights
+    reward = (distance_reward
+              + 0.2 * angle_penalty
+              + 0.1 * angular_velocity_penalty
+              + 0.4 * action_reward
+              + 0.3 * obstacle_penalty)  # Adjusted weights for better balance
+    
+    individual_reward = {
+        "distance_reward": distance_reward,
+        "angle_penalty": angle_penalty,
+        "angular_velocity_penalty": angular_velocity_penalty,
+        "action_reward": action_reward,
+        "obstacle_penalty": obstacle_penalty
+    }
+    
+    return reward, individual_reward
+```
+Key changes:
+
+* Inverted the distance-based reward to encourage movement towards the goal.
+* Scaled up the stability and smoothness rewards for increased emphasis.
+* Re-weighted the smoothness reward to reduce its impact.
+* Scaled down the proximity to Lidar points penalty for reduced impact.
+
+This improved reward function should better align with the desired behavior and provide more informative feedback during training.

@@ -1,0 +1,13 @@
+The reward function in this code is `self.compute_reward` and `self.compute_fitness_score`. 
+
+The `compute_reward` function calculates a reward based on the current state of the lander. It takes four arguments: `state`, `m_power`, `s_power`, and `terminated`. The purpose of this reward function is not explicitly stated, but it likely rewards the agent for staying within the desired bounds and penalties it for falling off the helipad or crashing.
+
+The `compute_fitness_score` function calculates a fitness score based on the current state of the lander. It also takes four arguments: `state`, `m_power`, `s_power`, and `terminated`. The purpose of this fitness score is not explicitly stated, but it likely rewards the agent for staying within the desired bounds and penalties it for falling off the helipad or crashing.
+
+Here's a possible reflection of these reward functions:
+
+- In this code, the main challenge is to land the aircraft safely on the helipad. The `compute_reward` function seems to be designed to encourage the agent to achieve this goal by rewarding it for staying within the desired bounds and penalties it for falling off the helipad or crashing.
+
+- However, these reward functions are quite simple and do not take into account more advanced features of the lander's state, such as its velocity or angular momentum. This simplicity might make them less effective in guiding the agent to optimal behavior.
+
+- The `compute_fitness_score` function seems to be used to calculate a secondary metric that can help evaluate the performance of the agent. However, without knowing what exactly this score represents or how it is used, it's hard to provide further insights on its importance in this code.

@@ -1,0 +1,28 @@
+def compute_reward(state, m_power, s_power, terminated):
+    # Define reward components
+    distance_to_helipad = 1 - state[0]  # closer is better
+    velocity = state[2]**2 + state[3]**2  # lower velocity is better
+    angle_error = np.abs(state[4])  # smaller angle error is better
+    legs_contact = int((state[6] + state[7])) / 2  # more contacts is better
+
+    # Calculate reward
+    if terminated:
+        # Game over, penalize the agent
+        reward = -10.0
+    else:
+        # Reward components
+        distance_reward = distance_to_helipad * 5.0
+        velocity_reward = np.exp(-velocity) * 2.0
+        angle_reward = np.exp(-angle_error) * 1.0
+        legs_reward = legs_contact * 3.0
+
+        # Combine rewards
+        reward = distance_reward + velocity_reward + angle_reward + legs_reward
+
+    individual_reward = {
+        'distance': distance_reward,
+        'velocity': velocity_reward,
+        'angle': angle_reward,
+        'legs': legs_reward
+    }
+    return reward, individual_reward

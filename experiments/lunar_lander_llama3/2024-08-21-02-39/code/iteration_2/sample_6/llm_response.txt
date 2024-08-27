@@ -1,0 +1,20 @@
+A reinforcement learning problem!
+
+The reward function appears to be defined in the `compute_reward` method. The signature of this method suggests that it takes the current state (`state`) and two actions (`m_power` and `s_power`) as input, and returns a scalar reward value.
+
+Here's the relevant code snippet:
+```python
+def compute_reward(self, state, m_power, s_power, terminated):
+    # ... (some logic here) ...
+    return 0.0, {}
+```
+Unfortunately, the implementation of the reward function is not provided in this snippet, as it's a separate method that's not shown.
+
+However, based on the context and the problem setup, we can infer some possible aspects of the reward function:
+
+1. **Landing**: The agent is likely rewarded for successfully landing on the helipad.
+2. **Distance to target**: The distance from the lander to the helipad might be a factor in the reward calculation.
+3. **Velocity and orientation**: The agent's velocity and orientation might influence the reward, with faster and more controlled movements receiving higher rewards.
+4. **Penalties for crashes or straying too far**: If the lander crashes or strays too far from the helipad, the agent might receive a penalty or a low reward.
+
+The exact reward function will depend on the specific design goals of the problem, but these aspects provide some hints about what the reward might be trying to encourage.

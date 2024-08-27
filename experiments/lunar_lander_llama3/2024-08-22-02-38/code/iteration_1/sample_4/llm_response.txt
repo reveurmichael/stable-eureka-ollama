@@ -1,0 +1,31 @@
+Based on the provided code, I'll try to reflect on what the reward function might look like. 
+
+From my understanding of reinforcement learning and the given code, the reward seems to be calculated based on the state of the lander (position, velocity, angle, and angular velocity) as well as the power applied to the main and side engines.
+
+The `compute_reward` method is used to calculate the reward. It takes four arguments: the current state (`state`), the main engine power (`m_power`), the side engine power (`s_power`), and a boolean indicating whether the episode has terminated (`terminated`).
+
+Here's my attempt at reconstructing the reward function:
+
+```
+def compute_reward(self, state, m_power, s_power, terminated):
+    # Calculate reward based on position, velocity, angle, and angular velocity
+    pos_reward = -abs(state[0])  # penalize for moving away from center
+    vel_reward = -abs(state[2])  # penalize for high velocity
+    ang_reward = -abs(state[4])  # penalize for large angle (off-axis)
+    ang_vel_reward = -abs(state[5])  # penalize for rapid angular changes
+
+    if terminated:
+        return -100.0, {}  # penalty for terminating the episode
+    else:
+        reward = pos_reward + vel_reward + ang_reward + ang_vel_reward
+        individual_rewards = {
+            'pos': pos_reward,
+            'vel': vel_reward,
+            'ang': ang_reward,
+            'ang_vel': ang_vel_reward
+        }
+        return reward, individual_rewards
+
+```
+
+This is just an educated guess, and the actual reward function might be more complex or nuanced. The goal is to encourage the lander to stay close to the center (low `pos_reward`), maintain a stable velocity and angle (low `vel_reward`, `ang_reward`, and `ang_vel_reward`), and terminate the episode when it's necessary (high `reward`).

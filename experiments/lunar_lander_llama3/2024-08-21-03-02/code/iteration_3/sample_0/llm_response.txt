@@ -1,0 +1,36 @@
+Based on the provided code, it seems that the reward function is defined in the `compute_reward` method of the class. The goal of this method appears to be to calculate a reward score based on the current state of the lander, its power settings (main and side), and whether the episode has terminated.
+
+Here's the relevant code:
+```
+    def compute_reward(self, state, m_power, s_power, terminated):
+        # TO DO: implement the reward function
+        raise NotImplementedError
+```
+
+However, this `compute_reward` method is not implemented. To create a reward function that effectively guides the reinforcement learning algorithm, we need to define what constitutes a good or bad episode in the context of this game.
+
+Here are some possible ways to design the reward function:
+
+1. **Main Thrust Reward**: Provide a positive reward when the lander successfully lands on the helipad, and a negative reward otherwise.
+2. **Side Engine Reward**: Award points for correct orientation (left or right) of the lander at landing.
+3. **Velocity-based Reward**: Penalize the agent for not being close to the ground (high velocity).
+4. **Distance-to-Helipad Reward**: Reward the agent for its distance from the helipad, with closer being better.
+
+Here's a possible implementation:
+```
+    def compute_reward(self, state, m_power, s_power, terminated):
+        if terminated:
+            # If the episode has terminated (lander crashed or landed), 
+            # calculate a reward based on whether it successfully landed
+            if np.abs(state[0]) < 1.0:  # Check if lander is close to the helipad
+                return 10.0, {'main_thrust': m_power}
+            else:
+                return -10.0, {'main_thrust': m_power}  # Penalty for crashing
+        else:
+            # If the episode has not terminated, award points based on distance from helipad and velocity
+            reward = (1 - np.abs(state[0])) * (1 - state[3]**2)
+            return reward, {'main_thrust': m_power, 'side_engine': s_power}
+```
+This is just one possible approach. The actual design of the reward function will depend on the specific goals and constraints of the game.
+
+Please note that this implementation is not optimized for performance, but rather serves as a starting point for designing the reward function.

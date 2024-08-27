@@ -1,0 +1,35 @@
+A reinforcement learning problem!
+
+To create a reward function that has an impact on the physics, I'll focus on designing a reward scheme that encourages the agent to learn effective control policies for landing the lander safely.
+
+Here's my proposed reward function:
+
+```
+def compute_reward(state, m_power, s_power, terminated):
+    # Positive reward for being close to the target position and orientation
+    pos_reward = np.exp(-((state[0] - 0.5) ** 2 + (state[1] - 0.5) ** 2) / (VIEWPORT_W / SCALE / 2) ** 2)
+    orient_reward = np.cos(state[4])
+
+    # Penalty for falling or crashing
+    fall_penalty = -100 if terminated and abs(state[0]) >= 1.0 else 0
+
+    # Bonus for using the main engines wisely (i.e., not wasting thrust)
+    m_power_bonus = 10 * s_power if np.abs(action[0]) > 0.5 else 0
+
+    # Side engine bonus for adjusting orientation
+    s_power_bonus = 20 * np.abs(s_power) if np.abs(action[1]) > 0.5 else 0
+
+    reward = pos_reward + orient_reward + m_power_bonus + s_power_bonus - fall_penalty
+    return reward, individual_reward
+```
+
+This reward function encourages the agent to:
+
+1. Stay close to the target position (x, y) and orientation (angle).
+2. Avoid falling or crashing by penalizing large deviations from the target.
+3. Use the main engines efficiently by rewarding moderate thrust levels.
+4. Adjust the side engines to orient the lander correctly.
+
+The reward is a weighted sum of these components, with the weights adjusted to balance the importance of each aspect.
+
+Note that this is just one possible approach, and you may need to adjust or modify the reward function based on your specific problem requirements and performance metrics.

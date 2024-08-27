@@ -1,0 +1,14 @@
+Based on the provided code, the reward function seems to be implemented in the `compute_reward` method. The method takes four inputs: `state`, `m_power`, `s_power`, and `terminated`. It returns two values: `reward` and `individual_reward`.
+
+The implementation of the `compute_reward` method is not explicitly shown, but based on the given code, it seems to be calculating a reward that depends on the state of the lander (its position, velocity, angle, and angular velocity) as well as the main engine power (`m_power`) and side engine power (`s_power`). The `terminated` flag likely indicates whether the episode has terminated or not.
+
+The exact formula for the reward is not provided, but it could be something like:
+
+```
+reward = - (pos.x**2 + pos.y**2) - 0.1 * abs(vel.x) - 0.1 * abs(vel.y)
+if terminated:
+    reward -= 10
+individual_reward = {'main_engine': m_power, 'side_engines': s_power}
+```
+
+This is just a hypothetical example and the actual implementation of the reward function might be different.
