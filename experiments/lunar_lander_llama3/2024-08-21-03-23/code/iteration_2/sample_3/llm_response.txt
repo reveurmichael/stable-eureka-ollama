@@ -1,9 +1,0 @@
-A reinforcement learning problem!
-
-The reward function is defined in the `compute_reward` method. It takes in the current state, `m_power`, `s_power`, and a boolean indicating whether the episode has terminated.
-
-Here's the reward function:
-```python
-reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)
-```
-The implementation of `compute_reward` is not provided in the code snippet, but it should return a scalar value representing the reward for the current state and action.

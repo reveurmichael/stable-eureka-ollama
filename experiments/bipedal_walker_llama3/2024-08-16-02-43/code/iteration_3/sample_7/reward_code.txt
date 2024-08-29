@@ -1,7 +1,0 @@
-def compute_reward(self, pos, action, state):
-    reward = 0.5 - np.abs(pos[0]) / (TERRAIN_LENGTH / 2)
-    reward += 1e-3 * np.sum(np.square(action))
-    
-    individual_reward = {'pos': reward}
-    
-    return reward, individual_reward

@@ -1,9 +1,0 @@
-def compute_reward(self, pos, action, state):
-    if not self.game_over and pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
-        reward = np.exp((pos[0] - (TERRAIN_LENGTH - TERRAREN_GRASS)) / 50) - 1
-    else:
-        reward = 0.0
-
-    individual_reward = {"reached_end": reward}
-
-    return reward, individual_reward

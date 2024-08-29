@@ -1,9 +1,0 @@
-def compute_reward(state, m_power, s_power, terminated):
-    if terminated:
-        return -1.0  # penalty for crashing or episode termination
-    else:
-        pos_diff = abs(state[0])  # distance from helipad
-        reward = -pos_diff + 0.5 * (m_power + s_power)  # combination of proximity and engine power
-        if state[2] > 0:  # agent is moving forward
-            reward += 0.1  # bonus for progress
-        return reward

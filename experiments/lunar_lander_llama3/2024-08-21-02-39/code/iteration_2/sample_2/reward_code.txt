@@ -1,9 +1,0 @@
-reward, individual_reward = self.compute_reward(state, m_power, s_power, terminated)
-
-if self.render_mode == "human":
-    self.render()
-
-fitness_score = self.compute_fitness_score(state, m_power, s_power, terminated)
-individual_reward.update({'fitness_score': fitness_score})
-
-return np.array(state, dtype=np.float32), reward, terminated, False, individual_reward

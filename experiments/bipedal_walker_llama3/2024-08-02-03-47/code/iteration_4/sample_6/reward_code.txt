@@ -1,9 +1,0 @@
-def compute_reward(self, pos, action, state):
-    distance_to_end = (VIEWPORT_W / SCALE) - pos[0]
-    
-    # Reward the agent for moving forward and avoiding obstacles
-    reward = 1.0 * np.exp(-0.5 * abs(distance_to_end)) * (1.0 - (abs(state[3]) + abs(state[15])))
-
-    individual_reward = {'distance_reward': distance_to_end, 'obstacle_penalty': abs(state[3]) + abs(state[15])}
-    
-    return reward, individual_reward

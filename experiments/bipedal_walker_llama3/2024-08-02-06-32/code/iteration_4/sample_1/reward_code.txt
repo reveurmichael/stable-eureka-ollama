@@ -1,4 +1,0 @@
-def compute_reward(self, pos, action, state):
-    reward = -1 * (abs(pos[0] - TERRAIN_LENGTH) + abs(action[0]) + abs(action[2])) ** 0.5  # penalize position and movement
-    individual_reward = {'movement': -1 * (action[0] ** 2 + action[2] ** 2), 'position': -1 * (pos[0] - TERRAIN_LENGTH) ** 0.5}
-    return reward, individual_reward

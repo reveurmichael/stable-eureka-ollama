@@ -1,7 +1,0 @@
-Your reward is \( reward = \text{Total amount earned}}\) using a specific reward code.
-In this scenario, the reward code used for this task is `reward` which represents the total amount of reward earned by the agent. The reward value is \( reward = \text{Total amount earned}}\) as mentioned earlier, with \( reward \) updated based on the fitness score, which in turn is calculated using the following formula: 
-```py
-fitness_score = self.compute_fitness_score(pos)
-reward = reward_update(reward, fitness_score))
-```
-In this code snippet, `self.compute_fitness_score(pos)` calculates the fitness score of the agent at the given position. Then, `reward = reward_update(reward, fitness_score))` combines and updates the reward value based on the updated fitness score.

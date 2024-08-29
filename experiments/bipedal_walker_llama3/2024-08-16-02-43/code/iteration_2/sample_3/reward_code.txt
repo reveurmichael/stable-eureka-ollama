@@ -1,4 +1,0 @@
-def compute_reward(self, pos, action, state):
-    reward = -1.0 + (state[2] ** 2) * 10.0  # penalty for moving slowly
-    individual_reward = {"position": (state[0] / math.pi) * 100.0}  # positive reward for reaching the end
-    return reward, individual_reward

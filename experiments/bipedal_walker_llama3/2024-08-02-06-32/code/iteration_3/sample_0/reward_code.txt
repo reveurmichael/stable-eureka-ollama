@@ -1,9 +1,0 @@
-def compute_reward(self, pos, action, state):
-    reach_end = int(pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP)
-    fall_down = int(1.5 < pos[1])  # assuming the agent falls down when y-coordinate is above 1.5
-    stuck = int((pos[0] - self.scroll) ** 2 + (pos[1] - 3.4) ** 2 > 0.01)
-    
-    reward = -abs(action).sum() * 0.001  # penalize high movements
-    individual_reward = {'reach_end': reach_end, 'fall_down': fall_down, 'stuck': stuck}
-    
-    return -1 if reach_end else 10 + (5 if not fall_down and not stuck else 0), individual_reward

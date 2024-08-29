@@ -1,7 +1,0 @@
-def compute_reward(self, pos, action, state):
-    reward = -abs(action[0]) - abs(action[1]) - abs(action[2]) - abs(action[3])
-    
-    individual_reward = {'velocity_x': -state[6], 'velocity_y': -state[7], 
-                          'distance_to_end': 10.0 - (pos[0] / (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP)}
-    
-    return reward, individual_reward

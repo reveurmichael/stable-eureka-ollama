@@ -1,6 +1,0 @@
-{
-    "0": [
-        "    # Generated code by stable-eureka\n    def compute_reward(self, pos, action, state):\n        hull_angle = state[0]\n        vel_x = state[2]\n        terminal = (pos[0] < 0) or self.game_over\n        \n        if terminal:\n            reward = -1.0\n            individual_reward = {\"fall\": -1.0}\n        else:\n            # Encourage forward movement\n            movement_reward = np.exp((pos[0] + VIEWPORT_W / SCALE / 5) / TERRAIN_LENGTH)\n            # Punish falling or getting stuck\n            fall_penalty = max(-np.exp(hull_angle), 0)\n            reward = movement_reward - fall_penalty\n            individual_reward = {\"movement\": movement_reward, \"fall\": fall_penalty}\n        \n        return reward, individual_reward",
-        -27.783419248815665
-    ]
-}

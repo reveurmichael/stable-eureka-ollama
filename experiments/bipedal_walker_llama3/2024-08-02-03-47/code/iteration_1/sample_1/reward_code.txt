@@ -1,6 +1,0 @@
-def compute_reward(self, pos, action, state):
-    distance_to_end = (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP - pos[0]
-    speed_penalty = np.exp(-((state[3] + state[5]) / 2)**2)
-    reward = 1 - speed_penalty
-    individual_reward = {'distance_to_end': distance_to_end, 'speed_penalty': speed_penalty}
-    return reward, individual_reward

@@ -1,9 +1,0 @@
-def compute_reward(self, pos, action, state):
-    distance_to_end = TERRAIN_LENGTH - pos[0] * TERRAIN_STEP
-    vertical_velocity = vel.y * (VIEWPORT_H / SCALE) / FPS
-    forward_speed = 0.3 * vel.x * (VIEWPORT_W / SCALE) / FPS
-
-    reward = distance_to_end + np.exp(forward_speed - 1)
-    individual_reward = {"distance_to_end": distance_to_end, "forward_speed": forward_speed}
-
-    return reward, individual_reward

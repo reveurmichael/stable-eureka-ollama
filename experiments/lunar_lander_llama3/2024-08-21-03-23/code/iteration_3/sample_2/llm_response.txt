@@ -1,3 +1,0 @@
-The reward code is not provided in the given code. However, I can see that the `compute_reward` and `compute_fitness_score` methods are called to calculate the reward for the agent. The actual implementation of these methods is not shown.
-
-Typically, a reward function is designed to encourage desired behaviors and discourage undesired ones. In this case, it seems like the goal is to land the rover on the helipad while avoiding falling off or being stuck in an orientation that makes it difficult to move forward. The `compute_reward` method could be responsible for calculating a reward based on the state of the agent (e.g., its position and angle) and other factors, such as the magnitude of the main engine power (`m_power`) and side engines (`s_power`).

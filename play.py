@@ -5,9 +5,9 @@ import yaml
 
 if __name__ == '__main__':
 
-    exp_path = Path('/home/utseus22/stable-eureka-zhuxinning/experiments/bipedal_walker_llama3/2024-08-22-07-52/')
+    exp_path = Path('/home/utseus22/stable-eureka-chenlunde/experiments/bipedal_walker_llama3/2024-08-27-13-54/')
 
-    model_path = exp_path / 'code' / f'iteration_1' / f'sample_4' / 'model.zip'
+    model_path = exp_path / 'code' / f'iteration_0' / f'sample_2' / 'model.zip'
     # model_path = exp_path / 'code' / 'benchmark' / 'model.zip'
 
     config = yaml.safe_load(open(exp_path / 'config.yaml', 'r'))

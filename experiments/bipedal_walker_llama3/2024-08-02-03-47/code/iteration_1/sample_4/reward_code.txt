@@ -1,9 +1,0 @@
-def compute_reward(self, pos, action, state):
-    if not self.game_over:
-        reward = -0.1 + 0.05 * (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP / abs(pos[0] - TERRAIN_LENGTH)
-    else:
-        reward = -100
-
-    individual_reward = {'reach_end': 0.5 - 0.2 * pos[0], 'avoid_falling': -1 if state[12] or state[18] else 0, 'smoothness': -0.1}
-
-    return reward, individual_reward

@@ -1,9 +1,0 @@
-In the reward reflection, it is mentioned that the reward provided by the `compute_reward` function is updated with a new `fitness_score` value. The new fitness score value is given as 'False' in the reward reflection.
-
-The reward received from the `compute_reward` function is given as ` reward = 10.0 ** (1.5, 3))` in the reward reflection.
-
-The update to the reward provided by the `compute_reward` function with new fitness score value `False` is given in the reward reflection as:
-
-```
- reward = 10.0 ** (1.5, 3))  # Update reward using new fitness score value
-```

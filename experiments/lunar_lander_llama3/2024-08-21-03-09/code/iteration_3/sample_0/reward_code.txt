@@ -1,9 +1,0 @@
-def compute_reward(self, state, m_power, s_power, terminated):
-    if terminated:
-        return -100  # termination penalty
-
-    proximity_reward = calculate_proximity_reward(state)
-    stability_reward = calculate_stability_reward(state)
-
-    reward = (1 - abs(state[0])) * proximity_reward + stability_reward
-    return reward

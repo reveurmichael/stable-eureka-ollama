@@ -1,1 +1,0 @@
-reward = float(SUM([j.x] for j in self.joints)) / (SPEED_HIP * TERRAIN_STEP)))

@@ -1,3 +1,0 @@
-def compute_reward(state, m_power, s_power, terminated):
-    # TO DO: implement a meaningful reward function based on the state and actions
-    pass

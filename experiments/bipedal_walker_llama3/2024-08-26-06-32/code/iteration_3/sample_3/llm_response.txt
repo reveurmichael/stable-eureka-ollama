@@ -1,6 +1,0 @@
-The reward value calculated using the reward code is as follows:
-```
-reward = self.compute_reward([pos, action, state)], 'reward', 1)
-```
-
-The reward value is equal to 1 since the reward function `self.compute_reward` returns a single reward value of 1 for all possible states `[pos, action, state]`.

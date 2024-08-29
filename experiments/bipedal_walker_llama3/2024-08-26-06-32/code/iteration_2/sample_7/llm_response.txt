@@ -1,4 +1,0 @@
-Your reward reflection indicates that the total reward received by the agent was \( \text{reward}} \) and the individual reward received by each arm joint in the network for \( \text{arms}} \) was \( \text{individual reward}} \). 
-This suggests that the overall reward received by the agent was higher than the individual rewards received by each arm joint in the network. 
-In addition, the total reward received by the agent was higher than the individual reward received by a single legged robot in the network, which is an example of a simple robot with only one leg and no other limbs.
-Overall, these findings suggest that the overall reward received by the agent was higher than the individual rewards received by each arm joint in the network, and that this resulted in better fitness scores for the agents compared to their individual reward levels.

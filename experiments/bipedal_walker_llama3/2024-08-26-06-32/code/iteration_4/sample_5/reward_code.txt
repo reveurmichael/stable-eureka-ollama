@@ -1,1 +1,0 @@
-reward = self.compute_reward(pos, action, state))

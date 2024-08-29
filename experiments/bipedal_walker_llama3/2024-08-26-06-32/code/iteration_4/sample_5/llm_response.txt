@@ -1,6 +1,0 @@
-The reward code for the given action is as follows:
-```python
-reward = self.compute_reward(pos, action, state))
-```
-
-This code extracts the reward value from the `compute_reward()` method of the environment class. This method calculates a reward based on the current position, the action taken by the agent, and the state of the environment at the time of the action.

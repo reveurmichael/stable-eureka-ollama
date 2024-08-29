@@ -1,3 +1,0 @@
-def compute_reward(self, state, m_power, s_power, terminated):
-    # TO DO: implement your reward function here
-    pass  # or maybe raise NotImplementedError?

@@ -1,9 +1,0 @@
-```python ```
-reward = (0.5 * pos.x - np.exp(-np.abs(state[1]) / 2)) + (-np.sum(np.abs(action)) / len(action))
-individual_reward = {
-    "distance_reward": 0.5 * pos.x,
-    "stability_reward": -np.exp(-np.abs(state[1]) / 2),
-    "smoothness_reward": -np.sum(np.abs(action)) / len(action)
-}
-return reward, individual_reward
-```

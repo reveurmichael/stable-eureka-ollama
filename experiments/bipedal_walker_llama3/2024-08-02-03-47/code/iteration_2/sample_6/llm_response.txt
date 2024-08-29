@@ -1,9 +1,0 @@
-```python
-def compute_reward(self, pos, action, state):
-    dist_to_end = (VIEWPORT_W / SCALE / 5) - pos[0]
-    reward = np.exp(-dist_to_end / 10) * (1 if self.legs[1].ground_contact and self.legs[3].ground_contact else -0.01)
-    individual_reward = {"progress": -dist_to_end, "balance": 0 if self.legs[1].ground_contact and self.legs[3].ground_contact else -1}
-    return reward, individual_reward
-```
-
-This reward function aims to encourage the agent to move forward quickly while maintaining balance by penalizing any deviations from a balanced stance. The exponential term helps to emphasize rewards when the agent is closer to the end of the terrain, and the progress-based reward provides an incentive to move forward.

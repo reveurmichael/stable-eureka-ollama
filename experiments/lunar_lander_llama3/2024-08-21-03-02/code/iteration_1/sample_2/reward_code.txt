@@ -1,3 +1,0 @@
-def compute_reward(self, state, m_power, s_power, terminated):
-    # TO DO: implement your own reward function here!
-    pass  # or return a default value, e.g., 0.0

@@ -1,1 +1,0 @@
-The reward for moving to the right end of the terrain is $1.0$. This means that after successfully reaching the right end of the terrain, the agent receives a reward of $1.0$.

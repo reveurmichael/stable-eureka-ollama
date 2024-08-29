@@ -1,7 +1,0 @@
-def compute_reward(self, pos, action, state):
-    done = state[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP or self.game_over or pos[0] < 0
-    
-    total_reward = np.exp(-10 * abs(action).sum()) if not done else 100
-    individual_rewards = {'distance_reached': int(pos[0]) * 1, 'velocity': state[2], 'leg_ground_contact': (state[-1] + state[-5]).mean()}
-
-    return total_reward, individual_rewards

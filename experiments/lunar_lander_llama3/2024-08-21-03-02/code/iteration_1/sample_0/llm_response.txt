@@ -1,8 +1,0 @@
-The reward code is:
-
-```
-def compute_reward(self, state, m_power, s_power, terminated):
-    pass
-```
-
-Note that this is a placeholder for the actual reward function. The goal is to define a reward function that encourages the agent to learn effective control policies. The reward function should reflect the desired behavior of the agent in the environment.

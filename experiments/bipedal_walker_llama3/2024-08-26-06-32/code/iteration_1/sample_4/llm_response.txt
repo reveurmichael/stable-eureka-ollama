@@ -1,9 +1,0 @@
-The reward received by the agent for its successful navigation to the given position and terrain is $1.0 \times \text{viewing angle}}$.
-
-Here's how the reward function works:
-- The reward function receives two inputs: `pos` (the current position of the agent) and `action` (an action performed by the agent to reach its current position, i.e., `pos`). 
-- The reward function takes into account the distance traveled from `pos` to the current position of the agent (`pos`). 
-- The reward function provides a scalar value as output that indicates the amount of reward received by the agent. This scalar value is known as the reward or the payoff and it can be expressed in terms of the actions performed by the agent at each time step, i.e., `action_history` (the history of the actions performed by the agent). 
-- The reward function provides a scalar value as output that indicates the amount of reward received by the agent. This scalar value is known as the reward or the payoff and it can be expressed in terms of the actions performed by the agent at each time step, i.e., `action_history` (the history of the actions performed by the agent)). 
-- The reward function provides a scalar value as output that indicates the amount of reward received by the agent. This scalar value is known as the reward or the payoff and it can be expressed in terms of the actions performed by the agent at each time step, i.e., `action_history` (the history of the actions performed by the agent)). 
-- The reward function provides a scalar value as output that indicates the amount of reward received by the agent. This scalar value is known as the reward or the payoff and it can be expressed in terms of the actions performed by the agent at each time step, i.e., `action_history` (the history of the actions performed by the agent)).

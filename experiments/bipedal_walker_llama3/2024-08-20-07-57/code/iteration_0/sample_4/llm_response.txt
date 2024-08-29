@@ -1,8 +1,0 @@
-```python
-def compute_reward(self, pos, action, state):
-    reward = -0.1 * (abs(action[0]) + abs(action[1]) + abs(action[2]) + abs(action[3])) + 0.1 * np.exp(-10 * ((pos[0] - TERRAIN_LENGTH) ** 2))
-    individual_reward = {'action_penalty': -0.1 * (abs(action[0]) + abs(action[1]) + abs(action[2]) + abs(action[3])), 'distance_reward': 0.1 * np.exp(-10 * ((pos[0] - TERRAIN_LENGTH) ** 2))}
-    return reward, individual_reward
-```
-
-This reward function aims to encourage the biped to move forward while penalizing large actions. The first part of the reward is a penalty for taking large actions, which discourages unnecessary movement and encourages more controlled steps. The second part is an exponential reward for reaching the end of the terrain, with the magnitude increasing as the distance to the end decreases.

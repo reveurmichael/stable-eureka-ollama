@@ -1,9 +1,0 @@
-def compute_reward(self, pos, action, state):
-    distance_to_goal = 1 - (abs(pos[0] - TERRAIN_LENGTH) / TERRAIN_LENGTH)
-    penalty_for_falling = -10 * (pos[1] / TERRAIN_STEP)
-    fitness_reward = 10 * (1 - (fitness_score / TERRAIN_LENGTH))
-    
-    reward = distance_to_goal + penalty_for_falling + fitness_reward
-    individual_reward = {'distance': distance_to_goal, 'falling': penalty_for_falling, 'fitness': fitness_reward}
-    
-    return reward, individual_reward

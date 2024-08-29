@@ -1,7 +1,0 @@
-```python
-def compute_reward(self, pos, action, state):
-    reward = -1 * (abs(action[0]) + abs(action[1]) + abs(action[2]) + abs(action[3]))  # penalty for moving
-    individual_reward = {'moving': -1 * (abs(action[0]) + abs(action[1]) + abs(action[2]) + abs(action[3])), 'distance_to_end': np.exp((TERRAIN_LENGTH - pos[0] / TERRAIN_STEP) / 10)}
-    return reward, individual_reward
-```
-This reward function aims to encourage the biped to move forward and reach the end of the terrain. It provides a penalty for moving (to discourage unnecessary movements), while also rewarding progress towards the end of the terrain. The exponential transformation is used to emphasize reaching the end over speed or stability.

@@ -1,3 +1,0 @@
-def compute_reward(self, state, m_power, s_power, terminated):
-    # ... some calculations ...
-    return reward, individual_reward

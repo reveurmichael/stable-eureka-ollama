@@ -1,7 +1,0 @@
-In the reward reflection, the following values are reflected:
-
-1. `reward`: The reward received by the agent for successfully completing the task.
-2. `individual_reward`: The individual reward received by the agent for performing an action in the environment.
-3. `fitness_score`: The fitness score provided by the environment to the agent, taking into account the agent's current activity and its performance in previous tasks.
-
-These values reflect the reward received by the agent for successfully completing the task, as well as the individual reward received by the agent for performing an action in the environment, and finally the fitness score provided by the environment to the agent, taking into account the agent's current activity and its performance in previous tasks.

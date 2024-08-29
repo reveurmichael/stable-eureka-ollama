@@ -1,8 +1,0 @@
-```python
-def compute_reward(self, pos, action, state):
-    total_reward = -0.1 * np.abs(action).sum() + 10.0 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else -1.0
-    individual_reward = {'action_cost': -0.1 * np.abs(action).sum(), 'goal_reached': 10.0 if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP else 0}
-    return total_reward, individual_reward
-```
-
-Explanation: The reward function is designed to encourage the biped to move forward as quickly as possible while avoiding falling down and getting stuck. The negative action cost encourages the agent to use minimal energy in its movements, while reaching the goal (reaching the right end of the terrain) is highly rewarded.

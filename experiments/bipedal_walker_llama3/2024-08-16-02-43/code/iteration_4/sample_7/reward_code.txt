@@ -1,7 +1,0 @@
-def compute_reward(self, pos, action, state):
-    distance_to_end = TERRAIN_LENGTH - pos[0]
-    movement_reward = np.exp((distance_to_end / TERRAIN_LENGTH) * TEMPERATURE)
-    stability_reward = 1.0 - np.abs(state[2]) - np.abs(state[3])
-    reward = movement_reward + stability_reward
-    individual_rewards = {'movement': movement_reward, 'stability': stability_reward}
-    return reward, individual_rewards

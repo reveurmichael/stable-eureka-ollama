@@ -1,7 +1,0 @@
-reward = 0.5
- terminated = False
- info = {
-    "reward": reward,
-    "terminated": terminated,
-    "info": info
- }

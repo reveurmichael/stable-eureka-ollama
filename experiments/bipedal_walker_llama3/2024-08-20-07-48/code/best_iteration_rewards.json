@@ -1,6 +1,0 @@
-{
-    "0": [
-        "    # Generated code by stable-eureka\n    def compute_reward(self, pos, action, state):\n        distance_to_goal = TERRAIN_LENGTH - pos[0]\n        \n        if self.game_over or pos[0] < 0:\n            return -100.0, {\"terminal\": True}\n        elif pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:\n            return 100.0, {\"success\": True}\n        \n        reward = distance_to_goal / TERRAIN_LENGTH\n        individual_reward = {\"distance_reward\": reward}\n        \n        if state[-1]:\n            individual_reward[\"fall\"] = -20.0\n        elif state[3] > 1.5:\n            individual_reward[\"struggle\"] = -10.0\n        \n        return reward, individual_reward",
-        -39.408283926948926
-    ]
-}
