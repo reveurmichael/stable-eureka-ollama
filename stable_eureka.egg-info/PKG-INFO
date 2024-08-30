@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: stable_eureka
+Version: 1.0.0
+Author: Rodrigo Sánchez Molina, Nicolás Gastón Rozado and David León Pérez
+Author-email: rsanchezm98@gmail.com
+Maintainer: Rodrigo Sánchez Molina
+Maintainer-email: rsanchezm98@gmail.com
+Requires-Python: >=3.8,<3.11
+License-File: LICENSE
+Requires-Dist: ollama
+Requires-Dist: gymnasium[accept-rom-license,box2d]
+Requires-Dist: tensorboard
+Requires-Dist: imageio
+Requires-Dist: openai
+Requires-Dist: stable-baselines3
+Requires-Dist: pyyaml
