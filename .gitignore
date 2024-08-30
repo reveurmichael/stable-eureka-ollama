@@ -1,5 +1,6 @@
 */_build/**
 __pycache__
+**/__pycache__/**
 .pytest_cache
 .vscode
 .idea
@@ -21,4 +22,4 @@ __pycache__
 */**/node_modules/*
 */node_modules/*
 */.python-version
-.python-versio
+.python-version

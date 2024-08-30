@@ -2,8 +2,8 @@ eureka:
     backend: 'ollama'                   # 'ollama' or 'openai'
     model: 'llama3'                     # name of the model (from ollama or openai models)
     temperature: 0.8                    # the higher it is, the more random the output will be
-    iterations: 2                       # number of total iterations
-    samples: 2                          # number of samples to generate per iteration, they will run in parallel, so consider your HW     
+    iterations: 8                       # number of total iterations
+    samples: 6                          # number of samples to generate per iteration, they will run in parallel, so consider your HW     
     sleep_time_per_iteration: 5         # sleep time between iterations in minutes (only if using ollama to avoid cuda memory issues)
     use_initial_reward_prompt: true    # if available, use the initial reward prompt provided in the environment folder
     pretraining_with_best_model: false   # use best model weights for pretraining the next iteration set of models
@@ -47,9 +47,9 @@ rl:
             seed: 5                     # seed for evaluation        
             num_episodes: 2             # number of episodes to evaluate
             num_evals: 10               # number of evaluations to perform during training
-        total_timesteps: 1_000      # total timesteps to train the agent
+        total_timesteps: 10_000_000      # total timesteps to train the agent
         device: 'cuda'                  # 'cuda' or 'cpu'
-        num_envs: 4                     # number of environments to run in parallel 
+        num_envs: 10                     # number of environments to run in parallel 
         state_stack: 1                  # number of frames to stack
         is_atari: false                 # if the environment is an atari game
 

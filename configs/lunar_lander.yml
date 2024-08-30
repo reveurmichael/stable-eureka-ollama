@@ -2,10 +2,10 @@ eureka:
     backend: 'ollama'  # 'ollama' or 'openai'
     model: 'llama3'
     temperature: .8  # if this value is too low, it is almost deterministic
-    iterations: 5
+    iterations: 8
     samples: 8
     use_initial_reward_prompt: true  # if available, use the initial reward prompt
-    pretraining_with_best_model: true   # use best model weights for pretraining the next models
+    pretraining_with_best_model: false   # use best model weights for pretraining the next models
 
 environment:
     name: 'lunar_lander'
@@ -40,7 +40,7 @@ rl:
         share_features_extractor: false
 
     training:
-        torch_compile: true
+        torch_compile: false
         seed: 0
         eval:
             seed: 5
