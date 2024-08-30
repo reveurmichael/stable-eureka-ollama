@@ -1,7 +1,0 @@
-ollama
-gymnasium[accept-rom-license,box2d]
-tensorboard
-imageio
-openai
-stable-baselines3
-pyyaml
