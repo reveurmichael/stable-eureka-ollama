@@ -175,6 +175,7 @@ class RLTrainer:
         self._config = config
         self._name = name
         self._log_dir = log_dir
+        self.model = None
 
         if self._config['algo'] not in RLTrainer.AVAILABLE_ALGOS.keys():
             raise ValueError(f"Algorithm {self._config['algo']} not available. "
@@ -197,19 +198,20 @@ class RLTrainer:
                                              name=self._name)
 
         if self._pretrained_model is None:
-            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
+            self.model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0](**self._params)
         else:
-            model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
+            self.model = RLTrainer.AVAILABLE_ALGOS[self._config['algo']][0].load(path=self._pretrained_model,
                                                                             **self._params)
         if self._config['training'].get('torch_compile', False):
             torch.set_float32_matmul_precision('high')
-            model.policy = torch.compile(model.policy)
+            self.model.policy = torch.compile(self.model.policy)
 
-        model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",
+        self.model.learn(total_timesteps=self._config['training']['total_timesteps'], tb_log_name="tensorboard",
                     callback=info_saver_callback)
-        model.save(self._log_dir / "model")
+        self.model.save(self._log_dir / "model")
         if logger:
             if is_benchmark:
                 logger.info(f"Training done for benchmark!")
             else:
                 logger.info(f"Training done for {self._log_dir} experiment!")
+

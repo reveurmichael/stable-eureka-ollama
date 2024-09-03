@@ -1,9 +1,9 @@
 eureka:
     backend: 'ollama'                   # 'ollama' or 'openai'
     model: 'llama3'                     # name of the model (from ollama or openai models)
-    temperature: 0.8                    # the higher it is, the more random the output will be
-    iterations: 10                       # number of total iterations
-    samples: 8                          # number of samples to generate per iteration, they will run in parallel, so consider your HW     
+    temperature: 1         # the higher it is, the more random the output will be
+    iterations: 6                       # number of total iterations
+    samples: 6                          # number of samples to generate per iteration, they will run in parallel, so consider your HW     
     sleep_time_per_iteration: 5         # sleep time between iterations in minutes (only if using ollama to avoid cuda memory issues)
     use_initial_reward_prompt: true    # if available, use the initial reward prompt provided in the environment folder
     pretraining_with_best_model: false   # use best model weights for pretraining the next iteration set of models
@@ -24,16 +24,24 @@ rl:
     algo: 'ppo'                         # 'ppo', 'sac', 'dqn', 'td3', 'ddpg'               
     algo_params:                        # hyperparameters for the algorithm (it depends on the algorithm, same as in sb3)          
         policy: 'MlpPolicy'             
-        learning_rate: 0.0003           
         n_steps: 2048
         batch_size: 64
         n_epochs: 10
         gamma: 0.999
         gae_lambda: 0.95
-        clip_range: 0.2
+        clip_range: 0.18
         ent_coef: 0.0
         vf_coef: 0.5
         max_grad_norm: 0.5
+        normalize: True
+        buffer_size: 200000
+        learning_starts: 10000
+        noise_type: 'normal'
+        noise_std: 0.1
+        gradient_steps: 1
+        train_freq: 1
+        learning_rate: !!float 1e-3
+        policy_kwargs: "dict(net_arch=[400, 300])"
 
     architecture:                       # architecture of the networks (it depends on the algorithm, same as in sb3)
         net_arch: {'pi': [64, 64], 'vf': [64, 64]}  
@@ -47,9 +55,9 @@ rl:
             seed: 5                     # seed for evaluation        
             num_episodes: 8             # number of episodes to evaluate
             num_evals: 10               # number of evaluations to perform during training
-        total_timesteps: 1_000_000      # total timesteps to train the agent
+        total_timesteps: 10_000_000      # total timesteps to train the agent
         device: 'cuda'                  # 'cuda' or 'cpu'
-        num_envs: 10                     # number of environments to run in parallel 
+        num_envs: 32                     # number of environments to run in parallel 
         state_stack: 1                  # number of frames to stack
         is_atari: false                 # if the environment is an atari game
 

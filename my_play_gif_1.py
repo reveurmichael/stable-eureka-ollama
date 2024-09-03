@@ -5,13 +5,15 @@ import yaml
 
 if __name__ == '__main__':
 
-    exp_path = Path('/home/utseus22/stable-eureka-chenlunde/experiments/bipedal_walker_llama3/2024-08-27-13-54/')
+    exp_path = Path(
+        "/home/utseus22/stable-eureka-chenlunde/experiments/bipedal_walker_llama3/2024-08-31-01-09/"
+    )
 
-    model_path = exp_path / 'code' / f'iteration_0' / f'sample_2' / 'model.zip'
-    # model_path = exp_path / 'code' / 'benchmark' / 'model.zip'
+    # model_path = exp_path / 'code' / f'iteration_0' / f'sample_2' / 'model.zip'
+    model_path = exp_path / 'code' / 'benchmark' / 'model.zip'
 
     config = yaml.safe_load(open(exp_path / 'config.yaml', 'r'))
-    env_name = f'BipedalWalker'
+    env_name = f'BipedalWalker-v3'
 
     env = make_env(env_class=env_name,
                    env_kwargs=config['environment'].get('kwargs', None),
@@ -23,4 +25,4 @@ if __name__ == '__main__':
     evaluator = RLEvaluator(model_path, algo=config['rl']['algo'])
     evaluator.run(env, seed=config['rl']['evaluation']['seed'],
                   n_episodes=config['rl']['evaluation']['num_episodes'],
-                  logger=get_logger(), save_gif=config['rl']['evaluation']['save_gif'])
+                  logger=get_logger(), save_gif=True)
