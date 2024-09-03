@@ -1,10 +1,9 @@
-from stable_eureka import RLTrainer, make_env, get_logger
+from stable_eureka import RLTrainer, make_env, get_logger, RLEvaluator
 from pathlib import Path
 import yaml
 import imageio
 import gymnasium as gym
 import numpy as np
-from gymnasium.wrappers import RecordVideo
 
 if __name__ == '__main__':
 
@@ -37,21 +36,19 @@ if __name__ == '__main__':
                    logger=get_logger(),
                    is_benchmark=True)
     
-    def save_gif(env, model, path, episodes=1):
-        images = []
-        for _ in range(episodes):
-            obs, _ = env.reset()  
-            done = False
-            while not done:
-                action, _states = model.predict(obs, deterministic=True)
-                obs, reward, terminated, truncated, info = env.step(action)  
-                done = terminated or truncated
-                images.append(env.render())
-        env.close()
+    model_path = exp_path / 'model.zip'
+    env_name = f'BipedalWalker-v3'
 
-        imageio.mimsave(path, [np.array(img) for i, img in enumerate(images) if i % 2 == 0], fps=29)
+    env = make_env(env_class=env_name,
+                   env_kwargs=config['environment'].get('kwargs', None),
+                   n_envs=1,
+                   is_atari=config['rl']['training'].get('is_atari', False),
+                   state_stack=config['rl']['training'].get('state_stack', 1),
+                   multithreaded=config['rl']['training'].get('multithreaded', False))
 
-    eval_env_for_render = gym.make(config['environment']['benchmark'], render_mode="rgb_array")
-    eval_env_for_render = RecordVideo(eval_env_for_render, video_folder=str(exp_path / 'code' / 'videos'))
+    evaluator = RLEvaluator(model_path, algo=config['rl']['algo'])
+    evaluator.run(env, seed=config['rl']['evaluation']['seed'],
+                  n_episodes=config['rl']['evaluation']['num_episodes'],
+                  logger=get_logger(), save_gif=True)
 
-    save_gif(eval_env_for_render, rl_trainer.model, exp_path / 'code' / 'evaluation.gif', episodes=1)
+    

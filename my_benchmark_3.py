@@ -7,7 +7,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    exp_path = Path("/home/utseus22/stable-eureka-chenlunde/experiments/bipedal_walker_llama3/benchmark_2/")
+    exp_path = Path("/home/utseus22/stable-eureka-chenlunde/experiments/bipedal_walker_llama3/benchmark_3/")
 
     config = yaml.safe_load(open(exp_path / 'config.yaml', 'r'))
 
