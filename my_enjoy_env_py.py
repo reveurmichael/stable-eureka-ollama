@@ -64,17 +64,7 @@ class MyEnjoyEnvPy:
         model.learn(total_timesteps=self._config['rl']['training']['total_timesteps'])
         # model.learn(total_timesteps=1000)
 
-        # # rendering
-        # vec_env = model.get_env()
-        # obs = vec_env.reset()
-        # for i in range(1000):
-        #     action, _state = model.predict(obs, deterministic=True)
-        #     obs, reward, done, info = vec_env.step(action)
-        #     vec_env.render("human")
-        # vec_env.close()
-    
-
-        model_path = self.log_dir / 'model_enjoy'
+        model_path = self.log_dir / 'model_env'
         env_name = f'BipedalWalker-v3'
         model.save(model_path)
 
