@@ -1,1 +1,1 @@
-scp -r * utseus22@58.199.168.149:~/stable-eureka-chenlunde/
+scp -r ~/stable-eureka-chenlunde/* utseus22@58.199.168.149:~/stable-eureka-chenlunde/

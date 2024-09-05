@@ -38,7 +38,7 @@ if __name__ == '__main__':
                     state_stack=1)
     
     obs = vec_env.reset()
-    for i in range(10000):
+    for i in range(1000):
         action, _state = model.predict(obs, deterministic=True)
         obs, reward, done, info = vec_env.step(action)
         vec_env.render("human")
