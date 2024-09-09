@@ -23,6 +23,7 @@ from stable_eureka.utils import (
 from stable_eureka.rl_trainer import RLTrainer
 from stable_eureka.rl_evaluator import RLEvaluator
 from gymnasium.envs.registration import register
+from stable_eureka.rl_eval_callback import RLEvalCallback
 
 import torch
 from typing import Dict
@@ -88,15 +89,9 @@ class MyEnjoyEnvPy:
         _params = RLTrainer.AVAILABLE_ALGOS[self._config["rl"]["algo"]][1](
             env, self._config["rl"], self.log_dir
         )
-        model = RLTrainer.AVAILABLE_ALGOS[self._config["rl"]["algo"]][0](**_params)
-        model.learn(total_timesteps=self._config["rl"]["training"]["total_timesteps"])
-        # model.learn(total_timesteps=1000)
-
-        model_path = self.log_dir / "model_env"
-        model.save(model_path)
 
         env_name = f"BipedalWalker-v3"
-        env = make_env(
+        env_eval = make_env(
             env_class=env_name,
             env_kwargs=self._config["environment"].get("kwargs", None),
             n_envs=1,
@@ -105,9 +100,40 @@ class MyEnjoyEnvPy:
             multithreaded=self._config["rl"]["training"].get("multithreaded", False),
         )
 
+        eval_freq = max(
+            1,
+            int(
+                self._config["rl"]["training"]["total_timesteps"]
+                // self._config["rl"]["training"]["num_envs"]
+                / self._config["rl"]["training"]["eval"]["num_evals"]
+            ),
+        )
+        info_saver_callback = RLEvalCallback(
+            env_eval,
+            seed=self._config["rl"]["training"]["eval"]["seed"],
+            n_eval_episodes=self._config["rl"]["training"]["eval"]["num_episodes"],
+            eval_freq=eval_freq,
+            log_path=self.log_dir,
+            is_benchmark=True,
+            logger=get_logger(),
+            name=f"{str(self._experiment_path)}_iteration_{iteration}_sample_{sample}",
+        )
+
+        model = RLTrainer.AVAILABLE_ALGOS[self._config["rl"]["algo"]][0](**_params)
+        model.learn(
+            total_timesteps=self._config["rl"]["training"]["total_timesteps"],
+            tb_log_name="tensorboard",
+            callback=info_saver_callback,
+        )
+
+        # model.learn(total_timesteps=100)
+
+        model_path = self.log_dir / "model_env"
+        model.save(model_path)
+
         evaluator = RLEvaluator(model_path, algo=self._config["rl"]["algo"])
         evaluator.run(
-            env,
+            env_eval,
             seed=self._config["rl"]["evaluation"]["seed"],
             n_episodes=self._config["rl"]["evaluation"]["num_episodes"],
             logger=get_logger(),
@@ -118,7 +144,7 @@ class MyEnjoyEnvPy:
 if __name__ == "__main__":
     m_checker = MyEnjoyEnvPy(
         experiment_name="bipedal_walker_llama3",
-        experiment_datetime="2024-08-31-01-09",
+        experiment_datetime="2099-99-99-99-03",
         iteration=18,
         sample=4,
     )
