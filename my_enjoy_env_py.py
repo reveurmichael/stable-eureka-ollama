@@ -93,9 +93,9 @@ class MyEnjoyEnvPy:
         # model.learn(total_timesteps=1000)
 
         model_path = self.log_dir / "model_env"
-        env_name = f"BipedalWalker-v3"
         model.save(model_path)
 
+        env_name = f"BipedalWalker-v3"
         env = make_env(
             env_class=env_name,
             env_kwargs=self._config["environment"].get("kwargs", None),
@@ -120,6 +120,6 @@ if __name__ == "__main__":
         experiment_name="bipedal_walker_llama3",
         experiment_datetime="2024-08-31-01-09",
         iteration=18,
-        sample=4
+        sample=4,
     )
     m_checker.run()
