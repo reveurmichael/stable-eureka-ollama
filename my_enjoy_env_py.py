@@ -42,6 +42,7 @@ class MyEnjoyEnvPy:
     ):
 
         self._root_path = Path(os.getcwd())
+        self.experiment_name = experiment_name
         self.experiment_datetime = experiment_datetime
         self._experiment_path = (
             self._root_path / "experiments" / experiment_name / self.experiment_datetime
@@ -116,7 +117,7 @@ class MyEnjoyEnvPy:
             log_path=self.log_dir,
             is_benchmark=True,
             logger=get_logger(),
-            name=f"{str(self._experiment_path)}_iteration_{iteration}_sample_{sample}",
+            name=f"{self.experiment_datetime} | iteration {iteration} | sample{sample}",
         )
 
         model = RLTrainer.AVAILABLE_ALGOS[self._config["rl"]["algo"]][0](**_params)
@@ -125,10 +126,9 @@ class MyEnjoyEnvPy:
             tb_log_name="tensorboard",
             callback=info_saver_callback,
         )
-
         # model.learn(total_timesteps=100)
 
-        model_path = self.log_dir / "model_env"
+        model_path = self.log_dir / "model_enjoy_env"
         model.save(model_path)
 
         evaluator = RLEvaluator(model_path, algo=self._config["rl"]["algo"])
