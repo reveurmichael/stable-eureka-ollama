@@ -91,7 +91,7 @@ class MyEnjoyEnvPy:
             env, self._config["rl"], self.log_dir
         )
 
-        env_name = f"BipedalWalker-v3"
+        env_name = self._config["environment"]["benchmark"]
         env_eval = make_env(
             env_class=env_name,
             env_kwargs=self._config["environment"].get("kwargs", None),
@@ -143,9 +143,9 @@ class MyEnjoyEnvPy:
 
 if __name__ == "__main__":
     m_checker = MyEnjoyEnvPy(
-        experiment_name="bipedal_walker_llama3",
-        experiment_datetime="2099-99-99-99-03",
-        iteration=18,
+        experiment_name="mountain_car_continuous_llama3",
+        experiment_datetime="2024-44-44-44-44",
+        iteration=1,
         sample=4,
     )
     m_checker.run()

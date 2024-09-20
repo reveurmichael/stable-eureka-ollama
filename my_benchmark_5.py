@@ -35,10 +35,10 @@ if __name__ == '__main__':
                    num_evals=config['rl']['training']['eval']['num_evals'],
                    logger=get_logger(),
                    is_benchmark=True)
-    
-    model_path = exp_path / 'model.zip'
-    env_name = f'BipedalWalker-v3'
 
+    model_path = exp_path / 'model.zip'
+    env_name = config["environment"]["benchmark"]
+    
     env = make_env(env_class=env_name,
                    env_kwargs=config['environment'].get('kwargs', None),
                    n_envs=1,
@@ -50,5 +50,3 @@ if __name__ == '__main__':
     evaluator.run(env, seed=config['rl']['evaluation']['seed'],
                   n_episodes=config['rl']['evaluation']['num_episodes'],
                   logger=get_logger(), save_gif=True)
-
-    
