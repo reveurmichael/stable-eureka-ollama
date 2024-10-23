@@ -37,8 +37,6 @@ class MyEnjoyEnvPy:
         self,
         experiment_name: str,
         experiment_datetime: str,
-        iteration: int,
-        sample: int,
     ):
 
         self._root_path = Path(os.getcwd())
@@ -49,9 +47,6 @@ class MyEnjoyEnvPy:
         )
         self.log_dir = (
             self._experiment_path
-            / "code"
-            / f"iteration_{iteration}"
-            / f"sample_{sample}"
         )
         config_path = self._experiment_path / "config.yaml"
 
@@ -60,26 +55,21 @@ class MyEnjoyEnvPy:
 
         self._config = yaml.safe_load(open(config_path, "r"))
 
-        self.iteration = iteration
-        self.sample = sample
-
     def run(self):
-        iteration = self.iteration
-        sample = self.sample
         module_name = f"{self._config['experiment']['parent']}.{self._config['experiment']['name']}"
         if self._config["experiment"]["use_datetime"]:
             module_name += f".{self.experiment_datetime}"
 
-        module_name += f".code.iteration_{iteration}.sample_{sample}.env_code.env"
+        module_name += f".env_code.env"
 
         register(
-            id=f"iteration_{iteration}_sample_{sample}_env-v0",
+            id=f"env-v0",
             entry_point=f"{module_name}:{self._config['environment']['class_name']}",
             max_episode_steps=self._config["environment"]["max_episode_steps"],
         )
 
         env = make_env(
-            env_class=f"iteration_{iteration}_sample_{sample}_env-v0",
+            env_class=f"env-v0",
             env_kwargs=self._config["environment"].get("kwargs", None),
             n_envs=self._config["rl"]["training"].get("num_envs", 1),
             is_atari=self._config["rl"]["training"].get("is_atari", False),
@@ -117,7 +107,7 @@ class MyEnjoyEnvPy:
             log_path=self.log_dir,
             is_benchmark=True,
             logger=get_logger(),
-            name=f"{self.experiment_datetime} | iteration {iteration} | sample{sample}",
+            name=f"{self.experiment_datetime} | ",
         )
 
         model = RLTrainer.AVAILABLE_ALGOS[self._config["rl"]["algo"]][0](**_params)
@@ -143,9 +133,7 @@ class MyEnjoyEnvPy:
 
 if __name__ == "__main__":
     m_checker = MyEnjoyEnvPy(
-        experiment_name="mountain_car_continuous_llama3",
-        experiment_datetime="2024-09-18-05-32",
-        iteration=1,
-        sample=4,
+        experiment_name="bipedal_walker_llama3",
+        experiment_datetime="zhuxinning-1010",
     )
     m_checker.run()
