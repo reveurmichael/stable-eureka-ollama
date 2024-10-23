@@ -1,0 +1,1 @@
+scp -r -P 2222 2024-10-21-19-32 utseus22@58.199.170.73:~/stable-eureka-chenlunde/experiments/bipedal_walker_llama3/
